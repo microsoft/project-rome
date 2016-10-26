@@ -55,10 +55,10 @@ class AppConnectionListener implements IAppServiceClientConnectionListener {
         if (response.getStatus() ==  SUCCESS) { 
             //it worked, lets send another message 
             Bundle message = new Bundle(); 
-            message.putChar(“another message”,’b’); 
+            message.putChar("another message",'b'); 
             appServiceClientConnection.sendMessageAsync(message); 
         } else { 
-            log(“The message was “ + response.getStatus().toString()); 
+            log("The message was " + response.getStatus().toString()); 
         } 
     } 
 } 
