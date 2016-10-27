@@ -35,7 +35,7 @@ appServiceClientConnection.openRemoteAsync();
 ```
 ## Send and receive messages
 An event listener is needed to handle all communication with the remote app service. You must create a class that implements **IAppServiceClientConnectionListener** to serve this purpose. 
->Note: Information is sent from the Android app to a Windows app service in the same way it is done between different activities of an Android app: through a **Bundle** object. The remote systems platform translates this into a **ValueSet** object (of the .NET Framework), which can then be interpreted by the Windows app service. Information passed in the other direction undergoes the reverse translation.
+>Note: Information is sent from the Android app to a Windows app service in the same way it is done between different activities of an Android app: through a **Bundle** object. The remote systems platform translates this into a [**ValueSet**](https://msdn.microsoft.com/library/windows/apps/windows.foundation.collections.valueset) object (of the .NET Framework), which can then be interpreted by the Windows app service. Information passed in the other direction undergoes the reverse translation.
 
 ```java 
 // Implement listener class for the app service connection 
