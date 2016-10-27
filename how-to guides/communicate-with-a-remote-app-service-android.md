@@ -33,7 +33,7 @@ appServiceClientConnection.addListener(listener);
 appServiceClientConnection.openRemoteAsync(); 
 
 ```
-## Communicate with the app service
+## Send and receive messages
 A listener object is needed to handle all communication with the remote app service. Create a class that implements **IAppServiceClientConnectionListener** to serve this purpose.
 
 ```java 
@@ -41,10 +41,10 @@ A listener object is needed to handle all communication with the remote app serv
 class AppConnectionListener implements IAppServiceClientConnectionListener { 
  
     public void openRemoteSuccess(AppServiceClientConnectionStatus status) { 
-        if (status == SUCCESS) { 
+        if (status == SUCCESS???) { 
+            // create and send a message to the app service
             Bundle message = new Bundle(); 
-            message.putChar("here is my message", 'a'); 
-            //send the message 
+            message.putChar("here is my message", 'a');  
             appServiceClientConnection.sendMessageAsync(message); 
         }
     } 
@@ -52,21 +52,21 @@ class AppConnectionListener implements IAppServiceClientConnectionListener {
     public void responseReceived(AppServiceClientResponse response) { 
          
         //check that the message was successfully transmitted 
-        if (response.getStatus() ==  SUCCESS) { 
-            //it worked, lets send another message 
+        if (response.getStatus() == SUCCESS) { 
+            // send another message to the app service, or receive??? 
             Bundle message = new Bundle(); 
             message.putChar("another message",'b'); 
             appServiceClientConnection.sendMessageAsync(message); 
         } else { 
-            log("The message was " + response.getStatus().toString()); 
+            log("The message status was " + response.getStatus().toString()); 
         } 
     } 
 } 
 ```
 
-When your app is finished messaging/querying the host device's app service, close the connection between the two devices.
+When your app is finished interacting with the host device's app service, close the connection between the two devices.
 
 ```java
-// Close AppConnection 
+// Close connection 
 appServiceClientConnection.close(); 
 ```
