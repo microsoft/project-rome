@@ -34,7 +34,8 @@ appServiceClientConnection.openRemoteAsync();
 
 ```
 ## Send and receive messages
-A listener object is needed to handle all communication with the remote app service. Create a class that implements **IAppServiceClientConnectionListener** to serve this purpose.
+An event listener is needed to handle all communication with the remote app service. You must create a class that implements **IAppServiceClientConnectionListener** to serve this purpose. 
+>Note: Information is sent from the Android app to a Windows app service in the same way it is done between different activities of an Android app: through a **Bundle** object. The remote systems platform translates this into a **ValueSet** object (of the .NET Framework), which can then be interpreted by the Windows app service. Information passed in the other direction undergoes the reverse translation.
 
 ```java 
 // Implement listener class for the app service connection 
@@ -53,12 +54,12 @@ class AppConnectionListener implements IAppServiceClientConnectionListener {
          
         //check that the message was successfully transmitted 
         if (response.getStatus() == SUCCESS) { 
-            // send another message to the app service, or receive??? 
+            // send another message to the app service 
             Bundle message = new Bundle(); 
             message.putChar("another message",'b'); 
             appServiceClientConnection.sendMessageAsync(message); 
         } else { 
-            log("The message status was " + response.getStatus().toString()); 
+            Log.i("message","The message status was " + response.getStatus().toString()); 
         } 
     } 
 } 
@@ -70,3 +71,8 @@ When your app is finished interacting with the host device's app service, close 
 // Close connection 
 appServiceClientConnection.close(); 
 ```
+
+
+---
+??? need a scenario where we receive message from app service.
+??? why do we check the status in the openRemoteSuccess handler?
