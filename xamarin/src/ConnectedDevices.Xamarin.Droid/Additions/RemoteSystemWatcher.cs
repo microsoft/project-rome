@@ -49,7 +49,7 @@ namespace Microsoft.ConnectedDevices
         public delegate void OnRemoteSystemUpdated(RemoteSystemWatcher watcher, RemoteSystemUpdatedEventArgs args);
         internal void InvokeRemoteSystemUpdated(RemoteSystem remoteSystem)
         {
-            RemoteSystemUpdated?(this, new RemoteSystemUpdatedEventArgs(remoteSystem));
+            RemoteSystemUpdated?.Invoke(this, new RemoteSystemUpdatedEventArgs(remoteSystem));
         }
         //
         // Summary:
