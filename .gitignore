@@ -197,8 +197,8 @@ FakesAssemblies/
 *.opt
 *.mp3
 *.opendb
-CDPPingPong/CDPPingPong.Core/Properties/CDPPingPong.Core.rd.xml
-CDPPingPong/CDPPingPong.sln.DotSettings
-/OfficeProtocolHandler/appx/office365cent.cer
-/OfficeProtocolHandler/appx/office365cent.pvk
-/OfficeProtocolHandler/appx/office365cent.appx
+
+xamarin/src/ConnectedDevices.Xamarin.Droid/Jars/connecteddevices-core-armv7-external-release.aar
+xamarin/src/ConnectedDevices.Xamarin.Droid/Jars/connecteddevices-sdk-armv7-external-release.aar
+xamarin/src/ConnectedDevices.Xamarin.Droid/Jars/org.apache.http.legacy.jar
+
