@@ -1,7 +1,7 @@
 # Launch an app on a remote device (Android)
-This guide shows you how to remotely launch a Universal Windows Platform (UWP) app or Windows desktop app on a Windows device from an Android device.
+This guide shows you how to remotely launch a Universal Windows Platform (UWP) app or Windows desktop app on a Windows device from an app on an Android device.
 
-Remote app launching can be useful when the user wishes to start a task on one device and finish it on another. For example, you might receive a Skype call on your Android phone and later wish to launch the Skype app on your desktop PC to continue the call there. However, note that the client's and host's apps do not need to be the same: your Android app can launch any Windows app on a connected Windows device.
+Remote app launching can be useful when the user wishes to start a task on one device and finish it on another. For example, you might receive a Skype call on your Android phone and later wish to launch the Skype app on your desktop PC to continue the call there. Note, however, that the client's and host's apps do not need to be the same: your Android app can launch any Windows app on a connected Windows device.
 
 Remote launch is achieved by sending a Uniform Resource Identifier (URI) from one device to another. A URI specifies a *scheme*, which determines which app(s) can handle its information. See [Launch the default app for a URI](https://msdn.microsoft.com/en-us/windows/uwp/launch-resume/launch-default-app) for information on using URIs to launch Windows apps.
 
@@ -9,13 +9,17 @@ Remote launch is achieved by sending a Uniform Resource Identifier (URI) from on
 
 Before implementing device discovery and connectivity, there are a few steps you'll need to take to give your Android app the capability to connect to remote Windows devices.
 
-First, you must register your app with Microsoft by following the instructions on the [Microsoft developer portal](https://apps.dev.microsoft.com/). Copy the provided code blocks to their respective locations in your Android project. This will allow your app to access Microsoft's remote systems platform by having users sign in to their Microsoft accounts (MSAs).
+First, you must register your app with Microsoft by following the instructions on the [Microsoft developer portal](https://apps.dev.microsoft.com/). Copy the provided code blocks to their respective locations in your Android app project. This will allow your app to access Microsoft's remote systems platform by having users sign in to their Microsoft accounts (MSAs).
 
 Next, go to the activity class where you would like the remote system discovery functionality to live (this may be the same activity in which MSA authentication is handled). Add the **remotesystems** namespace.
 
 ```java
 import com.microsoft.remotesystems (or rome???)
 ```
+
+**add .aar files as module dependencies here**
+
+** update androidmanifest** (taken care of in ms dev web instructions)
 
 Next, you must initialize the remote systems platform with your app's user Id, device Id, and access token. The user Id, also known as the app Id or client Id in this scenario, is unique to your app and was obtained upon registering with Microsoft in the step above. You can find it on the [app list page of the Microsoft developer portal](https://apps.dev.microsoft.com/#/appList).  
 
