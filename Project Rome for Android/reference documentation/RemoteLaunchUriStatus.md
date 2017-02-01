@@ -21,6 +21,6 @@ Returns the int value for this RemoteLaunchUriStatus.
 
 `public int getValue()`
 
-**Return value**
+**Return value**  
 The int value for this RemoteLaunchUriStatus
 

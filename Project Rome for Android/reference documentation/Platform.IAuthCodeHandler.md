@@ -11,5 +11,5 @@ Called when the Remote Systems platform is initializing and has acquired a new a
 
 `void onAuthCodeFetched(String authCode)`
 
-**Parameters**
+**Parameters**  
 *authCode* - the previous authorization code that the system will attempt to refresh

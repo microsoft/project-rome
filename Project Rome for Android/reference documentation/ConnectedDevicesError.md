@@ -16,10 +16,10 @@ Gets the ConnectedDevicesError for the given value.
 
 `public static ConnectedDevicesError fromInt(int value)`
 
-**Parameters**
+**Parameters**  
 *value* - the value representing a ConnectedDevicesError
 
-**Return value**
+**Return value**  
 The ConnectedDevicesError for the given value.
 
 ### getValue

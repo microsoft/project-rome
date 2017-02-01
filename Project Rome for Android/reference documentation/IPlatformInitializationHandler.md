@@ -11,5 +11,5 @@ Called when the Remote Systems platform initialization process finishes.
 
 `void onDone(boolean succeeded)`
 
-**Parameters** 
+**Parameters**  
 *succeeded* - **true** if initialization was successful, otherwise **false**
