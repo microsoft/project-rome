@@ -1,133 +1,153 @@
 # Launch an app on a remote device (Android)
-This guide shows you how to remotely launch a Universal Windows Platform (UWP) app or Windows desktop app on a Windows device from an app on an Android device.
+This guide shows you how to remotely launch a Universal Windows Platform (UWP) app or Windows desktop app on a Windows device from an app on an Android device. Refer to the [Android sample app](?) for a working example.
 
 Remote app launching can be useful when the user wishes to start a task on one device and finish it on another. For example, you might receive a Skype call on your Android phone and later wish to launch the Skype app on your desktop PC to continue the call there. Note, however, that the client's and host's apps do not need to be the same: your Android app can launch any Windows app on a connected Windows device.
 
 Remote launch is achieved by sending a Uniform Resource Identifier (URI) from one device to another. A URI specifies a *scheme*, which determines which app(s) can handle its information. See [Launch the default app for a URI](https://msdn.microsoft.com/en-us/windows/uwp/launch-resume/launch-default-app) for information on using URIs to launch Windows apps.
 
-## Initial setup for Remote Systems functionality
+## Initial setup for Connected Devices functionality
 
 Before implementing device discovery and connectivity, there are a few steps you'll need to take to give your Android app the capability to connect to remote Windows devices.
 
-First, you must register your app with Microsoft by following the instructions on the [Microsoft developer portal](https://apps.dev.microsoft.com/). Copy the provided code blocks to their respective locations in your Android app project. This will allow your app to access Microsoft's remote systems platform by having users sign in to their Microsoft accounts (MSAs).
+First, you must register your app with Microsoft by following the instructions on the [Microsoft developer portal](https://apps.dev.microsoft.com/). This will allow your app to access Microsoft's Connected Devices platform by having users sign in to their Microsoft accounts (MSAs). After registration, do not copy the generated code from the site into your app.
 
-Next, go to the activity class where you would like the remote system discovery functionality to live (this may be the same activity in which MSA authentication is handled). Add the **remotesystems** namespace.
+Add the connecteddevices-core and connecteddevices-sdk AAR dependencies into your app's build.gradle file.
 
-```java
-import com.microsoft.remotesystems (or rome???)
-```
-
-**add .aar files as module dependencies here**
-
-** update androidmanifest** (taken care of in ms dev web instructions)
-
-Next, you must initialize the remote systems platform with your app's user Id, device Id, and access token. The user Id, also known as the app Id or client Id in this scenario, is unique to your app and was obtained upon registering with Microsoft in the step above. You can find it on the [app list page of the Microsoft developer portal](https://apps.dev.microsoft.com/#/appList).  
-
-The device Id, or Android Id, is unique to the *user* on the device and can be obtained with the following method call:
+maven repository?
 
 ```java
-final string deviceId = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(),android.provider.Settings.Secure.ANDROID_ID);
+dependencies { 
+    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-core-armv7', version: '0.1.04', ext: 'aar', classifier: 'externalRelease') 
+    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armv7', version: '0.1.04', ext: 'aar', classifier: 'externalRelease') 
+}
 ```
 
-Finally, the app's access token is obtained when the user signs on to his or her MSA through the app. To reference it programatically, find the **onSuccess** event handler in the authentication code provided by the Microsoft developer portal. The access token is stored in the **AuthenticationResult** object that is passed in:
+proguard rules?
+
+Next, go to the activity class where you would like the remote system discovery functionality to live (this may be the same activity in which MSA authentication is handled). Add the **connecteddevices** namespace.
 
 ```java
-@Override
-public void onSuccess(AuthenticationResult result)
-{
-    Log.v(AUTH_TAG, "Successfully obtained token, still need to validate");
-    if (result != null && !result.getAccessToken().isEmpty())
-    {
-        try
-        {
-            String accessToken = result.getAccessToken();
-            //...
+import com.microsoft.connecteddevices.*;
 ```
 
-Now you have obtained the credentials necessary to initialize the remote systems platform. 
+Before any Connected Devices features can be used, the platform must be initialized. The **Platform.Initialize** method takes 3 parameters (the **Context** for the app, an **IAuthCodeProvider**, and an **IPlatformInitializationHandler**). 
+ 
+The **IAuthCodeProvider**'s **fetchAuthCodeAsync** method is invoked whenever the platform needs the app to fetch an MSA authorization code. This will be called the first time the app is run and upon the expiration of a platform-managed refresh token. 
+ 
+When **fetchAuthCodeAsync** is invoked, the app will need to open a web view with the given OAuth URL string. The user will then need to complete the sign-in to their MSA and accept the permissions. When the OAuth flow is complete, the app will extract the auth code from the web view and supply that value back to the Connected Devices platform by invoking the **IAuthCodeHandler.onAuthCodeFetched** method.
 
 ```java
-// initialize remote systems platform
-RemoteSystemsPlatform remoteSystemsPlatform = new RemoteSystemsPlatform();
-remoteSystemsPlatform.initialize(deviceId, userId, accessToken);
+Platform.initialize(getApplicationContext(),  
+    new IAuthCodeProvider() { 
+        @Override 
+        /** 
+         * ConnectedDevices Platform needs the app to fetch a MSA auth_code using the given oauthUrl. 
+         * When app has fetched the auth_code, it needs to invoke the authCodeHandler onAuthCodeFetched method. 
+         */ 
+        public void fetchAuthCodeAsync(String oauthUrl, Platform.IAuthCodeHandler authCodeHandler) { 
+            // Platform needs an MSA Auth code 
+            _oauthUrl = oauthUrl; 
+            _authCodeHandler = authCodeHandler; 
+            runOnUiThread(new Runnable() { 
+                @Override 
+                public void run() { 
+                    _signInButton.setVisibility(View.VISIBLE); 
+                    _signInButton.setEnabled(true); 
+                } 
+            }); 
+        } 
+ 
+        @Override 
+        /** 
+         * Connected Devices platform needs your app's registered client ID. 
+         */ 
+        public String getClientId() { 
+                return CLIENT_ID; 
+        } 
+    },  
+    new IPlatformInitializationHandler() { 
+        @Override 
+        public void onDone(boolean succeeded) { 
+            if (succeeded) { 
+                Log.i(TAG, "Initialized platform successfully"); 
+                Intent intent = new Intent(MainActivity.this, DeviceRecyclerActivity.class); 
+                startActivity(intent); 
+            } else { 
+                Log.e(TAG, "Error initializing platform"); 
+            } 
+        } 
+    }
+);
 ```
+
+When the ConnectedDevices platform has finished initializing, it will invoke the **IPlatformInitializationHandler.onDone** method the. If the *succeeded* parameter is true, the platform has initialized, and the app can proceed to now discover the user's devices.
+
+webview?
 
 ## Implement device discovery
 
-The Android client SDK, like the Windows implementation, uses a watcher pattern in which available devices are detected via Network connection over a period of time and corresponding events are raised. This guide will show a simple scenario; for further details on connecting to Windows devices, see [Discover remote devices (Android client)](discover-remote-devices-android).
+The Android client SDK, like the Windows implementation, uses a watcher pattern in which available devices are detected via network connection over a period of time and corresponding events are raised. This guide will show a simple scenario; for further details on connecting to Windows devices, see [Discover remote devices (Android client)](discover-remote-devices-android).
 
-Use a **RemoteSystemDiscovery** object to watch for remote system events. Then, you instantiate a custom **RemoteSystemsListener** to handle these events.
-
->Note: the **RemoteSystemsListener** class will be implemented next.
+Get an instance of **RemoteSystemDiscovery** using its corresponding Builder class. At this point you must also instantiate a custom **RemoteSystemsListener** to handle the discovery events. You may want to show and maintain a list view of all the available remote devices and their basic info.
 
 ```java
-// Create a RemoteSystemDiscovery for discovery of devices 
-RemoteSystemDiscovery remoteSystemDiscovery = new RemoteSystemDiscovery(); 
- 
-// Set up a listener to receive a callback when a new system is seen as available by the RemoteSystemDiscovery 
-RemoteSystemsListener listener = new RemoteSystemsListener(); 
-remoteSystemDiscovery.addListener(listener); 
- 
-// Start remote system discovery 
-remoteSystemDiscovery.start();
-```
+RemoteSystemDiscovery.Builder discoveryBuilder; 
 
-Once **Start** is called, it will begin watching for remote system activity and will raise events when remote systems are discovered, updated, or removed from the set of detected devices. You must extend the the IRemoteSystemsDiscoveryListener class (what is already implemented in this superclass???) to handle the remote system events.
-
-In this example, the listener class maintains a map of the available remote systems and their device Ids. It also has a basic outline for displaying this changing set of remote systems on the UI.
-
-
-```java
-// Implement listener class 
-class RemoteSystemsListener extends??? IRemoteSystemsDiscoveryListener { 
-    // this map will hold RemoteSystem objects and their unique Id strings. A RemoteSystem object represents a connected remote device.
-    private Map<String, RemoteSystem> mDiscoveredDevices; 
- 
-    // handle when a new system is seen as available by the watcher 
+discoveryBuilder = new RemoteSystemDiscovery.Builder().setListener(new IRemoteSystemDiscoveryListener() { 
+    @Override 
     public void onRemoteSystemAdded(RemoteSystem remoteSystem) { 
-        // add to the map
-        mDiscoveredDevices.put(remoteSystem.getId(), remoteSystem); 
-        
-        runOnUiThread(new Thread(new Runnable() { 
-            public void run() { 
-                // update UI to show the new system (recommended)
-            } 
-        }); 
-    } 
- 
-    // handle when a previously added remote system is updated 
-    public void onRemoteSystemUpdated(RemoteSystem remoteSystem) { 
-        // update the map item
-        mDiscoveredDevices.put(remoteSystem.getId(), remoteSystem); 
-    } 
- 
-    // handle when a remote system is removed 
-    public void onRemoteSystemRemoved(RemoteSystem remoteSystem) { 
-        // remove the map item
-        mDiscoveredDevices.remove(remoteSystem.getId(); 
-
-        runOnUiThread(new Thread(new Runnable() { 
-            public void run() { 
-                // update UI to remove the missing system (recommended)
-            } 
-        }); 
-    } 
+        // handle the added event. At minimum, you should acquire a reference to the discovered device.
+    }
+    @Override
+    public void onRemoteSystemUpdated(RemoteSystem remoteSystem) {
+        // update the reference to the device
+    }
+    @Override
+    public void onRemoteSystemRemoved(String remoteSystemId) {
+        // remove the reference to the device
+    }
 } 
+
+// get the discovery instance
+RemoteSystemDiscovery discovery = discoveryBuilder.getResult(); 
+// begin watching for remote devices
+discovery.start(); 
 ```
 
-## Select a remote system
-At this point in your code, you have a **RemoteSystemsListener** object, `listener`, which should contain a map of **RemoteSystem** objects and their Id strings (assuming Windows devices were discovered). Select one of these objects (ideally through a UI control) and then use a **RemoteLauncher** to launch a URI on it. This should cause the host device to launch the given URI with its default app for that URI scheme. Optionally, you can implement (???) an IRemoteLauncherListener to handle events related to the launching of the URI, such as checking whether the launch was successful.
+Once **Start** is called, it will begin watching for remote system activity and will raise events when connected devices are discovered, updated, or removed from the set of detected devices.
+
+## Select a connected device
+
+At this point in your code, you have a list of **RemoteSystem** objects that refer to available connected Windows devices. The following code shows how to select one of these objects (ideally this is done through a UI control) and then use a **RemoteLauncher** to launch a URI on it. This will cause the host device to launch the given URI with its default app for that URI scheme. You can use the **IRemoteLauncherListener** implementation to check whether the launch was successful.
 
 ```java
-// the "remoteSystem" object has been picked from the set of discovered devices
-
-RemoteLauncher launcher = new RemoteLauncher();   
-// this class implements (???) IRemoteLauncherListener and must be defined:
-RemoteSystemLauncherListener launcherListener = new RemoteSystemLauncherListener();
-launcher.addListener(launcherListener);
- 
 // a RemoteSystemConnectionRequest represents the connection to a single device (RemoteSystem object)
+// the RemoteSystem object 'remoteSystem' has previously been acquired
 RemoteSystemConnectionRequest connectionRequest = new RemoteSystemConnectionRequest(remoteSystem); 
+
+// the URI to launch
+Uri myUri = Uri.parse("http://www.bing.com");
+
+// get a RemoteLauncher and use it to launch the URI over this connection
+new RemoteLauncher().LaunchUriAsync(connectionRequest, url,
+    new IRemoteLauncherListener() {
+        @Override
+        public void onCompleted(RemoteLaunchUriStatus status) {
+            if (status == SUCCESS) {
+                // handle success case
+            } else {
+                // handle fail case, using 'status' to get more info
+            }
+        }
+    }
+);
+```
+
+The **LaunchUriAsync** method can also take a **RemoteLauncherOptions** object 
+
+
+ 
+
  
 // perform the launch of a URI on the remote device  
 Uri myUri = Uri.parse("http://www.bing.com");

@@ -7,7 +7,7 @@ Provides a method for getting an authorization token, as part of the platform in
 ## Public methods
 
 ### onAuthCodeFetched
-Called when the Remote Systems platform is initializing and must acquire a new authorization code.
+Called when the Remote Systems platform is initializing and has acquired a new authorization code.
 
 `void onAuthCodeFetched(String authCode)`
 
