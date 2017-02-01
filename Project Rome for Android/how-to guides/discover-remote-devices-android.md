@@ -12,7 +12,7 @@ In cases where you are only looking for certain types of devices to connect to, 
 // Device type filter:
 // make a list of allowed devices (in this case, only Surface Hub) 
 List<String> kinds = new ArrayList<String>(); 
-kinds.add(RemoteSystemKinds.HUB);
+kinds.add(RemoteSystemKind.HUB);
 // construct a filter with the given list
 RemoteSystemKindFilter kindFilter = new RemoteSystemKindFilter(kinds); 
  
@@ -26,34 +26,27 @@ RemoteSystemStatusTypeFilter statusFilter = new RemoteSystemStatusTypeFilter(Rem
 ```
 For a look at all of the options available to each filter type, see the reference documentation of the filter objects being used.
 
-Next construct a **RemoteSystemDiscovery** object with a list (???) of filters.
+Next, pass these filters into a **RemoteSystemDiscovery.Builder** instance, which will later be used to produce a **RemoteSystemDiscovery** object.
 
 ```java
-List<IRemoteSystemFilter> filters = new ArrayList<IRemoteSystemFilter>(); 
-filters.add(kindFilter); 
-filters.add(discoveryFilter); 
- 
-// Build a RemoteSystem to discover devices 
-RemoteSystemDiscovery remoteSystemDiscovery = new RemoteSystemDiscovery(filters); 
+RemoteSystemDiscovery.Builder discoveryBuilder = new RemoteSystemDiscovery.Builder();
+// add the filters
+discoveryBuilder.filter(kindFilter);
+discoveryBuilder.filter(discoveryFilter);
+discoveryBuilder.filter(statusFilter);
+
 ```
 
-From here, the procedure for handling events, retrieving **RemoteSystem** objects, and connecting to remote devices is exactly the same as in [Launch an app on a remote device (Android)](launch-a-remote-app-android.md). In short, the **RemoteSystem** objects are passed in as parameters of the **RemoteSystemAdded events**, which are raised by the **RemoteSystemDiscovery** object.
-
-Filter objects must be constructed before the **RemoteSystemWatcher** object is initialized, because they are passed as a parameter into its constructor. The following code creates a filter of each type available and then adds them to a list.
+## Implement a handler for discovery events (?)
+From here, the procedure for handling events, retrieving **RemoteSystem** objects, and connecting to remote devices is exactly the same as in [Launch an app on a remote device (Android)](launch-a-remote-app-android.md). In short, the **RemoteSystem** objects are passed in as parameters of the **RemoteSystemAdded events**, which are raised by the **RemoteSystemDiscovery** object and handled by the implementation of **IRemoteSystemDiscoveryListener** that was provided.
 
 ## Discover devices by address input
-Some devices may not be associated with a user's MSA or discoverable with a scan, but they can still be reached if the client app uses a direct address. This is often given in the form of an IP address, but several other formats are allowed (???).
-
-A **RemoteSystem** object is retrieved if a valid host string is provided. If the address data is invalid, a null object reference is returned.
+Some devices may not be associated with a user's MSA or discoverable with a scan, but they can still be reached if the client app uses a direct address. This is given in the form of an IP address string. If a valid host string is provided, the corresponding **onRemoteSystemAdded** event will be thrown and handled.
 
 ```java
-RemoteSystemDiscover remoteSystemDiscovery = new RemoteSystemDiscovery();
-RemoteSystem remoteSystem = remoteSystemDiscovery.findByHostName("???");
+String ipAddress = "198.51.100.0";
+RemoteSystem remoteSystem = remoteSystemDiscovery.findByHostName(ipAddress);
 ```
 
 ## Related topics
 [Launch an app on a remote device (Android)](launch-a-remote-app-android.md)
-
-
----
-builder pattern -???- wait to see what final API surface looks like

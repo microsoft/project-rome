@@ -5,9 +5,9 @@ Indicates an error condition that has occurred in the platform.
 
 |Member   |Value   |Description   |
 |:--------|:-------|:-------------|
-|SUCCESS |0 | |
-|FAIL |0x80000006 | |
-|UNKNOWN |0x8FFFFFFF | |
+|SUCCESS |0 |The operation was successful. |
+|FAIL |0x80000006 |The operation failed. |
+|UNKNOWN |0x8FFFFFFF |Unknown. |
 
 ## Public methods
 

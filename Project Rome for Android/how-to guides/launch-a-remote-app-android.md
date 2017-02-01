@@ -5,7 +5,7 @@ Remote app launching can be useful when the user wishes to start a task on one d
 
 Remote launch is achieved by sending a Uniform Resource Identifier (URI) from one device to another. A URI specifies a *scheme*, which determines which app(s) can handle its information. See [Launch the default app for a URI](https://msdn.microsoft.com/en-us/windows/uwp/launch-resume/launch-default-app) for information on using URIs to launch Windows apps.
 
-## Initial setup for remote systems functionality
+## Initial setup for Remote Systems functionality
 
 Before implementing device discovery and connectivity, there are a few steps you'll need to take to give your Android app the capability to connect to remote Windows devices.
 
@@ -53,6 +53,7 @@ remoteSystemsPlatform.initialize(deviceId, userId, accessToken);
 ```
 
 ## Implement device discovery
+
 The Android client SDK, like the Windows implementation, uses a watcher pattern in which available devices are detected via Network connection over a period of time and corresponding events are raised. This guide will show a simple scenario; for further details on connecting to Windows devices, see [Discover remote devices (Android client)](discover-remote-devices-android).
 
 Use a **RemoteSystemDiscovery** object to watch for remote system events. Then, you instantiate a custom **RemoteSystemsListener** to handle these events.

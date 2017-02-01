@@ -1,18 +1,19 @@
-# ITokenProvider interface
+# IAuthCodeProvider interface
 Provides methods that produce the MSA OAuth credentials needed for initializing the Remote Systems platform. An implementation of this interface gets passed in to the [**Platform.initialize**](Platform.md) method.
 
 ## Syntax
-`public interface ITokenProvider`
+`public interface IAuthCodeProvider`
 
 ## Public methods
 
-### getToken
+### fetchAuthCodeAsync
 Called within the **Platform.initialize** method when the Remote Systems platform requests an OAuth token.
 
-`String getToken()`
+`void fetchAuthCodeAsync(String url, Platform.IAuthCodeHandler handler)`
 
-**Return value**
-An OAuth token for the currently logged in MSA (Microsoft account)
+**Parameters**
+*url* - The URL that should be used to sign in the user with OAuth
+*handler* - The handler that the app will later invoke with the new auth code
 
 ### getClientId
 Called within the **Platform.initialize** method when the Remote Systems platform requests the client app's id.
