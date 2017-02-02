@@ -10,4 +10,4 @@ The first scenario, dealing only with the Universal Windows platform, is documen
 
 
 Privacy
-See [Microsoft's privacy statement](https://privacy.microsoft.com/en-us/privacystatement/) for more information.  https://privacy.microsoft.com/en-us/privacystatement/
+See [Microsoft's privacy statement](https://privacy.microsoft.com/en-us/privacystatement/) for more information. 
