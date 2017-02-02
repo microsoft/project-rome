@@ -7,3 +7,7 @@ Currently, Project "Rome" is implemented for the following scenarios:
 * Android client to Windows host
 
 The first scenario, dealing only with the Universal Windows platform, is documented via [how-to content](https://msdn.microsoft.com/windows/uwp/launch-resume/connected-apps-and-devices) and [API reference documentation](https://msdn.microsoft.com/library/windows/apps/windows.system.remotesystems.aspx) on the Windows Dev Center. See these resources for more detailed information about the feature in general. Any scenarios involving non-Windows platforms are covered in this repository. You will find documentation, code samples, and links to SDK downloads for each development platform in its respective folder.
+
+
+Privacy
+See [Microsoft's privacy statement](https://privacy.microsoft.com/en-us/privacystatement/) for more information.  https://privacy.microsoft.com/en-us/privacystatement/
