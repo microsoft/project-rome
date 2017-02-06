@@ -5,7 +5,7 @@ Remote app launching can be useful when the user wishes to start a task on one d
 
 Remote launch is achieved by sending a Uniform Resource Identifier (URI) from one device to another. A URI specifies a *scheme*, which determines which app(s) can handle its information. See [Launch the default app for a URI](https://msdn.microsoft.com/en-us/windows/uwp/launch-resume/launch-default-app) for information on using URIs to launch Windows apps.
 
-## Initial setup for Connected Devices functionality
+## Preliminary setup for Connected Devices functionality
 
 Before implementing device discovery and connectivity, there are a few steps you'll need to take to give your Android app the capability to connect to remote Windows devices.
 
@@ -33,7 +33,9 @@ Next, go to the activity class where you would like the remote system discovery 
 import com.microsoft.connecteddevices.*;
 ```
 
-Before any Connected Devices features can be used, the platform must be initialized. The **Platform.Initialize** method takes 3 parameters (the **Context** for the app, an **IAuthCodeProvider**, and an **IPlatformInitializationHandler**). 
+## Initialize the Connected Devices platform
+
+Before any Connected Devices features can be used, the platform must be initialized. The **Platform.Initialize** method takes 3 parameters (the **Context** for the app, an **IAuthCodeProvider**, and an **IPlatformInitializationHandler**). It is recommended that you call this method from within the activity class' **onCreate** method.
  
 The **IAuthCodeProvider**'s **fetchAuthCodeAsync** method is invoked whenever the platform needs the app to fetch an MSA authorization token. This will be called the first time the app is run and upon the expiration of a platform-managed Refresh Token. In this example, **fetchAuthCodeAsync** will invoke a user-defined method dedicated to MSA authentication. When the OAuth flow is complete, the app must call the **IAuthCodeHandler**'s **onAuthCodeFetched** method to extract the authorization code from the web view and supply that value back to the Connected Devices platform.
 
@@ -72,12 +74,15 @@ Platform.initialize(getApplicationContext(),
 );
 ```
 
-The **performOAuthFlow** method for manual user sign-in is defined here:
+The **performOAuthFlow** method for manual user sign-in is defined here. Note that it references a **WebView** layout object, defined later on.
 
 ```java
 public performOAuthFlow (String oauthUrl, Platform.IAuthCodeHandler authCodeHandler) {
     WebView web;
-    web = (WebView) _authDialog.findViewById(R.id.webv);
+    // the Dialog authDialog and WebView webv are defined separately
+    web = (WebView) authDialog.findViewById(R.id.webv);
+    
+    // required WebView settings:
     web.setWebChromeClient(new WebChromeClient());
     web.getSettings().setJavaScriptEnabled(true);
     web.getSettings().setDomStorageEnabled(true);
@@ -116,8 +121,36 @@ public performOAuthFlow (String oauthUrl, Platform.IAuthCodeHandler authCodeHand
 }
 ```
 
-When the ConnectedDevices platform has finished initializing, it will invoke the **IPlatformInitializationHandler.onDone** method the. If the *succeeded* parameter is true, the platform has initialized, and the app can proceed to now discover the user's devices.
+You must define the UI elements that will allow the app user to enter their MSA credentials when prompted. In the *res>layout* folder of your project, create a file called *auth_dialog.xml*. Paste in the following contents to create a simple **WebView** layout.
 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    <WebView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/webv"/>
+</LinearLayout>
+```
+
+Now go back to the activity class that contains the previous platform initialization work. In its **onCreate** method, declare a **Dialog** variable and couple it with your new **WebView** layout.
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    // ...
+
+    authDialog = new Dialog(this);
+    authDialog.setContentView(R.layout.auth_dialog);
+
+    // ...
+}
+```
+
+At this point you should have all the elements necessary to handle user sign-on and initialize the Connected Devices platform. When the platform has finished initializing, it will invoke the **IPlatformInitializationHandler.onDone** method. If the *succeeded* parameter is true, the platform has initialized, and the app can proceed to discover the user's devices.
 
 ## Implement device discovery
 
