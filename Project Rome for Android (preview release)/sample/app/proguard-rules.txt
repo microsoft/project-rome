@@ -1,0 +1,79 @@
+
+# To enable ProGuard in your project, edit project.properties
+# to define the proguard.config property as described in that file.
+#
+# Add project specific ProGuard rules here.
+# By default, the flags in this file are appended to flags specified
+# in ${sdk.dir}/tools/proguard/proguard-android.txt
+# You can edit the include path and order by changing the ProGuard
+# include property in project.properties.
+#
+# For more details, see
+#   http://developer.android.com/guide/developing/tools/proguard.html
+
+# Add any project specific keep options here:
+
+# If your project uses WebView with JS, uncomment the following
+# and specify the fully qualified class name to the JavaScript interface
+# class:
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#   public *;
+#}
+
+-keepnames class * implements android.os.Parcelable
+-keepclassmembers class * implements android.os.Parcelable {
+public static final *** CREATOR;
+}
+
+-keep @interface android.support.annotation.Keep
+-keep @android.support.annotation.Keep class *
+-keepclasseswithmembers class * {
+@android.support.annotation.Keep <fields>;
+}
+-keepclasseswithmembers class * {
+@android.support.annotation.Keep <methods>;
+}
+
+-keep class com.microsoft.cdp.internal.** {
+*;
+}
+
+-keepclassmembers class com.microsoft.connecteddevices.RemoteSystemWatcher {
+void onDeviceAdded(long, java.lang.String, java.lang.String, int, int, int[], java.lang.String);
+void onDeviceUpdated(long, java.lang.String, java.lang.String, int, int, int[], java.lang.String);
+void onDeviceRemoved(java.lang.String);
+void onDiscoveryError(int);
+void onDiscoveryComplete();
+}
+
+-keepclassmembers class com.microsoft.connecteddevices.DeviceInternal {
+void onConnecting();
+void onConnected();
+void onDisconnecting();
+void onDisconnected();
+void onConnectError(java.lang.String);
+}
+
+-keepclassmembers class com.microsoft.connecteddevices.AppControlClient {
+void onComplete(long);
+void onError(long, int);
+void onTimeout(long);
+}
+
+-keepclassmembers class com.microsoft.connecteddevices.BinaryClientInternal {
+void onData(byte[]);
+}
+
+-keepclassmembers class * implements com.microsoft.connecteddevices.IWebAccountProvider {
+java.lang.String getToken(java.lang.String);
+java.lang.String getStableUserId();
+java.lang.String getDeviceId();
+}
+
+-keepclasseswithmembernames,includedescriptorclasses class * {
+native <methods>;
+}
+
+-keep class com.microsoft.connecteddevices.RomeException {
+*;
+}

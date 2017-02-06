@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">RomanApp</string>
+    <string-array name="uri_array">
+        <item>http://microsoft.com</item>
+        <item>http://bing.com</item>
+        <item>http://xbox.com</item>
+        <item>ms-settings:crossdevice</item>
+        <item>ms-settings:about</item>
+    </string-array>
+    <string-array name="discovery_type_filter_array">
+        <item>All</item>
+        <item>Cloud</item>
+        <item>Proximal</item>
+    </string-array>
+    <string-array name="system_kind_filter_array">
+        <item>All</item>
+        <item>Desktop</item>
+        <item>Holographic</item>
+        <item>Phone</item>
+        <item>Xbox</item>
+    </string-array>
+</resources>
