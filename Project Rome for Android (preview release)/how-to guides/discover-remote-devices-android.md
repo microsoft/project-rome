@@ -37,15 +37,22 @@ discoveryBuilder.filter(statusFilter);
 
 ```
 
-## Implement a handler for discovery events
-From here, the procedure for handling events, retrieving **RemoteSystem** objects, and connecting to remote devices is exactly the same as in [Launch an app on a remote device (Android)](launch-a-remote-app-android.md). In short, the **RemoteSystem** objects are passed in as parameters of the **RemoteSystemAdded** events, which are raised by the **RemoteSystemDiscovery** object and handled by the implementation of **IRemoteSystemDiscoveryListener** that was provided.
+## Implement the handler for discovery events
+From here, the procedure for handling events, retrieving **RemoteSystem** objects, and connecting to remote devices is exactly the same as in [Launch an app on a remote device (Android)](launch-a-remote-app-android.md). In short, the **RemoteSystem** objects are passed in as parameters of the **RemoteSystemAdded** events, which are raised by the **RemoteSystemDiscovery** object and handled by the implementation of **IRemoteSystemDiscoveryListener** that was provided to it.
 
 ## Discover devices by address input
-Some devices may not be associated with a user's MSA or discoverable with a scan, but they can still be reached if the client app uses a direct address. This is given in the form of an IP address string. If a valid host string is provided, the corresponding **onRemoteSystemAdded** event will be thrown and handled.
+Some devices may not be associated with a user's MSA or discoverable with a scan, but they can still be reached if the client app uses a direct address. This can either be the IP address or the machine name for the device. If a valid host string is provided, the corresponding **onRemoteSystemAdded** event will be thrown and handled.
 
 ```java
+// discover using IP address
 String ipAddress = "198.51.100.0";
-RemoteSystem remoteSystem = remoteSystemDiscovery.findByHostName(ipAddress);
+remoteSystemDiscovery.findByHostName(ipAddress);
+
+// discover using machine name
+String deviceName = "DESKTOP-ABCD"
+remoteSystemDiscovery.findByHostName(ipAddress);
+
+// events are raised and handled by the IRemoteSystemDiscoveryListener implementation
 ```
 
 ## Related topics
