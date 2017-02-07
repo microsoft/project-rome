@@ -1,9 +1,9 @@
 # Discover remote devices (Android client)
-With the Project Rome SDK for Android, you can connect to and communicate with your Windows devices from an Android device. The host devices do not need to have any special software installed in order to be discoverable by the client device, but they must be signed on with the same Microsoft account (MSA) that you used to authorize your Android app (communal devices that can accept anonymous connections, such as the Surface Hub and Xbox One, are also discoverable). See [Launch an app on a remote device (Android)](launch-a-remote-app-android.md) for an explanation of MSA authorization as well as the basic end-to-end scenario for Android-to-Windows remote connectivity.
+With the Project Rome SDK for Android, you can connect to and communicate with your Windows devices from an Android device. The host devices do not need to have any special software installed in order to be discoverable by the client device, but they must be signed on with the same Microsoft account (MSA) that you used to authorize your Android app (communal devices that can accept anonymous connections, such as the Surface Hub and Xbox One, are also discoverable). See [Getting started with Connected Devices (Android)](getting-started-rome-android.md) for an explanation of MSA authorization as well as the basic end-to-end scenario for Android-to-Windows remote connectivity.
 
 This guide offers a closer look at how to discover Windows host devices from an Android client and utilize the more in-depth features in this area.
 
->Note: The code snippets in this guide will not work properly unless you have already initialized the Connected Devices platform by following the steps in [Launch an app on a remote device (Android)](launch-a-remote-app-android.md).
+>Note: The code snippets in this guide will not work properly unless you have already initialized the Connected Devices platform by following the steps in [Getting started with Connected Devices (Android)](getting-started-rome-android.md).
 
 ## Filter the set of discoverable devices
 In cases where you are only looking for certain types of devices to connect to, you can narrow down the set of discoverable devices by using a **RemoteSystemDiscovery** object with filters. Filters can detect the discovery type (local network vs. cloud connection), device type (desktop, mobile device, Xbox, Hub, and Holographic), and availability status (the status of a device's availability to use Remote System features). See examples of all three filter types below. 
@@ -56,4 +56,4 @@ remoteSystemDiscovery.findByHostName(ipAddress);
 ```
 
 ## Related topics
-[Launch an app on a remote device (Android)](launch-a-remote-app-android.md)
+[Getting started with Connected Devices (Android)](getting-started-rome-android.md)

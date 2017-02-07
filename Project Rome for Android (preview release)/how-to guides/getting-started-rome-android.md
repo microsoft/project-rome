@@ -1,5 +1,5 @@
-# Launch an app on a remote device (Android)
-This guide shows you how to remotely launch a Universal Windows Platform (UWP) app or Windows desktop app on a Windows device from an app on an Android device. Refer to the [Android sample app](??) for a working example.
+# Getting started with Connected Devices (Android)
+This guide shows you how to remotely launch a Universal Windows Platform (UWP) app or Windows desktop app on a Windows device from an app on an Android device. Refer to the [Android sample app](../sample/) for a working example.
 
 Remote app launching can be useful when the user wishes to start a task on one device and finish it on another. For example, you might receive a Skype call on your Android phone and later wish to launch the Skype app on your desktop PC to continue the call there. Note, however, that the client's and host's apps do not need to be the same: your Android app can launch any Windows app on a connected Windows device.
 
@@ -14,9 +14,15 @@ First, you must register your app with Microsoft by following the instructions o
 Add the connecteddevices-core and connecteddevices-sdk AAR dependencies into your app's build.gradle file.
 
 ```java
+repositories {
+    maven {
+        url "https://projectrome.bintray.com/maven"
+    }
+}
+
 dependencies { 
-    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-core-armv7', version: '0.1.04', ext: 'aar', classifier: 'externalRelease') 
-    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armv7', version: '0.1.04', ext: 'aar', classifier: 'externalRelease') 
+    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-core-armv7', version: '0.1.0', ext: 'aar', classifier: 'externalRelease') 
+    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armv7', version: '0.1.0', ext: 'aar', classifier: 'externalRelease') 
 }
 ```
 
@@ -211,17 +217,6 @@ new RemoteLauncher().LaunchUriAsync(connectionRequest, url,
 );
 ```
 
-The **LaunchUriAsync** method can also take a **RemoteLauncherOptions** object 
-
-
- 
-
- 
-// perform the launch of a URI on the remote device  
-Uri myUri = Uri.parse("http://www.bing.com");
-launcher.launchUriAsync(myUri, connectionRequest); 
-```
-
-
-
+## Related topics
+[Discover remote devices (Android client)](discover-remote-devices-android.md)
 
