@@ -1,5 +1,5 @@
 # Launch an app on a remote device (Android)
-This guide shows you how to remotely launch a Universal Windows Platform (UWP) app or Windows desktop app on a Windows device from an app on an Android device. Refer to the [Android sample app](?) for a working example.
+This guide shows you how to remotely launch a Universal Windows Platform (UWP) app or Windows desktop app on a Windows device from an app on an Android device. Refer to the [Android sample app](??) for a working example.
 
 Remote app launching can be useful when the user wishes to start a task on one device and finish it on another. For example, you might receive a Skype call on your Android phone and later wish to launch the Skype app on your desktop PC to continue the call there. Note, however, that the client's and host's apps do not need to be the same: your Android app can launch any Windows app on a connected Windows device.
 
