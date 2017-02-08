@@ -198,7 +198,6 @@ FakesAssemblies/
 *.mp3
 *.opendb
 
-xamarin/src/ConnectedDevices.Xamarin.Droid/Jars/connecteddevices-core-armv7-external-release.aar
-xamarin/src/ConnectedDevices.Xamarin.Droid/Jars/connecteddevices-sdk-armv7-external-release.aar
-xamarin/src/ConnectedDevices.Xamarin.Droid/Jars/org.apache.http.legacy.jar
+xamarin/src/ConnectedDevices.Xamarin.Droid.Core/Jars/connecteddevices-core-armv7-externalRelease.aar
+xamarin/src/ConnectedDevices.Xamarin.Droid/Jars/connecteddevices-sdk-armv7-externalRelease.aar
 
