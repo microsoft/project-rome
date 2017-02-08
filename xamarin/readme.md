@@ -8,7 +8,7 @@ Xamarin plugin to allow access to the Project Rome Connected Device APIs on Andr
 
 
 ### Setup
-* Available on NuGet: http://www.nuget.org/packages/Microsoft.ConnectedDevices [![NuGet](https://img.shields.io/nuget/v/Microsoft.ConnectedDevices.svg?label=NuGet)](https://www.nuget.org/packages/Microsoft.ConnectedDevices/)
+* Available on NuGet: https://www.nuget.org/packages/Microsoft.ConnectedDevices.Xamarin.Droid [![NuGet](https://img.shields.io/nuget/v/Microsoft.ConnectedDevices.Xamarin.Droid.svg?label=NuGet)](https://www.nuget.org/packages/Microsoft.ConnectedDevices.Xamarin.Droid/)
 
 **Platform Support**
 
