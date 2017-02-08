@@ -2,8 +2,8 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
+    <version>0.1.0/version>
+    <title>Project Rome Connected Devices SDK for Xamarin on Android</title>
     <authors>Microsoft</authors>
     <owners>Shawn Henry</owners>
     <licenseUrl>https://raw.github.com/Microsoft/project-rome/master/xamarin/LICENSE</licenseUrl>
