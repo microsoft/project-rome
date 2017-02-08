@@ -23,10 +23,11 @@ import android.widget.Toast;
 import com.microsoft.connecteddevices.IAuthCodeProvider;
 import com.microsoft.connecteddevices.IPlatformInitializationHandler;
 import com.microsoft.connecteddevices.Platform;
+import com.microsoft.connecteddevices.PlatformInitializationStatus;
 
 public class MainActivity extends FragmentActivity {
-    // Use your own Client ID
-    private static String CLIENT_ID = ""; // This is the client ID you were assigned when your app was registered with MSA.
+    // Use your own Client ID, assigned when your app was registered with MSA.
+    private static String CLIENT_ID = Secrets.CLIENT_ID;
 
     private TextView _statusOutput;
     private Button _signInButton;
@@ -60,13 +61,12 @@ public class MainActivity extends FragmentActivity {
              * ConnectedDevices Platform needs the app to fetch a MSA auth_code using the given oauthUrl.
              * When app is fetched the auth_code, it needs to invoke the authCodeHandler onAuthCodeFetched method.
              */
-            public void fetchAuthCodeAsync(String oauthUrl, Platform.IAuthCodeHandler authCodeHandler) {
+            public void fetchAuthCodeAsync(String oauthUrl, Platform.IAuthCodeHandler handler) {
                 _oauthUrl = oauthUrl;
-                _authCodeHandler = authCodeHandler;
+                _authCodeHandler = handler;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        appendStatus("Platform needs an MSA Auth code");
                         _signInButton.setVisibility(View.VISIBLE);
                         _signInButton.setEnabled(true);
                     }
@@ -81,16 +81,20 @@ public class MainActivity extends FragmentActivity {
                 return CLIENT_ID;
             }
         }, new IPlatformInitializationHandler() {
+
             @Override
-            public void onDone(boolean succeeded) {
-                if (succeeded) {
-                    Log.i(TAG, "Initialized platform successfully");
-                    appendStatus("Platform initialization complete");
-                    Intent intent = new Intent(MainActivity.this, DeviceRecyclerActivity.class);
-                    startActivity(intent);
-                } else {
+            public void onDone() {
+                Log.i(TAG, "Initialized platform successfully");
+                Intent intent = new Intent(MainActivity.this, DeviceRecyclerActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onError(PlatformInitializationStatus status) {
+                if (status == PlatformInitializationStatus.PLATFORM_FAILURE) {
                     Log.e(TAG, "Error initializing platform");
-                    appendStatus("Platform initialization failed");
+                } else if (status == PlatformInitializationStatus.TOKEN_ERROR) {
+                    Log.e(TAG, "Error refreshing tokens");
                 }
             }
         });
