@@ -15,7 +15,7 @@ Xamarin plugin to allow access to the Project Rome Connected Device APIs on Andr
 
 |Platform|Supported|Version|
 | ------------------- | :-----------: | :------------------: |
-|Xamarin.Android|Yes|API 14+|
+|Xamarin.Android|Yes|API 19+|
 
 
 ### API Usage
