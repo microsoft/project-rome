@@ -50,9 +50,9 @@ namespace Microsoft.ConnectedDevices
 
     internal class PlatformInitializer : Java.Lang.Object, IPlatformInitializationHandler
     {
-        public void OnDone(bool p0)
+        public void OnDone(bool completed)
         {
-            InitializationCompleted?.Invoke(p0);
+            InitializationCompleted?.Invoke(completed);
         }
 
         public event Action<bool> InitializationCompleted;

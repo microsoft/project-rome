@@ -10,4 +10,25 @@
   <attr path="/api/package[@name='com.microsoft.connecteddevices']" name="managedName">Microsoft.ConnectedDevices</attr>
   <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='Listenable']" name="visibility">public</attr>
 
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IAuthCodeProvider']/method[@name='fetchAuthCodeAsync']/parameter[@name='p0']"
+        name="name">oauthUrl</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IAuthCodeProvider']/method[@name='fetchAuthCodeAsync']/parameter[@name='p1']"
+      name="name">handler</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices.platform']/interface[@name='IAuthCodeProvider']/method[@name='onAuthCodeFetched']/parameter[@name='p0']"
+     name="name">code</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IBinaryClientListenerInternal']/method[@name='onData']/parameter[@name='p0']"
+    name="name">bytes</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IPlatformInitializationHandler']/method[@name='onDone']/parameter[@name='p0']"
+      name="name">completed</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IRemoteLauncherListener']/method[@name='onCompleted']/parameter[@name='p0']"
+      name="name">status</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IRemoteSystemDiscoveryListener']/method[@name='onRemoteSystemAdded']/parameter[@name='p0']"
+      name="name">remoteSystem</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IRemoteSystemDiscoveryListener']/method[@name='onRemoteSystemRemoved']/parameter[@name='p0']"
+      name="name">remoteSystemId</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IRemoteSystemDiscoveryListener']/method[@name='onRemoteSystemUpdated']/parameter[@name='p0']"
+    name="name">remoteSystem</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IRemoteSystemFilter']/method[@name='filter']/parameter[@name='p0']"
+      name="name">remoteSystem</attr>
+
 </metadata>
