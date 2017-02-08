@@ -6,8 +6,8 @@
     <title>$title$</title>
     <authors>Microsoft</authors>
     <owners>Shawn Henry</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
+    <licenseUrl>https://raw.github.com/Microsoft/project-rome/master/xamarin/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Microsoft/project-rome</projectUrl>
 <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>This package contains the Project Rome Connected Devices SDK for Xamarin on Android. </description>
