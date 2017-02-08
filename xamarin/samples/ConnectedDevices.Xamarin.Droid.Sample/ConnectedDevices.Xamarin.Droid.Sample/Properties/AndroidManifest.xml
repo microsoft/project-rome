@@ -2,6 +2,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="ConnectedDevices.Xamarin" android:versionCode="2" android:versionName="1.0.2">
 	<uses-sdk android:minSdkVersion="16" />
 	<application android:label="ConnectedDevices.Xamarin"></application>
-
-  <uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.INTERNET" />
 </manifest>

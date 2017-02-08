@@ -51,9 +51,11 @@
     <EnableProguard>False</EnableProguard>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConnectedDevices.Xamarin.Droid, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="ConnectedDevices.Xamarin.Droid">
       <HintPath>..\..\..\src\ConnectedDevices.Xamarin.Droid\bin\Release\ConnectedDevices.Xamarin.Droid.dll</HintPath>
+    </Reference>
+    <Reference Include="ConnectedDevices.Xamarin.Droid.Core">
+      <HintPath>..\..\..\src\ConnectedDevices.Xamarin.Droid.Core\bin\Release\ConnectedDevices.Xamarin.Droid.Core.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />

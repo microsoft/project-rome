@@ -25,7 +25,9 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
     public class MainActivity : ListActivity
     {
         // Use your own client id
-        private const string CLIENT_ID = "";
+        //private const string CLIENT_ID = ""; //get a client ID from https://apps.dev.microsoft.com/
+        private const string CLIENT_ID = "4243aabb-d2e3-423f-ad85-de5c284b5b1c";
+
 
         private WebView _webView;
         internal Dialog _authDialog;
@@ -45,6 +47,11 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
             {
                 RefreshDevices();
             };
+
+            if(string.IsNullOrEmpty(CLIENT_ID))
+            {
+                Toast.MakeText(this, "CLIENT_ID not set!", ToastLength.Long).Show();
+            }
 
             InitializeAsync();
 
