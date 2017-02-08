@@ -9,34 +9,5 @@
   <!-- Change the visibility of a class -->
   <attr path="/api/package[@name='com.microsoft.connecteddevices']" name="managedName">Microsoft.ConnectedDevices</attr>
   <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='Listenable']" name="visibility">public</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IRemoteSystemListener']/method[@name='onError' and count(parameter)=1 and parameter[1][@type='java.lang.String']]" name="argsType">RemoteListenerErrorEventArgs</attr>
-
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientClosedStatus']" name="visibility">internal</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection']" name="visibility">internal</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection.BinaryClientListener']" name="visibility">internal</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection.DeviceListener']" name="visibility">internal</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection.RemoteLauncherListener']" name="visibility">internal</attr>
-  <!--<attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnectionStatus']" name="visibility">internal</attr>-->
-  <!--<attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientResponse']" name="visibility">internal</attr>-->
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IAppServiceClientConnectionListener']" name="visibility">internal</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IAppServiceResponseListener']" name="visibility">internal</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceResponseEventArgs']" name="visibility">internal</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='ErrorEventArgs']" name="visibility">internal</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IBinaryClientListenerInternal']" name="visibility">internal</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IDeviceListenerInternal']" name="visibility">internal</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IPlatformInitializionHandler']" name="visibility">internal</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IRemoteLaunchListener']" name="visibility">internal</attr>
-
-
-
-  <!--<remove-node path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientClosedStatus']" />-->
-  <!--<remove-node path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection.BinaryClientListener']" />
-  <remove-node path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection.DeviceListener']" />
-  <remove-node path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection.RemoteLauncherListener']" />
-  <remove-node path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnectionStatus']" />
-  <remove-node path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientResponse']" />-->
-
-
-
 
 </metadata>
