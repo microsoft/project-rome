@@ -9,7 +9,7 @@ An [**IRemoteSystemFilter**](IRemoteSystemFilter.md) that limits the set of disc
 ### RemoteSystemKindFilter
 Initializes an instance of the RemoteSystemKindFilter class with a list of string representations of device types to target.
 
-`public RemoteSystemKindFilter(List<RemoteSystemKind> kinds`
+`public RemoteSystemKindFilter(List<RemoteSystemKind> kinds)`
 **Parameters**  
 *kinds* - A list of string representations of the device types to target. These strings should conform to the values in the **RemoteSystemKind** enum.
 
