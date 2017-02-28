@@ -18,8 +18,7 @@ namespace Microsoft.ConnectedDevices
         public static Task<RemoteLaunchUriStatus> LaunchUriAsync(RemoteSystemConnectionRequest connectionRequest, Uri uri)
         {
             var tcs = new TaskCompletionSource<RemoteLaunchUriStatus>();
-
-            RemoteLauncher _launcher = new RemoteLauncher();
+            RemoteLauncher launcher = new RemoteLauncher();
 
             try
             { 
@@ -28,7 +27,7 @@ namespace Microsoft.ConnectedDevices
                 {
                     tcs.TrySetResult(r);
                 };
-                _launcher.LaunchUriAsync(connectionRequest, uri.OriginalString, launchUriListener);
+                launcher.LaunchUriAsync(connectionRequest, uri.OriginalString, launchUriListener);
             }
             catch (Exception e)
             {
@@ -36,18 +35,16 @@ namespace Microsoft.ConnectedDevices
             }
 
             return tcs.Task;
-
         }
     }
 
     internal class LaunchURIListener : Java.Lang.Object, IRemoteLauncherListener
     {
-        public void OnCompleted(RemoteLaunchUriStatus p0)
-        {
-            LaunchCompleted?.Invoke(p0);
-        }
-
         public event Action<RemoteLaunchUriStatus> LaunchCompleted;
 
+        public void OnCompleted(RemoteLaunchUriStatus p0)
+        {
+            this.LaunchCompleted?.Invoke(p0);
+        }
     }
 }
