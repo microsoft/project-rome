@@ -1,0 +1,102 @@
+﻿<Page
+    x:Class="NarwhalFactsSelfhost.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NarwhalFactsSelfhost"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="#333">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Foreground="White"
+                Grid.Row="0"
+                Grid.Column="0"
+                Style="{StaticResource SplitViewTogglePaneButtonWhiteStyle}"
+                Click="ShowSplitView"/>
+            <TextBlock x:Name="title" 
+                       Foreground="White" 
+                       Style="{ThemeResource TitleTextBlockStyle}" 
+                       Text="Home" 
+                       VerticalAlignment="Center" 
+                       HorizontalAlignment="Center"
+                       Grid.ColumnSpan="3"/>
+            <Image Source="ms-appx:///Assets/NarwhalLogoSquare.png" 
+                   Grid.Row="0"
+                   Grid.Column="2"
+                   Height="30"
+                   Stretch="UniformToFill"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"/>
+        </Grid>
+
+        <ScrollViewer 
+            Grid.Row="1" 
+            Grid.Column="1" 
+            EntranceNavigationTransitionInfo.IsTargetElement="True" 
+            Margin="12,0,0,0">
+            <StackPanel Margin="0,0,12,0" >
+                <Grid Height="auto" Background="#0077b3" Padding="12">
+                    <Image Source="ms-appx:///Assets/NarwhalScene.png"
+                       Stretch="UniformToFill"/>
+                </Grid>
+
+                <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+                           FontWeight="SemiBold"
+                           Foreground="#23527c"
+                           Margin="12,0"
+                           Text="Launch Status"/>
+                <TextBlock x:Name="LaunchStatusTextBlock"
+                           Style="{ThemeResource TitleTextBlockStyle}"
+                           FontWeight="SemiBold"
+                           Foreground="Gray"
+                           Margin="12,0,12,36"
+                           Text="Not An AppUriHandler Launch"/>
+                <TextBlock x:Name="LaunchUriDisplayTextBlock"
+                           Visibility="Collapsed"
+                           Style="{ThemeResource BodyTextBlockStyle}"
+                           Foreground="Black"
+                           Margin="12,0,12,0"
+                           Text=""/>
+                
+                <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+                           FontWeight="SemiBold"
+                           Foreground="#23527c"
+                           Margin="12,0"
+                           Text="About"/>
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" 
+                           Margin="12,0">
+                Welcome to the sample app for AppUriHandlers. This is a test application with several pages that mirror the content on http://narwhalfacts.azurewebsites.net/. This app is registered for links in this domain like the following links in the list below.
+                </TextBlock>
+                <TextBlock Style="{ThemeResource BaseTextBlockStyle}"
+                           Foreground="#23527c"
+                           Margin="12,12,0,0" Text="Links"/>
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
+                           Margin="12,12,0,0" Text="http://narwhalfacts.azurewebsites.net/index.html"/>
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
+                           Margin="12,4,0,0" Text="http://narwhalfacts.azurewebsites.net/anatomy.html"/>
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
+                           Margin="12,4,0,0" Text="http://narwhalfacts.azurewebsites.net/diet.html"/>
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
+                           Margin="12,4,0,0" Text="http://narwhalfacts.azurewebsites.net/classification.html"/>
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
+                           Margin="12,4,0,0" Text="http://narwhalfacts.azurewebsites.net/population.html"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <local:SidePanel x:Name="MySidePanel" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+    </Grid>
+</Page>
