@@ -1,5 +1,5 @@
 # IAppServiceClientConnectionListener interface
-Interface TBD
+Contains methods that handle events related to the connection to a remote app service.
 
 ## Syntax
 `public interface IAppServiceClientConnectionListener`
@@ -7,19 +7,19 @@ Interface TBD
 ## Public methods
 
 ### onSuccess
-TBD
+Called when the connection to a remote app service was established successfully. 
 
 `void onSuccess()`
 
 ### onError
-TBD
+Called when the Connected Devices platform failed to establish a connection to a remote app service.
 
 `void onError(AppServiceClientConnectionStatus status)`
 
 **Parameters**  
-*status* - TBD
+*status* - an [**AppServiceClientConnectionStatus**](AppServiceClientConnectionStatus.md) value describing the status of the connection (in this case, the cause of the error).
 
 ### onClosed
-TBD
+Called when the connection to a remote app service is closed.
 
 `void onClosed()`
