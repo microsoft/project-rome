@@ -1,0 +1,5 @@
+[{
+  "packageFamilyName": "NarwhalFacts_9jmtgj1pbbz6e",
+  "paths": [ "*" ],
+  "excludePaths" : [ "/habitat*", "/lifespan*" ]
+ }]
