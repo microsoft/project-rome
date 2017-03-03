@@ -14,17 +14,17 @@ Your app must first acquire a reference to a remote device. See [Getting started
 Your app will identify its targeted Windows app service by two strings: the *app service name* and *package family name*. These are found in the source code of the app service provider (see [Create and consume an app service](https://msdn.microsoft.com/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details).
 
 ```java
-// the "remoteSystem" object has already been selected.
+// the "remoteSystem" object reference has already been selected.
 // create a RemoteSystemConnectionRequest for it
 RemoteSystemConnectionRequest connectionRequest = new RemoteSystemConnectionRequest(remoteSystem);
  
 // Set the AppServiceName for the Windows host
-String appServiceName = "com.microsoft.test.myservice"; 
+String appServiceName = "com.microsoft.example"; 
      
 // Set the PackageFamilyName for the Windows host 
-String packageFamilyName = "Abc.AbcMyapplication_j9d5akq8073h6"; 
+String packageFamilyName = "Abc.Example_abc123"; 
 
-// Connect to the app service via an AppServiceClientConnection 
+// Construct an AppServiceClientConnection 
 AppServiceClientConnection appServiceClientConnection = new AppServiceClientConnection(appServiceName, packageFamilyName, connectionRequest); 
  
 // Add a listener for connection events (this class is defined later)
