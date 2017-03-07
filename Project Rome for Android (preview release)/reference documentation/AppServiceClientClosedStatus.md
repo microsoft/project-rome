@@ -1,14 +1,14 @@
 # AppServiceClientClosedStatus
-Contains the values that describe TBD
+Contains the values that describe the reason that an app service connection was closed.
 
 ## Fields
 
 |Member   |Value   |Description   |
 |:--------|:-------|:-------------|
-|COMPLETED |0 | TBD |
-|CANCELLED |1 | |
-|RESOURCE_LIMITS_EXCEEDED |2 | |
-|UNKNOWN |3 | |
+|COMPLETED |0 | The app service connection was closed intentionally by the client app. |
+|CANCELLED |1 | The app service connection was closed due to network failure. |
+|RESOURCE_LIMITS_EXCEEDED |2 | The app service connection exceeded its allotted program memory. |
+|UNKNOWN |3 | The app service connection closed for an unknown reason.|
 
 ## Public methods
 
