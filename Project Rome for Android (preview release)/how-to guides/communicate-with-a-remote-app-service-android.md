@@ -116,3 +116,6 @@ When your app is finished interacting with the target device's app service, clos
 // Close connection 
 appServiceClientConnection.close(); 
 ```
+
+## Related topics
+[Getting started with Connected Devices (Android)](getting-started-rome-android.md)
