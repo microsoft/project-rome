@@ -1,7 +1,7 @@
 # Communicate with a remote app service (Android client)
 In addition to launching an app on a remote Windows device using a URI, your Android app can also interact with app services on Windows devices. This allows Android and Windows devices to communicate with each other via generic messages that can be handled by the apps on both platforms. 
 
-This provides an almost unlimited number of ways to communicate with Windows devices from your Android app&mdash;all without needing to bring an app to the foreground of the Windows device.
+This provides an almost unlimited number of ways to communicate with Windows devices from your Android app&mdash;all without needing to bring an app to the foreground of the Windows device. See the [Android sample app](../sample/) for a working example of remote app service connectivity.
 
 >Note: The code snippets in this guide will not work properly unless you have already initialized the remote systems platform by following the steps in [Getting started with Connected Devices (Android)](getting-started-rome-android.md).
 
@@ -11,7 +11,7 @@ In order to interact with an app service on a Windows device, you must already h
 ## Open an app service connection
 Your app must first acquire a reference to a remote device. See [Getting started with Connected Devices (Android)](getting-started-rome-android.md) for a simple way to do this, or [Discover remote devices (Android client)](disover-remote-device-android.md) for more in-depth options. 
 
-Your app will identify its targeted Windows app service by two strings: the *app service name* and *package family name*. These are found in the source code of the app service provider (see [Create and consume an app service](https://msdn.microsoft.com/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details).
+Your app will identify its targeted Windows app service by two strings: the *app service name* and *package family name*. These are found in the source code of the app service provider (see [Create and consume an app service](https://msdn.microsoft.com/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details). It also must implement an **IAppServiceClientConnectionListener** and **IAppServiceResponseListener** to handle events related to the connection itself and communications over that connection. This is done in the next section.
 
 ```java
 // the "remoteSystem" object reference has already been selected.
@@ -24,57 +24,95 @@ String appServiceName = "com.microsoft.example";
 // Set the PackageFamilyName for the Windows host 
 String packageFamilyName = "Abc.Example_abc123"; 
 
+// Instantiate implementations of IAppServiceClientConnectionListener and IAppServiceResponseListener (defined in the next section)
+IAppServiceClientConnectionListener connectionListener = new AppServiceClientConnectionListener();
+IAppServiceResponseListener responseListener = new AppServiceResponseListener();
+
 // Construct an AppServiceClientConnection 
-AppServiceClientConnection appServiceClientConnection = new AppServiceClientConnection(appServiceName, packageFamilyName, connectionRequest); 
- 
-// Add a listener for connection events (this class is defined later)
-AppServiceClientListener listener = new AppServicesClientListener(); 
-appServiceClientConnection.addListener(listener); 
+AppServiceClientConnection appServiceClientConnection = new AppServiceClientConnection(appServiceName, packageFamilyName, connectionRequest, connectionListener, responseListener); 
 
-// open the connection
-appServiceClientConnection.openRemoteAsync(); 
-
+// open the connection (will throw a ConnectedDevicesException if there is an error)
+try {
+    appServiceClientConnection.openRemoteAsync(); 
+} catch (ConnectedDevicesException e) {
+    e.printStackTrace();
+}
 ```
-## Send and receive messages
-An event listener is needed to handle all communication with the remote app service. You must create a class that implements **IAppServiceClientConnectionListener** to serve this purpose. 
->Note: Information is sent from the Android app to a Windows app service in the same way it is done between different activities of an Android app: through a **Bundle** object. The remote systems platform translates this into a [**ValueSet**](https://msdn.microsoft.com/library/windows/apps/windows.foundation.collections.valueset) object (of the .NET Framework), which can then be interpreted by the Windows app service. Information passed in the other direction undergoes the reverse translation.
+
+## Handle connection events
+
+Here, the implementations of the listener interfaces used above are defined as nested classes within the activity. These classes handle connection-related events as well as events that represent response messages from the app service.
 
 ```java 
-// Implement listener class for the app service connection 
-class AppConnectionListener implements IAppServiceClientConnectionListener { 
+// Define the connection listener class:
+class AppServiceClientConnectionListener implements IAppServiceClientConnectionListener { 
+    
+    @Override
+    public void onSuccess() {
+        Log.i("MyActivityName", "AppServiceClientConnectionListener onSuccess");
+        // connection was successful. initiate messaging or adjust UI to enable a messaging scenario.
+    }
+
+    @Override
+    public void onError(AppServiceClientConnectionStatus status) {
+        Log.e("MyActivityName", "AppServiceClientConnectionListener onError status [" + status.toString()+"]");
+        // failed to establish connection. inspect the cause of error and reflect back to the UI
+    }
+
+    @Override
+    public void onClosed(AppServiceClientClosedStatus status) {
+        Log.i("MyActivityName", "AppServiceClientConnectionListener onClosed status [" + status.toString()+"]");
+        // the connection closed. inspect the cause of closure and reflect back to the UI
+    }
+} 
+
+// Define the response listener class:
+class AppServiceResponseListener implements IAppServiceResponseListener { 
  
-    public void openRemoteSuccess(AppServiceClientConnectionStatus status) { 
-        if (status == SUCCESS???) { 
-            // create and send a message to the app service
-            Bundle message = new Bundle(); 
-            message.putChar("here is my message", 'a');  
-            appServiceClientConnection.sendMessageAsync(message); 
+    @Override
+    public void responseReceived(AppServiceClientResponse response) {
+        AppServiceResponseStatus status = response.getStatus();
+
+        if (status == AppServiceResponseStatus.SUCCESS) {
+            // last message was delivered successfully
+
+            Bundle bundle = response.getMessage();
+            Log.i("MyActivityName", "Received successful AppService response");
+            // parse the expected key/value data stored in "bundle"
+        } else {
+            Log.e("MyActivityName", "IAppServiceResponseListener.responseReceived status != SUCCESS");
+            // inspect "status" for the cause of unsuccessful message delivery
         }
-    } 
- 
-    public void responseReceived(AppServiceClientResponse response) { 
-         
-        //check that the message was successfully transmitted 
-        if (response.getStatus() == SUCCESS) { 
-            // send another message to the app service 
-            Bundle message = new Bundle(); 
-            message.putChar("another message",'b'); 
-            appServiceClientConnection.sendMessageAsync(message); 
-        } else { 
-            Log.i("message","The message status was " + response.getStatus().toString()); 
-        } 
-    } 
+    }
 } 
 ```
 
-When your app is finished interacting with the host device's app service, close the connection between the two devices.
+## Send messages to the app service
+
+Once the app service connection is established, sending a message to the app service is simple and can be done from anywhere in the app that has a reference to the connection instance.
+
+```java
+Bundle newMessage = new Bundle();
+// populate the Bundle with keys and values that the app service will be able to handle.
+//...//
+
+// use the AppServiceClientConnection instance to send the message (will throw a ConnectedDevicesException if there is an error)
+try {
+    appServiceClientConnection.sendMessageAsync(newMessage);
+} catch (ConnectedDevicesException e) {
+    e.printStackTrace();
+}
+```
+
+The app service's response will be received and parsed by the handler to the **IAppServiceResponseListener.responseReceived** event.
+
+>Note: Information is sent from the Android app to a Windows app service in the same way it is done between different activities of an Android app: through a [**Bundle**](https://developer.android.com/reference/android/os/Bundle.html) object. The remote systems platform translates this into a [**ValueSet**](https://msdn.microsoft.com/library/windows/apps/windows.foundation.collections.valueset) object (of the .NET Framework), which can then be interpreted by the Windows app service. Information passed in the other direction undergoes the reverse translation.
+
+## Finish app service communication
+
+When your app is finished interacting with the target device's app service, close the connection between the two devices.
 
 ```java
 // Close connection 
 appServiceClientConnection.close(); 
 ```
-
-
----
-??? need a scenario where we receive message from app service.
-??? why do we check the status in the openRemoteSuccess handler?
