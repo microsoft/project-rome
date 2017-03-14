@@ -6,12 +6,12 @@ This provides an almost unlimited number of ways to communicate with Windows dev
 >Note: The code snippets in this guide will not work properly unless you have already initialized the remote systems platform by following the steps in [Getting started with Connected Devices (Android)](getting-started-rome-android.md).
 
 ## Set up the app service on the target device
-In order to interact with an app service on a Windows device, you must already have a provider of that app service installed on the device. For information on setting this up, see the UWP version of this guide, [Communicate with a remote app service](https://msdn.microsoft.com/en-us/windows/uwp/launch-resume/communicate-with-a-remote-app-service). Regardless of which platform the client device is on, the setup procedure for the app service on the *host* device is exactly the same.
+In order to interact with an app service on a Windows device, you must already have a provider of that app service installed on the device. For information on how to set this up, see the UWP version of this guide, [Communicate with a remote app service](https://msdn.microsoft.com/en-us/windows/uwp/launch-resume/communicate-with-a-remote-app-service). Regardless of which platform the client device is on, the setup procedure for the app service on the *target* device is exactly the same.
 
 ## Open an app service connection
 Your app must first acquire a reference to a remote device. See [Getting started with Connected Devices (Android)](getting-started-rome-android.md) for a simple way to do this, or [Discover remote devices (Android client)](disover-remote-device-android.md) for more in-depth options. 
 
-Your app will identify its targeted Windows app service by two strings: the *app service name* and *package family name*. These are found in the source code of the app service provider (see [Create and consume an app service](https://msdn.microsoft.com/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details). It also must implement an **IAppServiceClientConnectionListener** and **IAppServiceResponseListener** to handle events related to the connection itself and communications over that connection. This is done in the next section.
+Your app will identify its targeted Windows app service by two strings: the *app service name* and *package family name*. These are found in the source code of the app service provider (see [Create and consume an app service](https://msdn.microsoft.com/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details). It also must implement an [**IAppServiceClientConnectionListener**](../IAppServiceClientConnectionListener) and [**IAppServiceResponseListener**](../IAppServiceResponseListener) to handle events related to the connection itself and communications over that connection. This is done in the next section.
 
 ```java
 // the "remoteSystem" object reference has already been selected.
@@ -41,7 +41,7 @@ try {
 
 ## Handle connection events
 
-Here, the implementations of the listener interfaces used above are defined as nested classes within the activity. These classes handle connection-related events as well as events that represent response messages from the app service.
+Here, the implementations of the listener interfaces used above are defined. These classes handle connection-related events as well as events that represent response messages from the app service.
 
 ```java 
 // Define the connection listener class:
@@ -106,7 +106,7 @@ try {
 
 The app service's response will be received and parsed by the handler to the **IAppServiceResponseListener.responseReceived** event.
 
->Note: Information is sent from the Android app to a Windows app service in the same way it is done between different activities of an Android app: through a [**Bundle**](https://developer.android.com/reference/android/os/Bundle.html) object. The remote systems platform translates this into a [**ValueSet**](https://msdn.microsoft.com/library/windows/apps/windows.foundation.collections.valueset) object (of the .NET Framework), which can then be interpreted by the Windows app service. Information passed in the other direction undergoes the reverse translation.
+>Note: Information is sent from the Android app to a Windows app service in the same way it is done between different activities of an Android app: through a [**Bundle**](https://developer.android.com/reference/android/os/Bundle.html) object. The Connected Devices platform translates this into a [**ValueSet**](https://msdn.microsoft.com/library/windows/apps/windows.foundation.collections.valueset) object (of the .NET Framework), which can then be interpreted by the Windows app service. Information passed in the other direction undergoes the reverse translation.
 
 ## Finish app service communication
 
