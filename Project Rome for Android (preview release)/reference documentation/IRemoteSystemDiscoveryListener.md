@@ -1,5 +1,5 @@
 # IRemoteSystemDiscoveryListener interface
-Interface to handle remote system discovery events.
+Handles remote system discovery events.
 
 ## Syntax
 `public interface IRemoteSystemDiscoveryListener`

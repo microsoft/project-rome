@@ -15,7 +15,7 @@ Xamarin plugin to allow access to the Project Rome Connected Device APIs on Andr
 
 |Platform|Supported|Version|
 | ------------------- | :-----------: | :------------------: |
-|Xamarin.Android|Yes|API 14+|
+|Xamarin.Android|Yes|API 19+|
 
 
 ### API Usage
@@ -26,13 +26,13 @@ Xamarin plugin to allow access to the Project Rome Connected Device APIs on Andr
 [https://apps.dev.microsoft.com](https://apps.dev.microsoft.com)
 
 #### Getting Started
-1. Initialize the Connected Devices Platform
+Initialize the Connected Devices Platform
 ```csharp
 Platform.FetchAuthCode += Platform_FetchAuthCode;
 var result = await Platform.InitializeAsync(this.ApplicationContext, CLIENT_ID);
 ```
 
-2. The FetchAuthCode handler is used when the platform needs an authorization code from the user (i.e. form OAuth with Microsoft Account). See the sample for more details.
+The FetchAuthCode handler is used when the platform needs an authorization code from the user (i.e. form OAuth with Microsoft Account). See the sample for more details.
 ```csharp
 private async void Platform_FetchAuthCode(string oauthUrl)
 {
@@ -41,7 +41,7 @@ private async void Platform_FetchAuthCode(string oauthUrl)
 }
 ```
 
-3. Now, discover devices
+Now, discover devices
 ```csharp
 private RemoteSystemWatcher _remoteSystemWatcher;
 private void DiscoverDevices()
@@ -55,7 +55,7 @@ private void DiscoverDevices()
 }
 ```
 
-4. Finally, connect and launch URIs using LaunchUriAsync
+Finally, connect and launch URIs using LaunchUriAsync
 ```csharp
 private async void RemoteLaunchUri(RemoteSystem remoteSystem, Uri uri)
 {
