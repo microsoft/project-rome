@@ -1,9 +1,8 @@
 apply plugin: 'com.android.application'
-apply plugin: 'maven'
 
 repositories {
-    maven {
-        url "https://projectrome.bintray.com/maven"
+    repositories {
+        jcenter()
     }
 }
 
@@ -51,7 +50,6 @@ dependencies {
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:cardview-v7:22.0.0'
     compile 'com.android.support:recyclerview-v7:22.0.0'
-    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-core-armv7', version: '0.1.0', ext: 'aar', classifier: 'externalRelease')
-    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armv7', version: '0.1.0', ext: 'aar', classifier: 'externalRelease')
+    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armv7', version: '0.2.0', ext: 'aar', classifier: 'release')
     testCompile 'junit:junit:4.12'
 }
