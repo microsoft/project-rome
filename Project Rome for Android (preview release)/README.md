@@ -4,4 +4,4 @@ Currently, Project Rome is implemented for Android-client-to-Windows-host scenar
 
 * View developer tutorials in the [how-to guides](how-to%20guides/) folder.
 * View the API reference documentation in the [reference documentation](reference%20documentation/) folder.
-* See code samples for Android apps in the [samples](samples/) folder.
+* See code samples for Android apps in the [sample](sample/) folder.
