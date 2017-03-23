@@ -13,15 +13,11 @@ namespace Microsoft.ConnectedDevices
 
     public partial class RemoteSystem
     {
-        public static void RequestAccessAsync()
-        {
-            
-        }
+        public static void RequestAccessAsync() {}
 
         public static RemoteSystemWatcher CreateWatcher()
         {
             return new RemoteSystemWatcher(); 
         }
     }
-
 }

@@ -6,8 +6,14 @@
   This sample removes the method: android.support.v4.content.CursorLoader.loadInBackground:
   <remove-node path="/api/package[@name='android.support.v4.content']/class[@name='CursorLoader']/method[@name='loadInBackground']" />
   -->
+
   <!-- Change the visibility of a class -->
   <attr path="/api/package[@name='com.microsoft.connecteddevices']" name="managedName">Microsoft.ConnectedDevices</attr>
   <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='Listenable']" name="visibility">public</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='Platform.IOAuthWebAccountProviderCallback']" name="visibility">public</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection']/method[@name='sendMessageAsync']" name="visibility">private</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection']/method[@name='openRemoteAsync']" name="visibility">private</attr>
 
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection']/method[@name='openRemoteAsync']" name="managedName">OpenRemoteAsynchronous</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection']/method[@name='sendMessageAsync']" name="managedName">SendMessageAsynchronous</attr>
 </metadata>

@@ -6,12 +6,12 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="16dp">
-  <!-- Dummy view -->
-  <View
-      android:layout_width="0dp"
-      android:layout_height="0dp"
-      android:focusable="true"
-      android:focusableInTouchMode="true"/>
+<!-- Dummy view -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -99,6 +99,41 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Launch Uri" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/detail_border"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:id="@+id/linearLayout2">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ping:"
+                    android:textSize="25sp" />
+                <TextView
+                    android:id="@+id/detailed_ping_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/linearLayout1">
+                    <Button
+                        android:id="@+id/detailed_connect_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Connect" />
+                    <Button
+                        android:id="@+id/detailed_ping_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Send Ping" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

@@ -16,24 +16,28 @@ namespace Microsoft.ConnectedDevices
 {
     public partial class Platform
     {
-
-        public static event Action<string> FetchAuthCode;
         private static Platform.IAuthCodeHandler _handler;
+        public static event Action<string> FetchAuthCode;
 
         public static Task<bool> InitializeAsync(Context context, string clientID)
         {
             var tcs = new TaskCompletionSource<bool>(); 
 
             var platformInitializer = new PlatformInitializer();
-            var _authCodeProvider = new AuthCodeProvider(clientID);
+            var authCodeProvider = new AuthCodeProvider(clientID);
 
             platformInitializer.InitializationCompleted += (r) =>
             {
                 tcs.TrySetResult(r);
             };
-            Platform.Initialize(context, _authCodeProvider, platformInitializer);
+            Platform.Initialize(context, authCodeProvider, platformInitializer);
 
             return tcs.Task;
+        }
+
+        public static void SetAuthCode(string authCode)
+        {
+            _handler?.OnAuthCodeFetched(authCode);
         }
 
         internal static void InvokeFetchAuthCode(string oauthUrl, Platform.IAuthCodeHandler handler)
@@ -42,38 +46,36 @@ namespace Microsoft.ConnectedDevices
             FetchAuthCode?.Invoke(oauthUrl);
         }
 
-        public static void SetAuthCode(string authCode)
+        internal class PlatformInitializer : Java.Lang.Object, IPlatformInitializationHandler
         {
-            _handler?.OnAuthCodeFetched(authCode);
-        }
-    }
+            public event Action<bool> InitializationCompleted;
 
-    internal class PlatformInitializer : Java.Lang.Object, IPlatformInitializationHandler
-    {
-        public void OnDone(bool p0)
-        {
-            InitializationCompleted?.Invoke(p0);
-        }
+            public void OnDone()
+            {
+                this.InitializationCompleted?.Invoke(true);
+            }
 
-        public event Action<bool> InitializationCompleted;
-    }
-
-    internal class AuthCodeProvider : Java.Lang.Object, IAuthCodeProvider
-    {
-        public AuthCodeProvider(string clientId)
-        {
-            ClientId = clientId;
+            public void OnError(PlatformInitializationStatus status)
+            {
+                this.InitializationCompleted?.Invoke(false);
+            }
         }
 
-        public string ClientId { get; private set; }
-
-        public void FetchAuthCodeAsync(string oauthUrl, Platform.IAuthCodeHandler handler)
+        internal class AuthCodeProvider : Java.Lang.Object, IAuthCodeProvider
         {
-            // Platform needs app to get an MSA auth_code.
-            // Need to sign in user via OAuth for given url.
-            Platform.InvokeFetchAuthCode(oauthUrl, handler);
+            public AuthCodeProvider(string clientId)
+            {
+                this.ClientId = clientId;
+            }
 
+            public string ClientId { get; private set; }
+
+            public void FetchAuthCodeAsync(string oauthUrl, Platform.IAuthCodeHandler handler)
+            {
+                // Platform needs app to get an MSA auth_code.
+                // Need to sign in user via OAuth for given url.
+                Platform.InvokeFetchAuthCode(oauthUrl, handler);
+            }
         }
-
     }
 }
