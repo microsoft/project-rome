@@ -6,6 +6,6 @@ Currently, Project Rome is implemented for the following scenarios:
 * Windows client to Windows host
 * Android client to Windows host
 
-##Privacy
+## Privacy
 
 See [Microsoft's privacy statement](https://privacy.microsoft.com/en-us/privacystatement/) for more information. 
