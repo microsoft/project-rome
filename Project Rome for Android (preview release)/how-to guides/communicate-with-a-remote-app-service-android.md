@@ -6,10 +6,45 @@ This provides an almost unlimited number of ways to communicate with Windows dev
 >Note: The code snippets in this guide will not work properly unless you have already initialized the remote systems platform by following the steps in [Getting started with Connected Devices (Android)](getting-started-rome-android.md).
 
 ## Set up the app service on the target device
-In order to interact with an app service on a Windows device, you must already have a provider of that app service installed on the device. For information on how to set this up, see the UWP version of this guide, [Communicate with a remote app service](https://msdn.microsoft.com/en-us/windows/uwp/launch-resume/communicate-with-a-remote-app-service). Regardless of which platform the client device is on, the setup procedure for the app service on the *target* device is exactly the same.
+This guide will use the Random Number Generator app service for UWP, which is available on the [Windows universal samples repo](https://github.com/Microsoft/Windows-universal-samples/tree/master/Samples/AppServices). For instructions on how to write your own UWP app service, see [Create and consume an app service](how-to-create-and-consume-an-app-service.md).
 
-## Open an app service connection
-Your app must first acquire a reference to a remote device. See [Getting started with Connected Devices (Android)](getting-started-rome-android.md) for a simple way to do this, or [Discover remote devices (Android client)](disover-remote-device-android.md) for more in-depth options. 
+Whether you are using an already-made app service or writing your own, you will need to make a few edits in order to make the service compatible with Connected Devices. In Visual Studio, go to the app service provider project and select its Package.appxmanifest file. Right-click and select **View Code** to view the full contents of the file. Find the **Extension** element that defines the project as an app service and names its parent project.
+
+``` xml
+...
+<Extensions>
+    <uap:Extension Category="windows.appService" EntryPoint="RandomNumberService.RandomNumberGeneratorTask">
+        <uap:AppService Name="com.microsoft.randomnumbergenerator"/>
+    </uap:Extension>
+</Extensions>
+...
+```
+
+Change the namespace of the **AppService** element to **uap3** and add the **SupportsRemoteSystems** attribute:
+
+``` xml
+...
+<uap3:AppService Name="com.microsoft.randomnumbergenerator" SupportsRemoteSystems="true"/>
+...
+```
+
+In order to use elements in this new namespace, you must add the namespace definition at the top of the manifest file.
+
+``` xml
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3">
+  ...
+</Package>
+```
+
+Build your app service provider project and deploy it to the target device(s).
+
+## Open an app service connection on the client device
+Your Android app must acquire a reference to a remote device. See [Getting started with Connected Devices (Android)](getting-started-rome-android.md) for a simple way to do this, or [Discover remote devices (Android client)](disover-remote-device-android.md) for more in-depth options. 
 
 Your app will identify its targeted Windows app service by two strings: the *app service name* and *package family name*. These are found in the source code of the app service provider (see [Create and consume an app service](https://msdn.microsoft.com/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details). It also must implement an [**IAppServiceClientConnectionListener**](../IAppServiceClientConnectionListener) and [**IAppServiceResponseListener**](../IAppServiceResponseListener) to handle events related to the connection itself and communications over that connection. This is done in the next section.
 
@@ -19,10 +54,10 @@ Your app will identify its targeted Windows app service by two strings: the *app
 RemoteSystemConnectionRequest connectionRequest = new RemoteSystemConnectionRequest(remoteSystem);
  
 // Set the AppServiceName for the Windows host
-String appServiceName = "com.microsoft.example"; 
+String appServiceName = "com.microsoft.randomnumbergenerator"; 
      
 // Set the PackageFamilyName for the Windows host 
-String packageFamilyName = "Abc.Example_abc123"; 
+String packageFamilyName = "Microsoft.SDKSamples.AppServicesProvider.CS_8wekyb3d8bbwe"; 
 
 // Instantiate implementations of IAppServiceClientConnectionListener and IAppServiceResponseListener (defined in the next section)
 IAppServiceClientConnectionListener connectionListener = new AppServiceClientConnectionListener();
@@ -118,4 +153,5 @@ appServiceClientConnection.close();
 ```
 
 ## Related topics
-[Getting started with Connected Devices (Android)](getting-started-rome-android.md)
+* [Getting started with Connected Devices (Android)](getting-started-rome-android.md)
+* [Create and consume an app service](how-to-create-and-consume-an-app-service.md).
