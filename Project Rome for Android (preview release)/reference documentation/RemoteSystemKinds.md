@@ -3,7 +3,7 @@ Contains the string values that identify various device types.
 
 ## Syntax
 
-`public enum RemoteSystemKind` 
+`public enum RemoteSystemKinds` 
 
 |Member|Value|Description|
 |:---|:---|:---| 

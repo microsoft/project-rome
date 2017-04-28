@@ -12,7 +12,7 @@ In cases where you are only looking for certain types of devices to connect to, 
 // Device type filter:
 // make a list of allowed devices (in this case, only Surface Hub) 
 List<String> kinds = new ArrayList<String>(); 
-kinds.add(RemoteSystemKind.HUB);
+kinds.add(RemoteSystemKinds.HUB);
 // construct a filter with the given list
 RemoteSystemKindFilter kindFilter = new RemoteSystemKindFilter(kinds); 
  
