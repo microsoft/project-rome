@@ -9,7 +9,7 @@ This class handles the launching of an app on a remote device through the use of
 ### LaunchUriAsync
 Starts the default app associated with the URI scheme name for the specified URI on a remote device.
 
-`public void LaunchUriAsync(RemoteSystemConnectionRequest remoteSystemConnectionRequest, String uri, IRemoteLauncherListener listener) throws ConnectedDevicesException`
+`public static void LaunchUriAsync(RemoteSystemConnectionRequest remoteSystemConnectionRequest, String uri, IRemoteLauncherListener listener) throws ConnectedDevicesException`
 
 **Parameters**  
 *remoteSystemConnectionRequest* - Specifies which remote system to connect to  
@@ -19,7 +19,7 @@ Starts the default app associated with the URI scheme name for the specified URI
 ### LaunchUriAsync
 Starts the default app associated with the URI scheme name for the specified URI on a remote device, using the specified options.
 
-`public void LaunchUriAsync(RemoteSystemConnectionRequest remoteSystemConnectionRequest, String uri, RemoteLauncherOptions options, IRemoteLauncherListener listener) throws ConnectedDevicesException`
+`public static void LaunchUriAsync(RemoteSystemConnectionRequest remoteSystemConnectionRequest, String uri, RemoteLauncherOptions options, IRemoteLauncherListener listener) throws ConnectedDevicesException`
 
 **Parameters**  
 *remoteSystemConnectionRequest* - Specifies which remote system to connect to  
