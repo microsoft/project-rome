@@ -1,9 +1,5 @@
-//
-//  Copyright (c) Microsoft Corporation. All rights reserved.
-//
+# protocol `CDRemoteSystemDiscoveryDelegate`
 
-#import <Foundation/Foundation.h>
-#import "CDRemoteSystem.h"
 
 @class CDRemoteSystemDiscovery;
 

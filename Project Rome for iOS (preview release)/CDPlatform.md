@@ -5,9 +5,7 @@ class CDPlatform
   : public NSObject
 ```  
 
-A static class to perform global scale commands to CDP.
-
-
+A static class to perform global scale commands to the Connected Devices platform.
 
 ## Summary
 

@@ -7,8 +7,6 @@ class CDRemoteSystemDiscovery
 
 A class used to find Remote Systems.
 
-
-
 ## Summary
 
  Members                        | Descriptions                                
@@ -20,14 +18,16 @@ A class used to find Remote Systems.
 
 ## Members
 
-#### `public virtual nullable instancetype initWithDiscoveryFilters:(nullable NSSet * filters)` 
+### initWithDiscoveryFilters
+`public virtual nullable instancetype initWithDiscoveryFilters:(nullable NSSet * filters)` 
 
 Initializes the CDPRemoteSystemDiscovery with a set of filters.  filters The set of filters.
 
 #### Returns
 The initialized [CDRemoteSystemDiscovery](#interface_c_d_remote_system_discovery), otherwise nil.
 
-#### `public virtual nullable NSError * start()` 
+### start
+`public virtual nullable NSError * start()` 
 
 Attempts to find RemoteSystems.
 
@@ -41,9 +41,10 @@ Stops the active discovery.
 #### Returns
 An error describing why the discovery could not be stopped, otherwise nil.
 
-#### `public virtual nullable NSError * findByHostName:(nonnull NSString * hostname)` 
+#### findByHostName
+`public virtual nullable NSError * findByHostName:(nonnull NSString * hostname)` 
 
-Attempts to find a PeerSystem proximaly by its IP.
+Attempts to find a PeerSystem proximally by its IP.
 
 #### Returns
 An error describing why the discovery could not be initiated, otherwise nil.

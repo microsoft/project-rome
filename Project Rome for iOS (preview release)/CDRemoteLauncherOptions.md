@@ -13,5 +13,7 @@ A class to represent RemoteLauncherOptions.
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
+fallbackUri | The fallback URI
+preferredAppIds | The app ids
 
 ## Members
