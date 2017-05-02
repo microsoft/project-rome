@@ -5,9 +5,7 @@ class CDRemoteLauncherOptions
   : public NSObject
 ```  
 
-A class to represent RemoteLauncherOptions.
-
-
+A class to represent options for [RemoteLauncher]().
 
 ## Summary
 
@@ -16,4 +14,14 @@ A class to represent RemoteLauncherOptions.
 fallbackUri | The fallback URI
 preferredAppIds | The app ids
 
-## Members
+## Properties
+
+### fallbackUri
+`@property (nonatomic, readonly, copy, nullable) NSString* fallbackUri;`
+
+The fallback uri.
+
+### preferredAppIds
+`@property (nonatomic, readonly, copy, nullable) NSArray* preferredAppIds;`
+
+The app ids.

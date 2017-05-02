@@ -11,13 +11,22 @@ A class to send binary data using the Connected Devices platform as a client.
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
+delegate | A delegate to receive events from this [BinaryClient](#interface_binary_client).
 initWithPeerSystemTarget | Initialize a [BinaryClient](#interface_binary_client) to a specific PeerSystemTarget.
 sendData | Send a binary message across this [BinaryClient](#interface_binary_client).
 
-## Members
+
+## Properties
+
+### delegate
+`@property (nonatomic, strong) id<BinaryClientDelegate> delegate;`
+
+A delegate to receive events from this [BinaryClient](#interface_binary_client).
+
+## Methods
 
 ### initWithPeerSystemTarget
-`public virtual id initWithPeerSystemTarget:delegate:(PeerSystemTarget * peerSystemTarget,id< BinaryClientDelegate > delegate)` 
+`-(id)initWithPeerSystemTarget:(PeerSystemTarget*)peerSystemTarget delegate:(id<BinaryClientDelegate>)delegate;` 
 
 Initialize a [BinaryClient](#interface_binary_client) to a specific PeerSystemTarget.
 
@@ -29,7 +38,7 @@ Initialize a [BinaryClient](#interface_binary_client) to a specific PeerSystemTa
 A [BinaryClient](#interface_binary_client) object if successful, nil otherwise.
 
 ### sendData 
-`public virtual NSError * sendData:(NSData * data)` 
+`-(NSError*)sendData:(NSData*)data;` 
 
 Send a binary message across this [BinaryClient](#interface_binary_client).
 

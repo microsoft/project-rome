@@ -11,46 +11,49 @@ A class used to find remote systems.
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
+connectionRequest | The CDRemoteSystemConnectionRequest.
 initWithConnectionRequest | Initializes the [CDRemoteLauncher](#interface_c_d_remote_launcher) with a [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
-`public virtual nullable NSError * launchUri:withCompletion:(nonnull NSString * uri,nullable void(^)(CDRemoteLauncherUriStatus) completionBlock)` | Launches a URI against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).  uri The URI to launch.
-`public virtual nullable NSError * launchUri:withOptions:withCompletion:(nonnull NSString * uri,nonnull `[`CDRemoteLauncherOptions`](#interface_c_d_remote_launcher_options)` * options,nonnull void(^)(CDRemoteLauncherUriStatus) completionBlock)` | Initializes the [CDRemoteLauncher](#interface_c_d_remote_launcher) with a [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
+launchUri | Launches a URI against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).  uri The URI to launch.
+launchUri | Launches a URI with options against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
 
-## Members
+## Properties
 
-#### `public virtual nullable instancetype initWithConnectionRequest:(nonnull `[`CDRemoteSystemConnectionRequest`](#interface_c_d_remote_system_connection_request)` * request)` 
+### connectionRequest
+`@property (nonatomic, readonly, strong, nonnull)CDRemoteSystemConnectionRequest* connectionRequest;`
+
+The CDRemoteSystemConnectionRequest.
+
+## Methods
+
+### initWithConnectionRequest
+`-(nullable instancetype)initWithConnectionRequest:(nonnull CDRemoteSystemConnectionRequest*)request;`
 
 Initializes the [CDRemoteLauncher](#interface_c_d_remote_launcher) with a [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
 
 #### Returns
 The initialized [CDRemoteLauncher](#interface_c_d_remote_launcher), otherwise nil.
 
-#### `public virtual nullable NSError * launchUri:withCompletion:(nonnull NSString * uri,nullable void(^)(CDRemoteLauncherUriStatus) completionBlock)` 
+### launchUri
+`-(nullable NSError*)launchUri:(nonnull NSString*)uri withCompletion:(nullable void (^)(CDRemoteLauncherUriStatus))completionBlock;` 
 
-Launches a URI against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).  uri The URI to launch.
+Launches a URI against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
 
 #### Parameters
-* `withCompletion` The block to invoke when the async request either succeeds or fails. 
-
-
-
-
+* `uri` The URI to launch.
+* `completionBlock` The block to invoke when the async request either succeeds or fails. 
 
 #### Returns
-The initialized [CDRemoteLauncher](#interface_c_d_remote_launcher), otherwise nil.
+An error, if any occurred. 
 
-#### `public virtual nullable NSError * launchUri:withOptions:withCompletion:(nonnull NSString * uri,nonnull `[`CDRemoteLauncherOptions`](#interface_c_d_remote_launcher_options)` * options,nonnull void(^)(CDRemoteLauncherUriStatus) completionBlock)` 
+### launchUri
+`-(nullable NSError*)launchUri:(nonnull NSString*)uri withOptions:(nonnull CDRemoteLauncherOptions*)options withCompletion:(nonnull void (^)(CDRemoteLauncherUriStatus))completionBlock;` 
 
-Initializes the [CDRemoteLauncher](#interface_c_d_remote_launcher) with a [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
+Launches a URI with options against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
 
 #### Parameters
+* `uri` The URI to launch.
 * `options` The launcher options. 
-
-
-* `withCompletion` The block to invoke when the async request either succeeds or fails. 
-
-
-
-
+* `completionBlock` The block to invoke when the async request either succeeds or fails. 
 
 #### Returns
-The initialized [CDRemoteLauncher](#interface_c_d_remote_launcher), otherwise nil.
+An error, if any occurred. 

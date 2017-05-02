@@ -1,23 +1,25 @@
-//
-//  Copyright (c) Microsoft Corporation. All rights reserved.
-//
+# protocol `CDOAuthCodeProviderDelegate`
 
-/**
- * @brief A protocol for returning OAuth information.
- */
-@protocol CDOAuthCodeProviderDelegate
+A protocol for returning OAuth information.
 
-/**
- * @brief Asynchronously obtains a new OAuth access code.
- * @signInUrl The URI which should be shown in a WebView.
- * @completion Callback which should be invoked when the OAuth access code is obtained or an error occurs.
- * @return An error if there was a failure preparing the async request.
- */
--(nullable NSError*)getAccessCode:(nonnull NSString*) signInUri completion:(nullable void (^)(NSError* _Nullable error, NSString* _Nullable accessCode))completionBlock;
+`@protocol CDOAuthCodeProviderDelegate`
 
-/**
- * @brief The OAuth app id code.
- */
-@property (nonatomic, readonly, copy, nonnull) NSString* appId;
+## Properties
+### appId
+`@property (nonatomic, readonly, copy, nonnull) NSString* appId;`
 
-@end
+The OAuth app id code.
+
+## Methods
+### getAccessCode
+`-(nullable NSError*)getAccessCode:(nonnull NSString*) signInUri completion:(nullable void (^)(NSError* _Nullable error, NSString* _Nullable accessCode))completionBlock;`
+
+Asynchronously obtains a new OAuth access code.
+
+**Parameters**
+* `signinUrl` The URI which should be shown in a WebView.
+* `completionBlock` Callback which should be invoked when the OAuth access code is obtained or an error occurs.
+
+**Returns**
+
+An error if there was a failure preparing the async request.
