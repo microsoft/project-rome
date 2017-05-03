@@ -5,16 +5,39 @@ class CDRemoteSystem
   : public NSObject
 ```  
 
-A class to represent a Remote System.
-
-
+A class to represent a remote system.
 
 ## Summary
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
-`public virtual (unavailable("init not available. A `[`CDRemoteSystem`](#interface_c_d_remote_system)` can only be created by the framework internally." __attribute__()` | 
+id | The identifier for this remote system.
+displayName | The friendly display name of this remote system.
+kind | The device type of this remote system.
+isAvailableByProximity | Indicates whether the remote system can be reached by proximal connection (UDP or Bluetooth).
+status | The availability of the remote system.
 
-## Members
+## Properties
 
-#### `public virtual (unavailable("init not available. A `[`CDRemoteSystem`](#interface_c_d_remote_system)` can only be created by the framework internally." __attribute__()` 
+### id
+`@property (nonatomic, readonly, copy, nonnull) NSString* id;`
+
+The identifier for this remote system.
+
+### displayName
+`@property (nonatomic, readonly, copy, nonnull) NSString* displayName;`
+
+The friendly display name of this remote system.
+
+### kind
+`@property (nonatomic, readonly, copy, nonnull) NSString* kind;`
+
+The device type of this remote system.
+
+### isAvailableByProximity
+`@property (nonatomic, readonly) BOOL isAvailableByProximity;`
+Indicates whether the remote system can be reached by proximal connection (UDP or Bluetooth).
+
+### status
+`@property (nonatomic, readonly) CDRemoteSystemStatus status;`
+The availability of the remote system.

@@ -1,15 +1,17 @@
-//
-//  Copyright (c) Microsoft Corporation. All rights reserved.
-//
+# enum `CDRemoteSystemStatus`
+```
+typedef NS_ENUM(NSInteger, CDRemoteSystemStatus)
+```
 
-/** @brief The result of an action against a Remote System. */
-typedef NS_ENUM(NSInteger, CDRemoteSystemStatus) {
-    /** @brief The status of the RemoteSystem is unknown. */
-    CDRemoteSystemStatusUnknown = 0,
-    /** @brief The status of the RemoteSystem is still being determined. */
-    CDRemoteSystemStatusDiscoveringAvailability,
-    /** @brief The RemoteSystem is reported as being available. */
-    CDRemoteSystemStatusAvailable,
-    /** @brief The RemoteSystem is reported as being unavailable. */
-    CDRemoteSystemStatusUnavailable
-};
+Contains values that describe the availability of a remote system.
+
+## Fields
+
+Name | Value | Description 
+--------------------------------|--------------------------------|------------
+CDRemoteSystemStatusUnknown | 0
+CDRemoteSystemStatusDiscoveringAvailability | 
+CDRemoteSystemStatusAvailable | 
+CDRemoteSystemStatusUnavailable | 
+
+TBD

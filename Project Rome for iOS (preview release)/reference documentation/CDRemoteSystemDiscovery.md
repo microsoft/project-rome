@@ -5,46 +5,55 @@ class CDRemoteSystemDiscovery
   : public NSObject
 ```  
 
-A class used to find Remote Systems.
+A class used to discover remote systems.
 
 ## Summary
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
-`public virtual nullable instancetype initWithDiscoveryFilters:(nullable NSSet * filters)` | Initializes the CDPRemoteSystemDiscovery with a set of filters.  filters The set of filters.
-`public virtual nullable NSError * start()` | Attempts to find RemoteSystems.
-`public virtual nullable NSError * stop()` | Stops the active discovery.
-`public virtual nullable NSError * findByHostName:(nonnull NSString * hostname)` | Attempts to find a PeerSystem proximaly by its IP.
+delegate | The delegate that will receive events from this [CDRemoteSystemDiscovery]( ).
+initWithDiscoveryFilters | Initializes the [CDPRemoteSystemDiscovery]( ) with a set of filters.
+start | Begins discovering remote systems.
+stop | Stops the active discovery.
+findByHostName | Attempts to find a system proximally using its IP address.
 
-## Members
+## Properties
+
+### delegate
+`@property (nonatomic, readwrite, weak, nullable)id<CDRemoteSystemDiscoveryDelegate> delegate;`
+
+The delegate that will receive events from this [CDRemoteSystemDiscovery]( ).
+
+## Methods
 
 ### initWithDiscoveryFilters
-`public virtual nullable instancetype initWithDiscoveryFilters:(nullable NSSet * filters)` 
+`-(nullable instancetype)initWithDiscoveryFilters:(nullable NSSet*)filters;` 
 
-Initializes the CDPRemoteSystemDiscovery with a set of filters.  filters The set of filters.
+Initializes the [CDPRemoteSystemDiscovery]( ) with a set of filters.
 
 #### Returns
 The initialized [CDRemoteSystemDiscovery](#interface_c_d_remote_system_discovery), otherwise nil.
 
 ### start
-`public virtual nullable NSError * start()` 
+`-(nullable NSError*)start;` 
 
-Attempts to find RemoteSystems.
+Begins discovering remote systems.
 
 #### Returns
 An error describing why the discovery could not be initiated, otherwise nil.
 
-#### `public virtual nullable NSError * stop()` 
+### stop
+`(nullable NSError*)stop;` 
 
 Stops the active discovery.
 
 #### Returns
 An error describing why the discovery could not be stopped, otherwise nil.
 
-#### findByHostName
-`public virtual nullable NSError * findByHostName:(nonnull NSString * hostname)` 
+### findByHostName
+`-(nullable NSError*)findByHostName:(nonnull NSString*)hostname;` 
 
-Attempts to find a PeerSystem proximally by its IP.
+Attempts to find a system proximally using its IP address.
 
 #### Returns
 An error describing why the discovery could not be initiated, otherwise nil.

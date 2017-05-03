@@ -1,45 +1,59 @@
 # protocol `CDRemoteSystemDiscoveryDelegate`
 
-
-@class CDRemoteSystemDiscovery;
-
-/**
- * @brief Set of methods to be implemented to act as a CDRemoteSystemDiscovery delegate.
- */
+```
 @protocol CDRemoteSystemDiscoveryDelegate <NSObject>
+```
 
-/**
- * @brief Called when a Remote System has been discovered.
- * @remarks Optional
- * @param discovery The delegating Remote System Discovery.
- * @param remoteSystem The discovered Remote System.
- */
-@optional
--(void)remoteSystemDiscoveryFound:(nonnull CDRemoteSystemDiscovery*)discovery remoteSystem:(nonnull CDRemoteSystem*)remoteSystem;
+Set of methods to be implemented by objects acting as delegates for the [CDRemoteSystemDiscovery]( ) class.
 
-/**
- * @brief Called when a previously discovered Remote System has been removed.
- * @remarks Optional
- * @param discovery The delegating CDRemoteSystemDiscovery.
- * @param remoteSystem The discovered Remote System.
- */
-@optional
--(void)remoteSystemDiscoveryRemoved:(nonnull CDRemoteSystemDiscovery*)discovery remoteSystem:(nonnull CDRemoteSystem*)remoteSystem;
+## Summary
 
-/**
- * @brief Called when a previously discovered RemoteSystem has been updated.
- * @remarks Optional
- * @param discovery The delegating CDRemoteSystemDiscovery.
- * @param remoteSystem The discovered Remote System.
- */
-@optional
--(void)remoteSystemDiscoveryUpdated:(nonnull CDRemoteSystemDiscovery*)discovery remoteSystem:(nonnull CDRemoteSystem*)remoteSystem;
+ Members                        | Descriptions                                
+--------------------------------|---------------------------------------------
+remoteSystemDiscoveryFound | Called when a remote system has been discovered.
+remoteSystemDiscoveryRemoved | Called when a previously discovered remote system has been removed.
+remoteSystemDiscoveryUpdated | Called when a previously discovered remote system has been updated.
+remoteSystemDiscoveryCompleted | Called when the discovery operation has completed successfully.
 
-/**
- * @brief Called when the discovery operation has completed successfully.
- * @param discovery The delegating CDRemoteSystemDiscovery.
- */
-@optional
--(void)remoteSystemDiscoveryCompleted:(nonnull CDRemoteSystemDiscovery*)discovery;
+## methods
 
-@end
+### remoteSystemDiscoveryFound
+`@optional
+-(void)remoteSystemDiscoveryFound:(nonnull CDRemoteSystemDiscovery*)discovery remoteSystem:(nonnull CDRemoteSystem*)remoteSystem;`
+
+Called when a remote system has been discovered.
+
+#### Parameters
+* `discovery` The delegating [CDRemoteSystemDiscovery]( ) instance.
+* `remoteSystem` The discovered [RemoteSystem]( ) instance.
+
+### remoteSystemDiscoveryRemoved
+`@optional
+-(void)remoteSystemDiscoveryRemoved:(nonnull CDRemoteSystemDiscovery*)discovery remoteSystem:(nonnull CDRemoteSystem*)remoteSystem;`
+
+Called when a previously discovered remote system has been removed.
+
+#### Parameters
+* `discovery` The delegating [CDRemoteSystemDiscovery]( ) instance.
+* `remoteSystem` The removed [RemoteSystem]( ) instance.
+
+### remoteSystemDiscoveryRemoved
+`@optional
+-(void)remoteSystemDiscoveryUpdated:(nonnull CDRemoteSystemDiscovery*)discovery remoteSystem:(nonnull CDRemoteSystem*)remoteSystem;`
+
+Called when a previously discovered remote system has been updated.
+
+#### Parameters
+* `discovery` The delegating [CDRemoteSystemDiscovery]( ) instance.
+* `remoteSystem` The updated [RemoteSystem]( ) instance.
+
+
+### remoteSystemDiscoveryCompleted
+`@optional
+-(void)remoteSystemDiscoveryCompleted:(nonnull CDRemoteSystemDiscovery*)discovery;`
+
+Called when the discovery operation has completed successfully.
+
+#### Parameters
+* `discovery` The delegating [CDRemoteSystemDiscovery]( ) instance.
+

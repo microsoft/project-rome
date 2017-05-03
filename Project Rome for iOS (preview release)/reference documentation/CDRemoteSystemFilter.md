@@ -1,16 +1,26 @@
-//
-//  Copyright (c) Microsoft Corporation. All rights reserved.
-//
+# protocol `CDRemoteSystemFilter`
 
-#import "CDRemoteSystem.h"
-
+```
 @protocol CDRemoteSystemFilter
+```
 
-/**
- * @brief Checks whether a Remote System is matched by the current filter.
- * @param remoteSystem The Remote System.
- * @returns Whether the filter matches the specified Remote System.
- */
--(BOOL)matchesRemoteSystem:(nonnull CDRemoteSystem*)remoteSystem;
+Set of methods to be implemented by objects acting as remote system discovery filters.
 
-@end
+## Summary
+
+ Members                        | Descriptions                                
+--------------------------------|---------------------------------------------
+matchesRemoteSystem | Checks whether a remote system passes the current filter.
+
+## Methods
+
+### matchesRemoteSystem
+`-(BOOL)matchesRemoteSystem:(nonnull CDRemoteSystem*)remoteSystem;`
+
+Checks whether a remote system passes the current filter.
+
+#### Parameters
+* `remoteSystem` The remote system to check.
+
+#### Returns
+**TRUE** if the given remote system passes through the filter, otherwise **FALSE**.

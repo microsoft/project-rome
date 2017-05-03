@@ -10,3 +10,5 @@
 @property (nonatomic, readonly)BOOL isConnected;
 
 @end
+
+TBD
