@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="discover">Discover Devices</string>
+	<string name="app_name">RomeCastRemote</string>
+	<string name="devices_prompt">Devices</string>
+	<string name="prev">Prev</string>
+	<string name="pause">Pause</string>
+	<string name="play">Play</string>
+	<string name="next">Next</string>
+</resources>
