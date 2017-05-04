@@ -1,11 +1,10 @@
 # class `LauncherOptions` 
 
 ```
-class LauncherOptions
-  : public NSObject
+@interface LauncherOptions : NSObject
 ```  
 
-A class describing a set of options for a Launch operation.
+A class describing a set of options for a launch operation.
 
 
 
@@ -13,5 +12,17 @@ A class describing a set of options for a Launch operation.
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
+targetPeerSystem | The PeerSystem to target with this operation.
+location | The screen location to lauch the application to.
 
 ## Members
+
+### targetPeerSystem
+`@property (nonatomic, strong) PeerSystem* targetPeerSystem;`
+
+The PeerSystem to target with this operation.
+
+### location
+`@property AppLocation location;`
+
+The screen location to lauch the application to.
