@@ -11,5 +11,3 @@ Name                        | Value
 CDRemoteSystemDiscoveryTypeCloud | 1
 CDRemoteSystemDiscoveryTypeProximal | 1 << 1
 CDRemoteSystemDiscoveryTypeAny | 0xFFFF
-
-TBD

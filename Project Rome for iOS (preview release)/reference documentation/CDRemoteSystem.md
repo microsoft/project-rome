@@ -1,8 +1,7 @@
 # class `CDRemoteSystem` 
 
 ```
-class CDRemoteSystem
-  : public NSObject
+@interface CDRemoteSystem : NSObject
 ```  
 
 A class to represent a remote system.

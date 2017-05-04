@@ -1,8 +1,7 @@
 # class `CDPlatform` 
 
 ```
-class CDPlatform
-  : public NSObject
+@interface CDPlatform : NSObject
 ```  
 
 A static class to perform global scale commands to the Connected Devices platform.

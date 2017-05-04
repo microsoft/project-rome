@@ -1,8 +1,7 @@
 # class `CDRemoteLauncher` 
 
 ```
-class CDRemoteLauncher
-  : public NSObject
+@interface CDRemoteLauncher : NSObject
 ```  
 
 A class used to find remote systems.
@@ -12,9 +11,9 @@ A class used to find remote systems.
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
 connectionRequest | The CDRemoteSystemConnectionRequest.
-initWithConnectionRequest | Initializes the [CDRemoteLauncher](#interface_c_d_remote_launcher) with a [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
-launchUri | Launches a URI against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).  uri The URI to launch.
-launchUri | Launches a URI with options against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
+initWithConnectionRequest | Initializes the [CDRemoteLauncher](CDRemoteLauncher.md) with a [CDRemoteSystemConnectionRequest](CDRemoteSystemConnectionRequest.md).
+launchUri | Launches a URI against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](CDRemoteSystemConnectionRequest.md).  uri The URI to launch.
+launchUri | Launches a URI with options against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](CDRemoteSystemConnectionRequest.md).
 
 ## Properties
 
@@ -28,15 +27,15 @@ The CDRemoteSystemConnectionRequest.
 ### initWithConnectionRequest
 `-(nullable instancetype)initWithConnectionRequest:(nonnull CDRemoteSystemConnectionRequest*)request;`
 
-Initializes the [CDRemoteLauncher](#interface_c_d_remote_launcher) with a [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
+Initializes the [CDRemoteLauncher](CDRemoteLauncher.md) with a [CDRemoteSystemConnectionRequest](CDRemoteSystemConnectionRequest.md).
 
 #### Returns
-The initialized [CDRemoteLauncher](#interface_c_d_remote_launcher), otherwise nil.
+The initialized [CDRemoteLauncher](CDRemoteLauncher.md), otherwise nil.
 
 ### launchUri
 `-(nullable NSError*)launchUri:(nonnull NSString*)uri withCompletion:(nullable void (^)(CDRemoteLauncherUriStatus))completionBlock;` 
 
-Launches a URI against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
+Launches a URI against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](CDRemoteSystemConnectionRequest.md).
 
 #### Parameters
 * `uri` The URI to launch.
@@ -48,7 +47,7 @@ An error, if any occurred.
 ### launchUri
 `-(nullable NSError*)launchUri:(nonnull NSString*)uri withOptions:(nonnull CDRemoteLauncherOptions*)options withCompletion:(nonnull void (^)(CDRemoteLauncherUriStatus))completionBlock;` 
 
-Launches a URI with options against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request).
+Launches a URI with options against the Remote System specified in the previously initialized [CDRemoteSystemConnectionRequest](#CDRemoteSystemConnectionRequest.md).
 
 #### Parameters
 * `uri` The URI to launch.

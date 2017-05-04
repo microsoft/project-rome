@@ -1,8 +1,7 @@
 # class `CDRemoteSystemConnectionRequest` 
 
 ```
-class CDRemoteSystemConnectionRequest
-  : public NSObject
+@interface CDRemoteSystemConnectionRequest : NSObject
 ```  
 
 A class used to express a connection request intent against a remote system.
@@ -12,7 +11,7 @@ A class used to express a connection request intent against a remote system.
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
 remoteSystem | The remote system to connect to.
-initWithRemoteSystem | Initializes the [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request) with a [RemoteSystem]( ) instance.
+initWithRemoteSystem | Initializes the [CDRemoteSystemConnectionRequest](CDRemoteSystemConnectionRequest.md) with a [CDRemoteSystem](CDRemoteSystem.md) instance.
 
 ## Properties
 
@@ -26,4 +25,4 @@ The remote system to connect to.
 ### initWithRemoteSystem
 `-(nullable instancetype)initWithRemoteSystem:(nonnull CDRemoteSystem*)remoteSystem;`
 
-Initializes the [CDRemoteSystemConnectionRequest](#interface_c_d_remote_system_connection_request) with a [RemoteSystem]( ) instance.
+Initializes the [CDRemoteSystemConnectionRequest](CDRemoteSystemConnectionRequest.md) with a [CDRemoteSystem](CDRemoteSystem.md) instance.

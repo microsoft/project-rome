@@ -4,7 +4,7 @@
 @protocol CDRemoteSystemDiscoveryDelegate <NSObject>
 ```
 
-Set of methods to be implemented by objects acting as delegates for the [CDRemoteSystemDiscovery]( ) class.
+Set of methods to be implemented by objects acting as delegates for the [CDRemoteSystemDiscovery](CDRemoteSystemDiscovery.md) class.
 
 ## Summary
 
@@ -24,8 +24,8 @@ remoteSystemDiscoveryCompleted | Called when the discovery operation has complet
 Called when a remote system has been discovered.
 
 #### Parameters
-* `discovery` The delegating [CDRemoteSystemDiscovery]( ) instance.
-* `remoteSystem` The discovered [RemoteSystem]( ) instance.
+* `discovery` The delegating [CDRemoteSystemDiscovery](CDRemoteSystemDiscovery.md) instance.
+* `remoteSystem` The discovered [CDRemoteSystem](CDRemoteSystem.md) instance.
 
 ### remoteSystemDiscoveryRemoved
 `@optional
@@ -34,8 +34,8 @@ Called when a remote system has been discovered.
 Called when a previously discovered remote system has been removed.
 
 #### Parameters
-* `discovery` The delegating [CDRemoteSystemDiscovery]( ) instance.
-* `remoteSystem` The removed [RemoteSystem]( ) instance.
+* `discovery` The delegating [CDRemoteSystemDiscovery](CDRemoteSystemDiscovery.md) instance.
+* `remoteSystem` The removed [CDRemoteSystem](CDRemoteSystem.md) instance.
 
 ### remoteSystemDiscoveryRemoved
 `@optional
@@ -44,8 +44,8 @@ Called when a previously discovered remote system has been removed.
 Called when a previously discovered remote system has been updated.
 
 #### Parameters
-* `discovery` The delegating [CDRemoteSystemDiscovery]( ) instance.
-* `remoteSystem` The updated [RemoteSystem]( ) instance.
+* `discovery` The delegating [CDRemoteSystemDiscovery](CDRemoteSystemDiscovery.md) instance.
+* `remoteSystem` The updated [CDRemoteSystem](CDRemoteSystem.md) instance.
 
 
 ### remoteSystemDiscoveryCompleted
@@ -55,5 +55,5 @@ Called when a previously discovered remote system has been updated.
 Called when the discovery operation has completed successfully.
 
 #### Parameters
-* `discovery` The delegating [CDRemoteSystemDiscovery]( ) instance.
+* `discovery` The delegating [CDRemoteSystemDiscovery](CDRemoteSystemDiscovery.md) instance.
 

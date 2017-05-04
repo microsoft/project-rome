@@ -1,11 +1,10 @@
 # class `CDRemoteLauncherOptions` 
 
 ```
-class CDRemoteLauncherOptions
-  : public NSObject
+@interface CDRemoteLauncherOptions : NSObject
 ```  
 
-A class to represent options for [RemoteLauncher]().
+A class to represent options for the remote launch feature.
 
 ## Summary
 

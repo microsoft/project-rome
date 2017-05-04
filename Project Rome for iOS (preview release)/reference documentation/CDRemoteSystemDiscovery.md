@@ -1,8 +1,7 @@
 # class `CDRemoteSystemDiscovery` 
 
 ```
-class CDRemoteSystemDiscovery
-  : public NSObject
+@interface CDRemoteSystemDiscovery : NSObject
 ```  
 
 A class used to discover remote systems.
@@ -11,8 +10,8 @@ A class used to discover remote systems.
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
-delegate | The delegate that will receive events from this [CDRemoteSystemDiscovery]( ).
-initWithDiscoveryFilters | Initializes the [CDPRemoteSystemDiscovery]( ) with a set of filters.
+delegate | The delegate that will receive events from this [CDRemoteSystemDiscovery](CDRemoteSystemDiscovery.md).
+initWithDiscoveryFilters | Initializes the [CDRemoteSystemDiscovery](CDRemoteSystemDiscovery.md) with a set of filters.
 start | Begins discovering remote systems.
 stop | Stops the active discovery.
 findByHostName | Attempts to find a system proximally using its IP address.
@@ -22,17 +21,17 @@ findByHostName | Attempts to find a system proximally using its IP address.
 ### delegate
 `@property (nonatomic, readwrite, weak, nullable)id<CDRemoteSystemDiscoveryDelegate> delegate;`
 
-The delegate that will receive events from this [CDRemoteSystemDiscovery]( ).
+The delegate that will receive events from this [CDRemoteSystemDiscovery](CDRemoteSystemDiscovery.md).
 
 ## Methods
 
 ### initWithDiscoveryFilters
 `-(nullable instancetype)initWithDiscoveryFilters:(nullable NSSet*)filters;` 
 
-Initializes the [CDPRemoteSystemDiscovery]( ) with a set of filters.
+Initializes the [CDRemoteSystemDiscovery](CDRemoteSystemDiscovery.md) with a set of filters.
 
 #### Returns
-The initialized [CDRemoteSystemDiscovery](#interface_c_d_remote_system_discovery), otherwise nil.
+The initialized [CDRemoteSystemDiscovery](CDRemoteSystemDiscovery.md), otherwise nil.
 
 ### start
 `-(nullable NSError*)start;` 

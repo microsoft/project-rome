@@ -11,7 +11,7 @@ A class used to filter remote systems based upon discovery type.
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
 type | The discovery type to filter for.
-initWithType | Initializes the [CDRemoteSystemDiscoveryTypeFilter]( ) with a discovery type.
+initWithType | Initializes the [CDRemoteSystemDiscoveryTypeFilter](CDRemoteSystemDiscoveryTypeFilter.md) with a [CDRemoteSystemDiscoveryType](CDRemoteSystemDiscoveryType.md).
 
 ## Properties
 
@@ -25,10 +25,10 @@ The discovery type to filter for.
 ### initWithType
 `-(nullable instancetype)initWithType:(CDRemoteSystemDiscoveryType)initType;`
 
-Initializes the [CDRemoteSystemDiscoveryTypeFilter]( ) with a discovery type.
+Initializes the [CDRemoteSystemDiscoveryTypeFilter](CDRemoteSystemDiscoveryTypeFilter.md) with a [CDRemoteSystemDiscoveryType](CDRemoteSystemDiscoveryType.md).
 
 #### Parameters
 * `initType` The discovery type. 
 
 #### Returns
-The initialized [CDRemoteSystemDiscoveryTypeFilter](#interface_c_d_remote_system_discovery_type_filter) if successful, otherwise nil.
+The initialized [CDRemoteSystemDiscoveryTypeFilter](#CDRemoteSystemDiscoveryTypeFilter.md) if successful, otherwise nil.
