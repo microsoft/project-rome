@@ -15,7 +15,7 @@ namespace RomeCastRemote
 	public class MainActivity : Activity
 	{
 		// Use your own client id
-		private const string CLIENT_ID = "ed8a4c36-b610-483e-b9fb-a6a4b0be914d"; //get a client ID from https://apps.dev.microsoft.com/
+		private const string CLIENT_ID = ""; //get a client ID from https://apps.dev.microsoft.com/
 
 		private WebView _webView;
 		internal Dialog _authDialog;
