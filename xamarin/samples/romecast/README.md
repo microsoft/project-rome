@@ -16,12 +16,12 @@ There many scenarios enabled by Project Rome, but one of the most compelling is 
 
 The [VideoPlayback](https://github.com/Microsoft/Windows-universal-samples/tree/master/Samples/VideoPlayback) UWP sample from the Windows SDK provides a good place to start. Other than cleaning up the UI a bit (SDK samples typically don't win any beauty contests), we added one other piece of functionality: the ability to read and parse RSS feeds of our [favorite Podcast](http://www.xamarinpodcast.com/). We'll call this app: RomeCast.
 
-![The RomeCast app](romecast.png)
+![The RomeCast app](Images/romecast.png)
 
 ## Adding Launch URI Support
 Now that we have a basic media playback application, let's make it command-able from other devices. This is easier than it might seem. First we'll declare that our RomeCast app supports being activated via a protocol. This can be done in the Package.appmanifest XML file, or using the designer, as shown below. Double-click the Package.appmanifest file to launch the designer, select the `Declarations` tab and add a `Protocol` definition. The only property that needs to be filled out, for now, is `Name`. We'll call our new protocol `romecast`.
 
-![Adding a protocol scheme extension](protocol.png)
+![Adding a protocol scheme extension](Images/protocol.png)
 
 Now we need to write some code to tell the application what to do when it's been activated via a protocol. In this case, we'll override the `OnActivated` method in `App.xaml.cs` to pass the URI on to our MainPage:
 
@@ -76,11 +76,11 @@ We can test out that everything is working, and that our app can be commanded vi
 ## Setting up the Android Project
 Ok, we're done with the UWP project for a little while. Next we'll start on the Xamarin Android project, but first we need to generate a Microsoft Account application ID from [https://apps.dev.microsoft.com](https://apps.dev.microsoft.com). This will allow users to authenticate with their Microsoft Account and see the list of devices associated with their account.
 
-![Getting an App ID](applicationid.png)
+![Getting an App ID](Images/applicationid.png)
 
 Back over to our Xamarin Android poject, we can add the [Microsoft.ConnectedDevices.Xamarin.Droid](https://www.nuget.org/packages/Microsoft.ConnectedDevices.Xamarin.Droid/) nuget package to our project.
 
-![Adding the NuGet package](nuget.png)
+![Adding the NuGet package](Images/nuget.png)
 
 ... and authenticate and initialize the Connected Devices platform:
 ```csharp
@@ -127,7 +127,7 @@ private async void RemoteLaunchUri(RemoteSystem remoteSystem, Uri uri)
 }
 ```
 
-![The RomeCast remote app](romecastremote.png)
+![The RomeCast remote app](Images/romecastremote.png)
 
 
 ## Summary
