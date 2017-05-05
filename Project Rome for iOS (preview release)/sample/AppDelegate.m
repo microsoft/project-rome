@@ -5,8 +5,6 @@
 
 #import "AppDelegate.h"
 
-static const NSString* HockeyAppId = @"5649c03af8954a5c9b7ba98b801096a6";
-
 @implementation AppDelegate
 
 - (BOOL)application:(__unused UIApplication*)application didFinishLaunchingWithOptions:(__unused NSDictionary*)launchOptions
