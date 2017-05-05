@@ -102,6 +102,7 @@
 
 - (NSString*)appId
 {
+    // Change to your own app's MSA Client ID
     return @"8a284efa-414b-445e-8710-0fabde940942";
 }
 
