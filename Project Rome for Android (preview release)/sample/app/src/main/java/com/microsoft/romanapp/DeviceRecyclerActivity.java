@@ -28,7 +28,7 @@ import com.microsoft.connecteddevices.RemoteSystem;
 import com.microsoft.connecteddevices.RemoteSystemDiscovery;
 import com.microsoft.connecteddevices.RemoteSystemDiscoveryType;
 import com.microsoft.connecteddevices.RemoteSystemDiscoveryTypeFilter;
-import com.microsoft.connecteddevices.RemoteSystemKind;
+import com.microsoft.connecteddevices.RemoteSystemKinds;
 import com.microsoft.connecteddevices.RemoteSystemKindFilter;
 
 public class DeviceRecyclerActivity extends AppCompatActivity {
@@ -208,6 +208,10 @@ public class DeviceRecyclerActivity extends AppCompatActivity {
             @Override
             public void onRemoteSystemRemoved(String remoteSystemId) {
             }
+
+            @Override
+            public void onComplete() {
+            }
         }).filter(generateDiscoveryTypeFilter()).filter(generateSystemKindFilter());
 
         startDiscovery();
@@ -231,30 +235,30 @@ public class DeviceRecyclerActivity extends AppCompatActivity {
     }
 
     private RemoteSystemKindFilter generateSystemKindFilter() {
-        ArrayList<RemoteSystemKind> kinds = new ArrayList<>(Arrays.asList(RemoteSystemKind.UNKNOWN));
+        ArrayList<RemoteSystemKinds> kinds = new ArrayList<>(Arrays.asList(RemoteSystemKinds.UNKNOWN));
 
         switch (_systemKind) {
             case ALL:
-                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKind.UNKNOWN,
-                        RemoteSystemKind.DESKTOP,
-                        RemoteSystemKind.HOLOGRAPHIC,
-                        RemoteSystemKind.PHONE,
-                        RemoteSystemKind.XBOX));
+                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKinds.UNKNOWN,
+                        RemoteSystemKinds.DESKTOP,
+                        RemoteSystemKinds.HOLOGRAPHIC,
+                        RemoteSystemKinds.PHONE,
+                        RemoteSystemKinds.XBOX));
                 break;
             case UNKNOWN:
-                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKind.UNKNOWN));
+                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKinds.UNKNOWN));
                 break;
             case DESKTOP:
-                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKind.DESKTOP));
+                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKinds.DESKTOP));
                 break;
             case HOLOGRAPHIC:
-                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKind.HOLOGRAPHIC));
+                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKinds.HOLOGRAPHIC));
                 break;
             case PHONE:
-                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKind.PHONE));
+                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKinds.PHONE));
                 break;
             case XBOX:
-                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKind.XBOX));
+                kinds = new ArrayList<>(Arrays.asList(RemoteSystemKinds.XBOX));
                 break;
         }
 
