@@ -57,6 +57,10 @@
     <Reference Include="ConnectedDevices.Xamarin.Droid.Core">
       <HintPath>..\..\..\src\ConnectedDevices.Xamarin.Droid.Core\bin\Release\ConnectedDevices.Xamarin.Droid.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ConnectedDevices.Xamarin.Droid, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ConnectedDevices.Xamarin.Droid.0.3.0\lib\MonoAndroid71\Microsoft.ConnectedDevices.Xamarin.Droid.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
@@ -72,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="GettingStarted.Xamarin" />
+    <None Include="packages.config" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <AndroidResource Include="Resources\layout\RemoteSystemView.axml" />
