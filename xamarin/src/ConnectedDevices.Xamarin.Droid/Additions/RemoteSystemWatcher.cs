@@ -8,7 +8,7 @@
 //
 //*********************************************************
 
-using System;
+using System.Collections.Generic;
 
 namespace Microsoft.ConnectedDevices
 {
@@ -16,7 +16,14 @@ namespace Microsoft.ConnectedDevices
     {
         private RemoteSystemDiscovery.Builder builder = new RemoteSystemDiscovery.Builder();
         private RemoteSystemDiscoveryListener listener;
+        private List<IRemoteSystemFilter> filters;
+
         private RemoteSystemDiscovery watcher;
+
+        public RemoteSystemWatcher(List<IRemoteSystemFilter> filters)
+        {
+            this.filters = filters;
+        }
 
         //
         // Summary:
@@ -57,7 +64,17 @@ namespace Microsoft.ConnectedDevices
         public void Start()
         {
             this.listener = new RemoteSystemDiscoveryListener(this);
-            this.watcher = this.builder.SetListener(this.listener).Result;
+            this.builder = this.builder.SetListener(this.listener);
+
+            if (filters != null)
+            {
+                foreach (var filter in this.filters)
+                {
+                    this.builder = this.builder.Filter(filter);
+                }
+            }
+
+            this.watcher = this.builder.Result;
             this.watcher.Start();
         }
 
