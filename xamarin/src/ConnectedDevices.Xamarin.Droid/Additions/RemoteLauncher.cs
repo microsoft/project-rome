@@ -18,7 +18,6 @@ namespace Microsoft.ConnectedDevices
         public static Task<RemoteLaunchUriStatus> LaunchUriAsync(RemoteSystemConnectionRequest connectionRequest, Uri uri)
         {
             var tcs = new TaskCompletionSource<RemoteLaunchUriStatus>();
-            RemoteLauncher launcher = new RemoteLauncher();
 
             try
             { 
@@ -27,7 +26,8 @@ namespace Microsoft.ConnectedDevices
                 {
                     tcs.TrySetResult(r);
                 };
-                launcher.LaunchUriAsync(connectionRequest, uri.OriginalString, launchUriListener);
+
+                RemoteLauncher.LaunchUriAsync(connectionRequest, uri.OriginalString, launchUriListener);
             }
             catch (Exception e)
             {

@@ -8,6 +8,8 @@
 //
 //*********************************************************
 
+using System.Collections.Generic;
+
 namespace Microsoft.ConnectedDevices
 {
 
@@ -17,7 +19,12 @@ namespace Microsoft.ConnectedDevices
 
         public static RemoteSystemWatcher CreateWatcher()
         {
-            return new RemoteSystemWatcher(); 
+            return new RemoteSystemWatcher(null); 
+        }
+
+        public static RemoteSystemWatcher CreateWatcher(List<IRemoteSystemFilter> filters)
+        {
+            return new RemoteSystemWatcher(filters); 
         }
     }
 }
