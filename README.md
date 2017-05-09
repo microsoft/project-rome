@@ -5,6 +5,7 @@
 Currently, Project Rome is implemented for the following scenarios:
 * Windows client to Windows host
 * Android client to Windows host
+* iOS client to Windows host
 
 The first scenario, dealing only with the Universal Windows platform, is documented in [how-to content](https://msdn.microsoft.com/windows/uwp/launch-resume/connected-apps-and-devices) and [API reference documentation](https://msdn.microsoft.com/library/windows/apps/windows.system.remotesystems.aspx) on the Windows Dev Center, as well as in the [Windows SDK samples](https://github.com/Microsoft/Windows-universal-samples/tree/master/Samples/RemoteSystems). See these resources for more detailed information about the Project Rome feature in general. Any scenarios involving non-Windows platforms are documented in this repository. You will also find end-to-end sample app(s) for Windows here.
 
