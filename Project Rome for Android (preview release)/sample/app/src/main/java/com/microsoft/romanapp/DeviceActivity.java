@@ -22,7 +22,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.microsoft.connecteddevices.AppServiceClientClosedStatus;
+import com.microsoft.connecteddevices.AppServiceClientConnectionClosedStatus;
 import com.microsoft.connecteddevices.AppServiceClientConnection;
 import com.microsoft.connecteddevices.AppServiceClientConnectionStatus;
 import com.microsoft.connecteddevices.AppServiceClientResponse;
@@ -41,10 +41,10 @@ import static com.microsoft.connecteddevices.RemoteLaunchUriStatus.SUCCESS;
 
 public class DeviceActivity extends Activity implements AdapterView.OnItemSelectedListener {
     private static final String TAG = DeviceActivity.class.getName();
-    private static final String URL = "https://www.bing.com";
 
-    private static final String APP_SERVICE = Secrets.APP_SERVICE;
-    private static final String APP_IDENTIFIER = Secrets.APP_IDENTIFIER;
+    private static final String APP_SERVICE = ""; // Fill in your app service name
+    private static final String APP_IDENTIFIER = ""; // Fill in your app identifier
+
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
     private static final String TIME_STAMP_FORMAT = "HH:mm:ss.SSS";
 
@@ -292,7 +292,7 @@ public class DeviceActivity extends Activity implements AdapterView.OnItemSelect
         }
 
         @Override
-        public void onClosed(AppServiceClientClosedStatus status) {
+        public void onClosed(AppServiceClientConnectionClosedStatus status) {
             Log.i(TAG, "AppServiceClientConnectionListener onClosed status [" + status.toString()+"]");
             logMessage("AppService connection closed");
             _sendPingButton.setEnabled(false);
