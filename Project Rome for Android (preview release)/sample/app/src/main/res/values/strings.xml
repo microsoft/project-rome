@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">RomanApp</string>
     <string-array name="uri_array">
+        <item>ms-windows-store://pdp/?productid=9NBLGGH4NNQJ</item>
         <item>http://microsoft.com</item>
         <item>http://bing.com</item>
         <item>http://xbox.com</item>

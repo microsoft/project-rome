@@ -4,13 +4,17 @@
 
 package com.microsoft.romanapp;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -25,10 +29,13 @@ import com.microsoft.connecteddevices.IPlatformInitializationHandler;
 import com.microsoft.connecteddevices.Platform;
 import com.microsoft.connecteddevices.PlatformInitializationStatus;
 
-public class MainActivity extends FragmentActivity {
-    // Use your own Client ID, assigned when your app was registered with MSA.
-    private static String CLIENT_ID = Secrets.CLIENT_ID;
+import java.util.Random;
 
+public class MainActivity extends FragmentActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+    // Use your own Client ID, assigned when your app was registered with MSA.
+    private static String CLIENT_ID = ""; //get a client ID from https://apps.dev.microsoft.com/
+
+    private int _permissionRequestCode = -1;
     private TextView _statusOutput;
     private Button _signInButton;
     private String _oauthUrl;
@@ -53,51 +60,16 @@ public class MainActivity extends FragmentActivity {
         _web.getSettings().setJavaScriptEnabled(true);
         _web.getSettings().setDomStorageEnabled(true);
 
-        appendStatus("Initializing Platform");
-        appendStatus("Platform will attempt to use previously saved refresh token");
-        Platform.initialize(getApplicationContext(), new IAuthCodeProvider() {
-            @Override
-            /**
-             * ConnectedDevices Platform needs the app to fetch a MSA auth_code using the given oauthUrl.
-             * When app is fetched the auth_code, it needs to invoke the authCodeHandler onAuthCodeFetched method.
-             */
-            public void fetchAuthCodeAsync(String oauthUrl, Platform.IAuthCodeHandler handler) {
-                _oauthUrl = oauthUrl;
-                _authCodeHandler = handler;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        _signInButton.setVisibility(View.VISIBLE);
-                        _signInButton.setEnabled(true);
-                    }
-                });
-            }
-
-            @Override
-            /**
-             * ConnectedDevices Platform needs your app's registered client ID.
-             */
-            public String getClientId() {
-                return CLIENT_ID;
-            }
-        }, new IPlatformInitializationHandler() {
-
-            @Override
-            public void onDone() {
-                Log.i(TAG, "Initialized platform successfully");
-                Intent intent = new Intent(MainActivity.this, DeviceRecyclerActivity.class);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onError(PlatformInitializationStatus status) {
-                if (status == PlatformInitializationStatus.PLATFORM_FAILURE) {
-                    Log.e(TAG, "Error initializing platform");
-                } else if (status == PlatformInitializationStatus.TOKEN_ERROR) {
-                    Log.e(TAG, "Error refreshing tokens");
-                }
-            }
-        });
+        appendStatus("Checking BT permission");
+        Random rng = new Random();
+        _permissionRequestCode = rng.nextInt(128);
+        int permissionCheck = ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
+        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, _permissionRequestCode);
+            // InitializePlatform will be later invoked from onRequestPermissionsResult
+        } else {
+            InitializePlatform();
+        }
     }
 
     @Override
@@ -168,6 +140,17 @@ public class MainActivity extends FragmentActivity {
         _authDialog.setCancelable(true);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == _permissionRequestCode) {
+            // Platform handles if no permission granted for bluetooth, no need to do anything special.
+            InitializePlatform();
+            _permissionRequestCode = -1;
+        }
+    }
+
     private void appendStatus(final String status) {
         if (_statusOutput == null) {
             Log.e(TAG, "StatusOutput field is null");
@@ -180,6 +163,59 @@ public class MainActivity extends FragmentActivity {
                 String newStatus = prevStatus + "\n" + status;
 
                 _statusOutput.setText(newStatus);
+            }
+        });
+    }
+
+    private void InitializePlatform() {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                appendStatus("Initializing Platform");
+                appendStatus("Platform will attempt to use previously saved refresh token");
+
+                Platform.initialize(getApplicationContext(), new IAuthCodeProvider() {
+                    @Override
+                    /**
+                     * ConnectedDevices Platform needs the app to fetch a MSA auth_code using the given oauthUrl.
+                     * When app is fetched the auth_code, it needs to invoke the authCodeHandler onAuthCodeFetched method.
+                     */
+                    public void fetchAuthCodeAsync(String oauthUrl, Platform.IAuthCodeHandler handler) {
+                        _oauthUrl = oauthUrl;
+                        _authCodeHandler = handler;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                _signInButton.setVisibility(View.VISIBLE);
+                                _signInButton.setEnabled(true);
+                            }
+                        });
+                    }
+
+                    @Override
+                    /**
+                     * ConnectedDevices Platform needs your app's registered client ID.
+                     */
+                    public String getClientId() {
+                        return CLIENT_ID;
+                    }
+                }, new IPlatformInitializationHandler() {
+                    @Override
+                    public void onDone() {
+                        Log.i(TAG, "Initialized platform successfully");
+                        Intent intent = new Intent(MainActivity.this, DeviceRecyclerActivity.class);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onError(PlatformInitializationStatus status) {
+                        if (status == PlatformInitializationStatus.PLATFORM_FAILURE) {
+                            Log.e(TAG, "Error initializing platform");
+                        } else if (status == PlatformInitializationStatus.TOKEN_ERROR) {
+                            Log.e(TAG, "Error refreshing tokens");
+                        }
+                    }
+                });
             }
         });
     }

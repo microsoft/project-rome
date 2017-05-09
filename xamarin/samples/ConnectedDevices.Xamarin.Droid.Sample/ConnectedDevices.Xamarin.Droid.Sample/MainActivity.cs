@@ -25,8 +25,7 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
     public class MainActivity : ListActivity
     {
         // Use your own client id
-        //private const string CLIENT_ID = ""; //get a client ID from https://apps.dev.microsoft.com/
-
+        // private const string CLIENT_ID = ""; //get a client ID from https://apps.dev.microsoft.com/
 
         private WebView _webView;
         internal Dialog _authDialog;
@@ -147,14 +146,14 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
     }
     public class RemoteSystemAdapter : ArrayAdapter<RemoteSystem>
     {
-        private static readonly Dictionary<RemoteSystemKind, int> RemoteSystemKindImages = new Dictionary<RemoteSystemKind, int>
+        private static readonly Dictionary<RemoteSystemKinds, int> RemoteSystemKindImages = new Dictionary<RemoteSystemKinds, int>
         {
-            { RemoteSystemKind.Desktop, Resource.Drawable.Desktop },
-            { RemoteSystemKind.Phone, Resource.Drawable.Phone },
-            { RemoteSystemKind.Xbox, Resource.Drawable.Xbox },
-            { RemoteSystemKind.Holographic, Resource.Drawable.Hololens },
-            { RemoteSystemKind.Hub, Resource.Drawable.SurfaceHub },
-            { RemoteSystemKind.Unknown, Resource.Drawable.Unknown}
+            { RemoteSystemKinds.Desktop, Resource.Drawable.Desktop },
+            { RemoteSystemKinds.Phone, Resource.Drawable.Phone },
+            { RemoteSystemKinds.Xbox, Resource.Drawable.Xbox },
+            { RemoteSystemKinds.Holographic, Resource.Drawable.Hololens },
+            { RemoteSystemKinds.Hub, Resource.Drawable.SurfaceHub },
+            { RemoteSystemKinds.Unknown, Resource.Drawable.Unknown}
         };
 
         public List<RemoteSystem> Items { get; }
@@ -175,7 +174,7 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
                 view = context.LayoutInflater.Inflate(Resource.Layout.RemoteSystemView, null);
             view.FindViewById<TextView>(Resource.Id.Text1).Text = item.DisplayName;
             view.FindViewById<TextView>(Resource.Id.Text2).Text = item.IsAvailableByProximity ? "Proximal" : "Cloud";
-            int id = RemoteSystemKindImages.ContainsKey(item.Kind) ? RemoteSystemKindImages[item.Kind] : RemoteSystemKindImages[RemoteSystemKind.Unknown];
+            int id = RemoteSystemKindImages.ContainsKey(item.Kind) ? RemoteSystemKindImages[item.Kind] : RemoteSystemKindImages[RemoteSystemKinds.Unknown];
             view.FindViewById<ImageView>(Resource.Id.Image).SetImageResource(id);
 
             return view;
