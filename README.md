@@ -33,8 +33,6 @@ The first scenario, dealing only with the Universal Windows platform, is documen
 
 * [MS Dev Show podcast](http://msdevshow.com/2016/11/project-rome-with-shawn-henry/)
 
-## Contact
-[ProjectRomeTeam@microsoft.com](mailto:ProjectRomeTeam@microsoft.com)
 
 ## Privacy
 See [Microsoft's privacy statement](https://privacy.microsoft.com/en-us/privacystatement/) for more information. 
