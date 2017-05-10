@@ -1,9 +1,10 @@
-# RemoteSystemConnectionRequest class
+# class `RemoteSystemConnectionRequest class`
+
+```
+@interface CDRemoteSystemConnectionRequest : NSObject
+```
+
 Represents an attempt to communicate with a specific remote system (device).
-
-## Syntax
-
-`public final class RemoteSystemConnectionRequest`
 
 ## Public constructors
 
