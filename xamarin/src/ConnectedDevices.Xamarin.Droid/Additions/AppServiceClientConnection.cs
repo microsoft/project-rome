@@ -92,7 +92,7 @@ namespace Microsoft.ConnectedDevices
                 this.ConnectedStatus?.Invoke(status);
             }
 
-            public void OnClosed() {}
+            public void OnClosed(AppServiceClientConnectionClosedStatus status) {}
         }
 
         internal class AppServiceResponseListener : Java.Lang.Object, IAppServiceResponseListener
