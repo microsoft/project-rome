@@ -17,10 +17,10 @@ The "friendly name" of the remote system
 ### getKind
 Returns the kind of the remote system.
 
-`public RemoteSystemKind getKind()`
+`public RemoteSystemKinds getKind()`
 
 **Return value**  
-The **RemoteSystemKind** value corresponding to the kind of device this remote system is classified as
+The **RemoteSystemKinds** value corresponding to the kind of device this remote system is classified as
 
 ### getStatus
 Returns the status of the remote system.

@@ -95,7 +95,7 @@ class AppServiceClientConnectionListener implements IAppServiceClientConnectionL
     }
 
     @Override
-    public void onClosed(AppServiceClientClosedStatus status) {
+    public void onClosed(AppServiceClientConnectionClosedStatus status) {
         Log.i("MyActivityName", "AppServiceClientConnectionListener onClosed status [" + status.toString()+"]");
         // the connection closed. inspect the cause of closure and reflect back to the UI
     }
