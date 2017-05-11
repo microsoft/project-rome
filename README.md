@@ -2,11 +2,11 @@
 
 "Project Rome" is a project code name for Microsoft's cross-device experiences platform using the Microsoft Graph. This toolkit, consisting of API sets on multiple development platforms, allows an app on a client (local) device to interact with apps and services on a host (remote) device that is signed in with or receptive to the Microsoft Account (MSA) or Azure Active Directory (AAD) account on the client device. This allows developers to program cross-device and cross-platform experiences that are centered around user tasks rather than devices.
 
-Currently, Project Rome is implemented for the following scenarios:
-* Windows client to Windows host
-* Android client to Windows host
-* iOS client to Windows host
-* Microsoft Graph REST APIs for all web-capable platforms
+Project Rome is currently implemented for the following scenarios. Follow the links for each corresponding section.
+* [Windows client to Windows host](Project%20Rome%20for%20Windows/)
+* [Android client to Windows host](Project%20Rome%20for%20Android%20(preview%20release)/)
+* [iOS client to Windows host](Project%20Rome%20for%20iOS%20(preview%20release)/)
+* [Microsoft Graph REST APIs for all web-capable platforms](Project%20Rome%20for%20Microsoft%20Graph/)
 
 ## Project Rome blog posts
 * [Cross-device experiences with Project Rome](https://blogs.windows.com/buildingapps/2016/10/11/cross-device-experience-with-project-rome/#iQTseFlAMJRopU9k.97)
