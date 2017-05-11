@@ -32,8 +32,8 @@ import com.microsoft.connecteddevices.PlatformInitializationStatus;
 import java.util.Random;
 
 public class MainActivity extends FragmentActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
-    // Use your own Client ID, assigned when your app was registered with MSA.
-    private static String CLIENT_ID = ""; //get a client ID from https://apps.dev.microsoft.com/
+    // Use your own Client ID, assigned when your app was registered with MSA from https://apps.dev.microsoft.com/
+    // private static String CLIENT_ID = "";
 
     private int _permissionRequestCode = -1;
     private TextView _statusOutput;
