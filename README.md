@@ -8,9 +8,6 @@ Currently, Project Rome is implemented for the following scenarios:
 * iOS client to Windows host
 * Microsoft Graph REST APIs for all web-capable platforms
 
-The first scenario, dealing only with the Universal Windows platform, is documented in [how-to content](https://msdn.microsoft.com/windows/uwp/launch-resume/connected-apps-and-devices) and [API reference documentation](https://msdn.microsoft.com/library/windows/apps/windows.system.remotesystems.aspx) on the Windows Dev Center, as well as in the [Windows SDK samples](https://github.com/Microsoft/Windows-universal-samples/tree/master/Samples/RemoteSystems). See these resources for more detailed information about the Project Rome feature in general. Any scenarios involving non-Windows platforms are documented in this repository. You will also find end-to-end sample app(s) for Windows here.
-
-
 ## Project Rome blog posts
 * [Cross-device experiences with Project Rome](https://blogs.windows.com/buildingapps/2016/10/11/cross-device-experience-with-project-rome/#iQTseFlAMJRopU9k.97)
 
