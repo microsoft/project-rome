@@ -131,7 +131,7 @@ private async void RemoteLaunchUri(RemoteSystem remoteSystem, Uri uri)
 
 
 ## Summary
-In this blog post we learned how to use Xamarin for Android and Project Rome to build a remote control companion application. And it was easy! The concepts can be extended to any type of cross-device application and for more advanced scenarios, take a look at [App Services](https://github.com/Microsoft/project-rome/blob/master/Project%20Rome%20for%20Android%20(preview%20release)/how-to%20guides/communicate-with-a-remote-app-service-android.md): they enable a richer messaging framework than URIs. Also, be sure to check out:
+In this blog post we learned how to use Xamarin for Android and Project Rome to build a remote control companion application. And it was easy! The concepts can be extended to any type of cross-device application and for more advanced scenarios, take a look at [App Services](../../../Android/how-to%20guides/communicate-with-a-remote-app-service-android.md): they enable a richer messaging framework than URIs. Also, be sure to check out:
 
 - [Project Rome on GitHub](https://github.com/Microsoft/project-rome)
 - [Romecast sample on GitHub](https://github.com/Microsoft/project-rome/tree/master/xamarin/samples/romecast)
