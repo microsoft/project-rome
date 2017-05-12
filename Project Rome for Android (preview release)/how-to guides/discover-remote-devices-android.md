@@ -38,7 +38,7 @@ discoveryBuilder.filter(statusFilter);
 ```
 
 ## Implement the handler for discovery events
-From here, the procedure for handling events, retrieving **RemoteSystem** objects, and connecting to remote devices is exactly the same as in [Launch an app on a remote device (Android)](launch-a-remote-app-android.md). In short, the **RemoteSystem** objects are passed in as parameters of the **RemoteSystemAdded** events, which are raised by the **RemoteSystemDiscovery** object and handled by the implementation of **IRemoteSystemDiscoveryListener** that was provided to it.
+From here, the procedure for handling events, retrieving **RemoteSystem** objects, and connecting to remote devices is exactly the same as in [Getting started with Connected Devices (Android)](getting-started-rome-android.md). In short, the **RemoteSystem** objects are passed in as parameters of the **RemoteSystemAdded** events, which are raised by the **RemoteSystemDiscovery** object and handled by the implementation of **IRemoteSystemDiscoveryListener** that was provided to it.
 
 ## Discover devices by address input
 Some devices may not be associated with a user's MSA or discoverable with a scan, but they can still be reached if the client app uses a direct address. This can either be the IP address or the machine name for the device. If a valid host string is provided, the corresponding **onRemoteSystemAdded** event will be thrown and handled.

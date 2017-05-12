@@ -9,7 +9,4 @@ Interface for handling the platform initialization process.
 ### onDone
 Called when the Remote Systems platform initialization process finishes.
 
-`void onDone(boolean succeeded)`
-
-**Parameters**  
-*succeeded* - **true** if initialization was successful, otherwise **false**
+`void onDone()`

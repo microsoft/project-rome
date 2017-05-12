@@ -21,16 +21,20 @@ repositories {
 }
 
 dependencies { 
-    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-core-armv7', version: '0.1.0', ext: 'aar', classifier: 'externalRelease') 
-    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armv7', version: '0.1.0', ext: 'aar', classifier: 'externalRelease') 
+    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armv7', version: '0.4.0', ext: 'aar', classifier: 'release')
 }
+
 ```
 
 If you wish to use ProGuard in your app, add the ProGuard Rules for these new APIs. Create a file called *proguard-rules.txt* in the *App* folder of your project, and paste in the contents of [ProGuard_Rules_for_Android_Rome_SDK.txt](../ProGuard_Rules_for_Android_Rome_SDK.txt).
 
-In your project's *AndroidManifest.xml* file, add the following permission inside the `<manifest>` element (if it is not already present). This gives your app permission to connect to the Internet.
+In your project's *AndroidManifest.xml* file, add the following permissions inside the `<manifest>` element (if they are not already present). This gives your app permission to connect to the Internet.
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.BLUETOOTH" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 ```
 
 Next, go to the activity class where you would like the remote system discovery functionality to live (this may be the same activity in which MSA authentication is handled). Add the **connecteddevices** namespace.
@@ -50,11 +54,9 @@ Platform.initialize(getApplicationContext(),
     // implement an IAuthCodeProvider
     new IAuthCodeProvider() { 
         @Override 
-        /** 
-         * ConnectedDevices Platform needs the app to fetch a MSA auth_code using the given oauthUrl. 
-         * When app has fetched the auth_code, it needs to invoke the authCodeHandler onAuthCodeFetched method. 
-         */ 
-        public void fetchAuthCodeAsync(String oauthUrl, Platform.IAuthCodeHandler authCodeHandler) { 
+        //ConnectedDevices Platform needs the app to fetch a MSA auth_code using the given oauthUrl. 
+        //When app has fetched the auth_code, it needs to invoke the 
+        public void fetchAuthCodeAsync(String oauthUrl, final Platform.IAuthCodeHandler authCodeHandler) { 
             // launch the dedicated OAuth method, passing in the oauth URL and the IAuthCodeHandler instance provided by the platform
             performOAuthFlow(oauthUrl, authCodeHandler);
         }
@@ -69,12 +71,9 @@ Platform.initialize(getApplicationContext(),
     // Implement an IPlatformInitializationHandler - not required
     new IPlatformInitializationHandler() { 
         @Override 
-        public void onDone(boolean succeeded) { 
-            if (succeeded) { 
-                // handle success case - begin process of discovering devices
-            } else { 
-                // handle the fail case
-            } 
+        public void onDone() { 
+            // execute code when initialization is complete
+            // ...
         } 
     }
 );
@@ -83,7 +82,7 @@ Platform.initialize(getApplicationContext(),
 The **performOAuthFlow** method for manual user sign-in is defined here. Note that it references a **WebView** layout object, defined later on.
 
 ```java
-public performOAuthFlow (String oauthUrl, Platform.IAuthCodeHandler authCodeHandler) {
+public performOAuthFlow(String oauthUrl, final Platform.IAuthCodeHandler authCodeHandler) {
     WebView web;
     // the Dialog authDialog and WebView webv are defined separately
     web = (WebView) authDialog.findViewById(R.id.webv);
@@ -180,7 +179,7 @@ discoveryBuilder = new RemoteSystemDiscovery.Builder().setListener(new IRemoteSy
     public void onRemoteSystemRemoved(String remoteSystemId) {
         // remove the reference to the device
     }
-} 
+}); 
 
 // get the discovery instance
 RemoteSystemDiscovery discovery = discoveryBuilder.getResult(); 
@@ -192,7 +191,7 @@ Once **Start** is called, it will begin watching for remote system activity and 
 
 ## Select a connected device
 
-At this point in your code, you have a list of **RemoteSystem** objects that refer to available connected Windows devices. The following code shows how to select one of these objects (ideally this is done through a UI control) and then use a **RemoteLauncher** to launch a URI on it. This will cause the host device to launch the given URI with its default app for that URI scheme. You can use the **IRemoteLauncherListener** implementation to check whether the launch was successful.
+At this point in your code, you have a list of **RemoteSystem** objects that refer to available connected Windows devices. The following code shows how to select one of these objects (ideally this is done through a UI control) and then use **RemoteLauncher** to launch a URI on it. This will cause the host device to launch the given URI with its default app for that URI scheme. You can use the **IRemoteLauncherListener** implementation to check whether the launch was successful.
 
 ```java
 // a RemoteSystemConnectionRequest represents the connection to a single device (RemoteSystem object)
@@ -202,8 +201,8 @@ RemoteSystemConnectionRequest connectionRequest = new RemoteSystemConnectionRequ
 // the URI to launch
 Uri myUri = Uri.parse("http://www.bing.com");
 
-// get a RemoteLauncher and use it to launch the URI over this connection
-new RemoteLauncher().LaunchUriAsync(connectionRequest, url,
+// use RemoteLauncher to launch the URI over this connection
+RemoteLauncher().LaunchUriAsync(connectionRequest, myUri.toString(),
     new IRemoteLauncherListener() {
         @Override
         public void onCompleted(RemoteLaunchUriStatus status) {
