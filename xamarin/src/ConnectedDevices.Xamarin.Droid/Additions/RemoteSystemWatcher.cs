@@ -58,6 +58,23 @@ namespace Microsoft.ConnectedDevices
 
         public delegate void OnRemoteSystemUpdated(RemoteSystemWatcher watcher, RemoteSystemUpdatedEventArgs args);
 
+        internal void InvokeRemoteSystemUpdated(RemoteSystem remoteSystem)
+        {
+            this.RemoteSystemUpdated?.Invoke(this, new RemoteSystemUpdatedEventArgs(remoteSystem));
+        }
+
+        //
+        // Summary:
+        //     The event that is raised when a new remote system (device) is discovered.
+        public event OnRemoteSystemWatcherComplete Complete;
+
+        public delegate void OnRemoteSystemWatcherComplete(RemoteSystemWatcher watcher);
+
+        internal void InvokeComplete()
+        {
+            Complete?.Invoke(this);
+        }
+
         //
         // Summary:
         //     Starts watching for discoverable remote systems.
@@ -87,10 +104,6 @@ namespace Microsoft.ConnectedDevices
             this.watcher.Stop();
         }
 
-        internal void InvokeRemoteSystemUpdated(RemoteSystem remoteSystem)
-        {
-            this.RemoteSystemUpdated?.Invoke(this, new RemoteSystemUpdatedEventArgs(remoteSystem));
-        }
     }
 
     internal class RemoteSystemDiscoveryListener : Java.Lang.Object, IRemoteSystemDiscoveryListener
@@ -115,6 +128,11 @@ namespace Microsoft.ConnectedDevices
         public void OnRemoteSystemUpdated(Microsoft.ConnectedDevices.RemoteSystem remoteSystem)
         {
             this.watcher.InvokeRemoteSystemUpdated(remoteSystem);
+        }
+
+        public void OnComplete()
+        {
+            this.watcher.InvokeComplete();
         }
     }
 }
