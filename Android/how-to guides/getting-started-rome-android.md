@@ -165,9 +165,11 @@ The Android client SDK, like the Windows implementation, uses a watcher pattern 
 Get an instance of **RemoteSystemDiscovery** using its corresponding Builder class. At this point you must also instantiate a custom **RemoteSystemsListener** to handle the discovery events. You may want to show and maintain a list view of all the available remote devices and their basic info.
 
 ```java
-RemoteSystemDiscovery.Builder discoveryBuilder; 
 
-discoveryBuilder = new RemoteSystemDiscovery.Builder().setListener(new IRemoteSystemDiscoveryListener() { 
+// use the builder pattern to get a RemoteSystemDiscovery instance.
+RemoteSystemDiscovery discovery = new RemoteSystemDiscovery.Builder()
+// set the listener for discovery events
+.setListener(new IRemoteSystemDiscoveryListener() { 
     @Override 
     public void onRemoteSystemAdded(RemoteSystem remoteSystem) { 
         // handle the added event. At minimum, you should acquire a reference to the discovered device.
@@ -180,10 +182,10 @@ discoveryBuilder = new RemoteSystemDiscovery.Builder().setListener(new IRemoteSy
     public void onRemoteSystemRemoved(String remoteSystemId) {
         // remove the reference to the device
     }
-}); 
+})
+// return a RemoteSystemDiscovery instance
+.getResult(); 
 
-// get the discovery instance
-RemoteSystemDiscovery discovery = discoveryBuilder.getResult(); 
 // begin watching for remote devices
 discovery.start(); 
 ```

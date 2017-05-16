@@ -26,14 +26,20 @@ RemoteSystemStatusTypeFilter statusFilter = new RemoteSystemStatusTypeFilter(Rem
 ```
 For a look at all of the options available to each filter type, see the reference documentation of the filter objects being used.
 
-Next, pass these filters into a **RemoteSystemDiscovery.Builder** instance, which will later be used to produce a **RemoteSystemDiscovery** object.
+Next, pass these filters into a **RemoteSystemDiscovery.Builder** instance, and use it to produce a **RemoteSystemDiscovery** object.
 
 ```java
-RemoteSystemDiscovery.Builder discoveryBuilder = new RemoteSystemDiscovery.Builder();
+RemoteSystemDiscovery discovery = new RemoteSystemDiscovery.Builder()
 // add the filters
-discoveryBuilder.filter(kindFilter);
-discoveryBuilder.filter(discoveryFilter);
-discoveryBuilder.filter(statusFilter);
+.filter(kindFilter)
+.filter(discoveryFilter)
+.filter(statusFilter);
+
+// set the listener for discovery events
+//...
+
+// return a RemoteSystemDiscovery instance
+.getResult();
 
 ```
 
