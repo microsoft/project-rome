@@ -104,7 +104,8 @@ public performOAuthFlow(String oauthUrl, final Platform.IAuthCodeHandler authCod
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
 
-            // check URL for authorization success:
+            // check URL for authorization success. REDIRECT_URI should be defined 
+            // at the class level as "https://login.live.com/oauth20_desktop.srf"
             if (url.startsWith(REDIRECT_URI)) {
                 // extract the auth code from the url
                 Uri uri = Uri.parse(url);
