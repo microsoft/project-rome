@@ -54,8 +54,8 @@ Platform.initialize(getApplicationContext(),
     // implement an IAuthCodeProvider
     new IAuthCodeProvider() { 
         @Override 
-        //ConnectedDevices Platform needs the app to fetch a MSA auth_code using the given oauthUrl. 
-        //When app has fetched the auth_code, it needs to invoke the 
+        // ConnectedDevices Platform needs the app to fetch a MSA auth_code using the given oauthUrl. 
+        // When app has fetched the auth_code, it needs to invoke the 
         public void fetchAuthCodeAsync(String oauthUrl, final Platform.IAuthCodeHandler authCodeHandler) { 
             // launch the dedicated OAuth method, passing in the oauth URL and the IAuthCodeHandler instance provided by the platform
             performOAuthFlow(oauthUrl, authCodeHandler);
@@ -64,7 +64,8 @@ Platform.initialize(getApplicationContext(),
         @Override 
         // Connected Devices platform also needs the app's client id to initialize
         public String getClientId() { 
-            // recommended: retrieve client id previously and store as a global constant
+            // recommended: retrieve client id previously and store as a global constant. 
+            // The client id is provided when you register your app on the Microsoft developer portal
             return CLIENT_ID; 
         } 
     },  
