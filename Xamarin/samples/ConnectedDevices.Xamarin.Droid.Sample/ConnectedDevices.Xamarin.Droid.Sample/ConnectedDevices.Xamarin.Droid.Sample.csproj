@@ -52,8 +52,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.ConnectedDevices.Xamarin.Droid, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\src\ConnectedDevices.Xamarin.Droid\bin\Debug\Microsoft.ConnectedDevices.Xamarin.Droid.dll</HintPath>
+      <HintPath>..\packages\Microsoft.ConnectedDevices.Xamarin.Droid.0.4.0\lib\MonoAndroid44\Microsoft.ConnectedDevices.Xamarin.Droid.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
