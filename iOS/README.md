@@ -18,7 +18,7 @@ The simplest way to add the Connected Devices platform to your iOS app is by usi
 platform :ios, '10.0'
 
 target 'ProjectName' do
-  pod 'ProjectRomeSdk', '~>0.0.2'
+  pod 'ProjectRomeSdk', '~>0.0.3'
 end
 ```
 
