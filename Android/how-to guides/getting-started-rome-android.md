@@ -85,7 +85,7 @@ The **performOAuthFlow** method for manual user sign-in is defined here. Note th
 ```java
 public performOAuthFlow(String oauthUrl, final Platform.IAuthCodeHandler authCodeHandler) {
     WebView web;
-    // the Dialog authDialog and WebView webv are defined separately
+    // the Dialog authDialog and WebView layout webv are defined separately
     web = (WebView) authDialog.findViewById(R.id.webv);
     
     // required WebView settings:
@@ -125,6 +125,10 @@ public performOAuthFlow(String oauthUrl, final Platform.IAuthCodeHandler authCod
     };
     // set the WebViewClient to the WebView's URL
     web.setWebViewClient(webViewClient);
+
+    // display the authentication dialog to the user
+    authDialog.show();
+    authDialog.setCancelable(true);
 }
 ```
 
@@ -157,7 +161,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-At this point you should have all the elements necessary to handle user sign-on and initialize the Connected Devices platform. When the platform has finished initializing, it will invoke the **IPlatformInitializationHandler.onDone** method. If the *succeeded* parameter is true, the platform has initialized, and the app can proceed to discover the user's devices.
+At this point you should have all the elements necessary to handle user sign-on and initialize the Connected Devices platform (by calling the **performOAuthFlow** method from anywhere in your app). When the platform has finished initializing, it will invoke the **IPlatformInitializationHandler.onDone** method. If the *succeeded* parameter is true, the platform has initialized, and the app can proceed to discover the user's devices.
 
 ## Implement device discovery
 
@@ -171,7 +175,8 @@ RemoteSystemDiscovery.Builder discoveryBuilder;
 discoveryBuilder = new RemoteSystemDiscovery.Builder().setListener(new IRemoteSystemDiscoveryListener() { 
     @Override 
     public void onRemoteSystemAdded(RemoteSystem remoteSystem) { 
-        // handle the added event. At minimum, you should acquire a reference to the discovered device.
+        // handle the added event. At minimum, you should acquire a 
+        // reference to the discovered device.
     }
     @Override
     public void onRemoteSystemUpdated(RemoteSystem remoteSystem) {
