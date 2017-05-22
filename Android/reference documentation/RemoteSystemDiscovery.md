@@ -12,7 +12,7 @@ Builder class for producing a RemoteSystemDiscovery instance with discovery filt
 ## Public methods
 
 ### start
-Starts watching for discoverable devices.
+Starts watching for discoverable devices, with a default timeout of 5 seconds.
 
 `public void start() throws ConnectedDevicesException`
 

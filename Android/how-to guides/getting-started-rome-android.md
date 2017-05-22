@@ -186,6 +186,10 @@ discoveryBuilder = new RemoteSystemDiscovery.Builder().setListener(new IRemoteSy
     public void onRemoteSystemRemoved(String remoteSystemId) {
         // remove the reference to the device
     }
+    @Override
+    public void onComplete(){
+        // execute code when the initial discovery process has completed
+    }
 }); 
 
 // get the discovery instance

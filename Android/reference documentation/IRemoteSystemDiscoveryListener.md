@@ -29,3 +29,8 @@ Called when a previously discovered remote system is no longer available.
 
 **Parameters**  
 *remoteSystemId* - the unique device id of the removed remote system
+
+### onComplete
+Called when the initial discovery process has completed (after a 5-second timeout).
+
+`void onComplete()`
