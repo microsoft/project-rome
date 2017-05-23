@@ -22,14 +22,14 @@ Xamarin plugin to allow access to the Project Rome Connected Device APIs on Andr
 
 #### Pre-requisites
 1. Visual Studio 2015 or 2017 RC with Xamarin or Xamarin Studio
-2. Register your applciation and obtain an MSA client ID from 
+2. Register your application and obtain an MSA app ID from 
 [https://apps.dev.microsoft.com](https://apps.dev.microsoft.com)
 
 #### Getting Started
 Initialize the Connected Devices Platform
 ```csharp
 Platform.FetchAuthCode += Platform_FetchAuthCode;
-var result = await Platform.InitializeAsync(this.ApplicationContext, CLIENT_ID);
+var result = await Platform.InitializeAsync(this.ApplicationContext, APP_ID);
 ```
 
 The FetchAuthCode handler is used when the platform needs an authorization code from the user (i.e. form OAuth with Microsoft Account). See the sample for more details.
