@@ -86,7 +86,7 @@ The **performOAuthFlow** method for manual user sign-in is defined here. Note th
 ```java
 public performOAuthFlow(String oauthUrl, final Platform.IAuthCodeHandler authCodeHandler) {
     WebView web;
-    // the Dialog authDialog and WebView webv are defined separately
+    // the Dialog authDialog and WebView layout webv are defined separately
     web = (WebView) authDialog.findViewById(R.id.webv);
     
     // required WebView settings:
@@ -105,7 +105,8 @@ public performOAuthFlow(String oauthUrl, final Platform.IAuthCodeHandler authCod
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
 
-            // check URL for authorization success:
+            // check URL for authorization success. REDIRECT_URI should be defined 
+            // at the class level as "https://login.live.com/oauth20_desktop.srf"
             if (url.startsWith(REDIRECT_URI)) {
                 // extract the auth code from the url
                 Uri uri = Uri.parse(url);
@@ -125,6 +126,10 @@ public performOAuthFlow(String oauthUrl, final Platform.IAuthCodeHandler authCod
     };
     // set the WebViewClient to the WebView's URL
     web.setWebViewClient(webViewClient);
+
+    // display the authentication dialog to the user
+    authDialog.show();
+    authDialog.setCancelable(true);
 }
 ```
 
@@ -157,7 +162,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-At this point you should have all the elements necessary to handle user sign-on and initialize the Connected Devices platform. When the platform has finished initializing, it will invoke the **IPlatformInitializationHandler.onDone** method. If the *succeeded* parameter is true, the platform has initialized, and the app can proceed to discover the user's devices.
+At this point you should have all the elements necessary to handle user sign-on and initialize the Connected Devices platform (by calling the **performOAuthFlow** method from anywhere in your app). When the platform has finished initializing, it will invoke the **IPlatformInitializationHandler.onDone** method. If the *succeeded* parameter is true, the platform has initialized, and the app can proceed to discover the user's devices.
 
 ## Implement device discovery
 
@@ -169,11 +174,11 @@ Get an instance of **RemoteSystemDiscovery** using its corresponding Builder cla
 
 // use the builder pattern to get a RemoteSystemDiscovery instance.
 RemoteSystemDiscovery discovery = new RemoteSystemDiscovery.Builder()
-// set the listener for discovery events
-.setListener(new IRemoteSystemDiscoveryListener() { 
+.setListener(new IRemoteSystemDiscoveryListener() {	// set the listener for discovery events
     @Override 
     public void onRemoteSystemAdded(RemoteSystem remoteSystem) { 
-        // handle the added event. At minimum, you should acquire a reference to the discovered device.
+        // handle the added event. At minimum, you should acquire a 
+        // reference to the discovered device.
     }
     @Override
     public void onRemoteSystemUpdated(RemoteSystem remoteSystem) {
@@ -182,6 +187,10 @@ RemoteSystemDiscovery discovery = new RemoteSystemDiscovery.Builder()
     @Override
     public void onRemoteSystemRemoved(String remoteSystemId) {
         // remove the reference to the device
+    }
+    @Override
+    public void onComplete(){
+        // execute code when the initial discovery process has completed
     }
 })
 .getResult(); // return a RemoteSystemDiscovery instance

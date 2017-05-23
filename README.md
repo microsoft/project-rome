@@ -33,7 +33,7 @@ Project Rome is currently implemented for the following scenarios. Follow the li
 | **[Windows][windows-sample]**           |  [![SDK][windows-sdk-badge]][windows-sdk]       | [docs][windows-docs]
 | **[Android][android-sample] (Preview)** | [![Maven][android-sdk-badge]][android-sdk]      | [docs][android-docs]
 | **[iOS][ios-sample] (Preview)**         |     [![CocoaPod][ios-sdk-badge]][ios-sdk]       | [docs][ios-docs]
-| **[Xamarin][xamarin-sample] (Preview)** |[![Nuget][xamarin-sdk-badge]][xamarin-sdk]       | Coming Soon
+| **[Xamarin for Android][xamarin-sample] (Preview)** |[![Nuget][xamarin-sdk-badge]][xamarin-sdk]       | Coming Soon
 | **[MSGraph][graph-sample] (Preview)**   |[![REST][graph-sdk-badge]][graph-sdk]            | [docs][graph-docs]
 
 ## Project Rome blog posts
