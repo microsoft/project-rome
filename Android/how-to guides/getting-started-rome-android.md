@@ -62,11 +62,12 @@ Platform.initialize(getApplicationContext(),
         }
  
         @Override 
-        // Connected Devices platform also needs the app's client id to initialize
-        public String getClientId() { 
-            // recommended: retrieve client id previously and store as a global constant. 
-            // The client id is provided when you register your app on the Microsoft developer portal
-            return CLIENT_ID; 
+        // Connected Devices platform also needs the app id to initialize
+        public String getAppId() { 
+            // recommended: retrieve app id previously and store as a global constant. 
+            // The app id is provided when you register your app on the Microsoft developer portal
+            // (https://apps.dev.microsoft.com/)
+            return APP_ID; 
         } 
     },  
     // Implement an IPlatformInitializationHandler - not required
@@ -183,8 +184,7 @@ RemoteSystemDiscovery discovery = new RemoteSystemDiscovery.Builder()
         // remove the reference to the device
     }
 })
-// return a RemoteSystemDiscovery instance
-.getResult(); 
+.getResult(); // return a RemoteSystemDiscovery instance
 
 // begin watching for remote devices
 discovery.start(); 
