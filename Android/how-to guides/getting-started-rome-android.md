@@ -174,26 +174,26 @@ Get an instance of **RemoteSystemDiscovery** using its corresponding Builder cla
 
 // use the builder pattern to get a RemoteSystemDiscovery instance.
 RemoteSystemDiscovery discovery = new RemoteSystemDiscovery.Builder()
-.setListener(new IRemoteSystemDiscoveryListener() {	// set the listener for discovery events
-    @Override 
-    public void onRemoteSystemAdded(RemoteSystem remoteSystem) { 
-        // handle the added event. At minimum, you should acquire a 
-        // reference to the discovered device.
-    }
-    @Override
-    public void onRemoteSystemUpdated(RemoteSystem remoteSystem) {
-        // update the reference to the device
-    }
-    @Override
-    public void onRemoteSystemRemoved(String remoteSystemId) {
-        // remove the reference to the device
-    }
-    @Override
-    public void onComplete(){
-        // execute code when the initial discovery process has completed
-    }
-})
-.getResult(); // return a RemoteSystemDiscovery instance
+    .setListener(new IRemoteSystemDiscoveryListener() {	// set the listener for discovery events
+        @Override 
+        public void onRemoteSystemAdded(RemoteSystem remoteSystem) { 
+            // handle the added event. At minimum, you should acquire a 
+            // reference to the discovered device.
+        }
+        @Override
+        public void onRemoteSystemUpdated(RemoteSystem remoteSystem) {
+            // update the reference to the device
+        }
+        @Override
+        public void onRemoteSystemRemoved(String remoteSystemId) {
+            // remove the reference to the device
+        }
+        @Override
+        public void onComplete(){
+            // execute code when the initial discovery process has completed
+        }
+    })
+    .getResult(); // return a RemoteSystemDiscovery instance
 
 // begin watching for remote devices
 discovery.start(); 

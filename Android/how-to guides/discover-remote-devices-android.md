@@ -30,13 +30,13 @@ Next, pass these filters into a **RemoteSystemDiscovery.Builder** instance, and 
 
 ```java
 RemoteSystemDiscovery discovery = new RemoteSystemDiscovery.Builder()
-.filter(kindFilter) // add the filters
-.filter(discoveryFilter)
-.filter(statusFilter)
-.setListener(new IRemoteSystemDiscoveryListener() { 
-    //...
-})                  // set the listener for discovery events
-.getResult();       // return a RemoteSystemDiscovery instance
+    .filter(kindFilter) // add the filters
+    .filter(discoveryFilter)
+    .filter(statusFilter)
+    .setListener(new IRemoteSystemDiscoveryListener() { 
+        //...
+    })                  // set the listener for discovery events
+    .getResult();       // return a RemoteSystemDiscovery instance
 
 
 ```
