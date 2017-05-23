@@ -63,7 +63,7 @@ Platform.initialize(getApplicationContext(),
  
         @Override 
         // Connected Devices platform also needs the app id to initialize
-        public String getAppId() { 
+        public String getClientId() { 
             // recommended: retrieve app id previously and store as a global constant. 
             // The app id is provided when you register your app on the Microsoft developer portal
             // (https://apps.dev.microsoft.com/)
