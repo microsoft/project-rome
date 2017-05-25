@@ -54,6 +54,12 @@ Project Rome is currently implemented for the following scenarios. Follow the li
 ## MSDN docs and other resources
 * [Connected apps and devices (Project "Rome") for UWP](https://docs.microsoft.com/en-us/windows/uwp/launch-resume/connected-apps-and-devices)
 
+MS Graph docs: List the user's devices https://developer.microsoft.com/en-us/graph/docs/api-reference/beta/api/user_list_devices
+
+MS Graph docs: Send a command to a device https://developer.microsoft.com/en-us/graph/docs/api-reference/beta/api/send_device_command
+
+MS Graph docs: Get command status https://developer.microsoft.com/en-us/graph/docs/api-reference/beta/api/get_device_command_status
+
 * [Web-to-app linking](https://docs.microsoft.com/en-us/windows/uwp/launch-resume/web-to-app-linking)
 
 * [//Build 2016 talk](https://channel9.msdn.com/Events/Build/2016/B831)
