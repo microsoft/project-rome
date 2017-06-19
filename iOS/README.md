@@ -10,7 +10,7 @@ Currently, Project Rome is implemented for iOS-client-to-Windows-host scenarios.
 
 Before implementing device discovery and connectivity, there are a few steps you'll need to take to give your iOS app the capability to connect to remote Windows devices.
 
-First, you must register your app with Microsoft by following the instructions on the [Microsoft developer portal](https://apps.dev.microsoft.com/). This will allow your app to access Microsoft's Connected Devices platform by having users sign in to their Microsoft accounts (MSAs). 
+First, you must register your app with Microsoft by following the instructions on the [Microsoft developer portal](https://apps.dev.microsoft.com/). This will allow your app to access Microsoft's Connected Devices platform by having users sign in to their Microsoft accounts (MSAs). You will receive a client ID which you'll use to authenticate your app. To do this in the [sample](sample/) source code, replace the value of _appId_ in _AuthenticationViewController.m_ with this value.
 
 The simplest way to add the Connected Devices platform to your iOS app is by using the [CocoaPods](https://cocoapods.org/) dependency manager. Go to your iOS project's *Podfile* and insert the following entry:
 
