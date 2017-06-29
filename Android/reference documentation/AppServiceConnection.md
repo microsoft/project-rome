@@ -1,21 +1,21 @@
-# AppServiceClientConnection class
+# AppServiceConnection class
 This class manages a connection to an app service on a remote device.
 
 ## Syntax
-`public final class AppServiceClientConnection`
+`public final class AppServiceConnection`
 
 ## Public constructors
 
-### AppServiceClientConnection
-Initializes an instance of the AppServiceClientConnection class with a name and Id of the app service, a generic remote connection request, and a listeners for related connection events.
+### AppServiceConnection
+Initializes an instance of the AppServiceConnection class with a name and Id of the app service, a generic remote connection request, and a listeners for related connection events.
 
-`public AppServiceClientConnection(String appServiceName, String appIdentifier, RemoteSystemConnectionRequest request, IAppServiceClientConnectionListener appServiceClientConnectionListener, IAppServiceResponseListener responseListener) throws InvalidParameterException`  
+`public AppServiceConnection(String appServiceName, String appIdentifier, RemoteSystemConnectionRequest request, IAppServiceConnectionListener appServiceConnectionListener, IAppServiceResponseListener responseListener) throws InvalidParameterException`  
 
 **Parameters**  
 *appServiceName* - the name of the remote app service. [See Create and consume an app service](https://docs.microsoft.com/en-us/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details.  
 *appIdentifier* - the package family name of the remote app service. See [See Create and consume an app service](https://docs.microsoft.com/en-us/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details.  
 *request* - a [**RemoteSystemConnectionRequest**](RemoteSystemConnectionRequest.md) object representing the intent to connect to a specific remote system  
-*appServiceClientConnectionListener* - an [**IAppServiceClientConnectionListener**](IAppServiceClientConnectionListener.md) that handles events related to the connection itself.  
+*appServiceConnectionListener* - an [**IAppServiceConnectionListener**](IAppServiceConnectionListener.md) that handles events related to the connection itself.  
 *responseListener* - an [**IAppServiceResponseListener**](IAppServiceResponseListener.md) that handles messaging events with the remote app service  
 
 ## Public methods
@@ -39,7 +39,7 @@ Closes the connection to the remote app service. This is recommended when the cl
 `public void closeAsync()`
 
 ### getAppServiceName
-Returns the app service name with which this AppServiceClientConnection instance was constructed.
+Returns the app service name with which this AppServiceConnection instance was constructed.
 
 `public String getAppServiceName()`
 
@@ -47,7 +47,7 @@ Returns the app service name with which this AppServiceClientConnection instance
 The name string of the target app service.
 
 ### getPackageFamilyName
-Returns the package family name with which this AppServiceClientConnection instance was constructed.
+Returns the package family name with which this AppServiceConnection instance was constructed.
 
 `public String getPackageFamilyName()`
 

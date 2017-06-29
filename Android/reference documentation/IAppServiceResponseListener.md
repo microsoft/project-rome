@@ -9,7 +9,7 @@ Handles the receiving of information from a remote app service.
 ### responseReceived
 Called when a response from a remote app service has been received through the Connected Devices platform.
 
-`void responseReceived(AppServiceClientResponse response)`
+`void responseReceived(AppServiceResponse response)`
 
 **Parameters**  
-*response* - an [**AppServiceClientResponse**](AppServiceClientResponse.md) instance representing the app service's response.
+*response* - an [**AppServiceResponse**](AppServiceResponse.md) instance representing the app service's response.

@@ -1,8 +1,8 @@
-# AppServiceClientResponse class
+# AppServiceResponse class
 Represents information passed from a remote app service to the client app, namely the status of the last message sent by the client app and (optionally) a new message from the remote app service.
 
 ## Syntax
-`public final class AppServiceClientResponse`
+`public final class AppServiceResponse`
 
 ## Public methods
 
