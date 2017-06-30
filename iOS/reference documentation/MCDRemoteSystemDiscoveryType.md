@@ -4,6 +4,8 @@
 typedef NS_ENUM(NSInteger, MCDRemoteSystemDiscoveryType) 
 ```
 
+Contains values that describe the discovery type of a remote system.
+
 ## Fields
 
 Name                        | Value                                
