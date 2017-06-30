@@ -1,7 +1,7 @@
-# class `CDRemoteSystem` 
+# class `MCDRemoteSystem` 
 
 ```
-@interface CDRemoteSystem : NSObject
+@interface MCDRemoteSystem : NSObject
 ```  
 
 A class to represent a remote system.
@@ -38,5 +38,5 @@ The device type of this remote system.
 Indicates whether the remote system can be reached by proximal connection (UDP or Bluetooth).
 
 ### status
-`@property (nonatomic, readonly) CDRemoteSystemStatus status;`
+`@property (nonatomic, readonly) MCDRemoteSystemStatus status;`
 The availability of the remote system.

@@ -1,7 +1,7 @@
-# class `CDRemoteLauncherOptions` 
+# class `MCDRemoteLauncherOptions` 
 
 ```
-@interface CDRemoteLauncherOptions : NSObject
+@interface MCDRemoteLauncherOptions : NSObject
 ```  
 
 A class to represent options for the remote launch feature.
@@ -10,17 +10,17 @@ A class to represent options for the remote launch feature.
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
-fallbackUri | The fallback URI
-preferredAppIds | The app ids
+fallbackUri | The fallback URI to launch on the web in case the app launch URI fails.
+preferredAppIds | The list of IDs of the apps which should be able to launch with this URI.
 
 ## Properties
 
 ### fallbackUri
 `@property (nonatomic, readonly, copy, nullable) NSString* fallbackUri;`
 
-The fallback uri.
+The fallback URI to launch on the web in case the app launch URI fails.
 
 ### preferredAppIds
 `@property (nonatomic, readonly, copy, nullable) NSArray* preferredAppIds;`
 
-The app ids.
+The list of IDs of the apps which should be able to launch with this URI.
