@@ -18,7 +18,7 @@ shutdown | Shutdown the Connected Devices Platform.
 ## Members
 
 ### startWithOAuthCodeProviderDelegate
-`+(void) startWithOAuthCodeProviderDelegate: (id<MCDOAuthCodeProviderDelegate>)delegate completion:(void (^)(NSError* error):completion);`
+`+(void) startWithOAuthCodeProviderDelegate: (id<MCDOAuthCodeProviderDelegate>)delegate completion:(void (^)(NSError* error)completion);`
 
 Initializes the Connected Devices Platform with an instance of the OAuth Token Provider Delegate. Must be invoked before attempting to use any Connected Devices functionality. Not thread safe.
 
