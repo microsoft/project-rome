@@ -1,7 +1,7 @@
 # class `MCDRemoteLauncherOptions` 
 
 ```
-@interface MCDRemoteLauncherOptions : NSObject
+@interface MCDRemoteLauncherOptions : NSObject <NSCopying>
 ```  
 
 A class to represent options for the remote launch feature.

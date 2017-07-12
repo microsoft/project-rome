@@ -31,7 +31,7 @@ The [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md) asso
 Initializes the [MCDRemoteLauncher](MCDRemoteLauncher.md) with a [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
 
 #### Parameters
-* `request` the connection request associated with the target device.
+* `request` The connection request associated with the target device.
 
 #### Returns
 The initialized [MCDRemoteLauncher](MCDRemoteLauncher.md), otherwise nil.

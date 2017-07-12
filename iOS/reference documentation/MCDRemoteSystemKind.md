@@ -4,7 +4,7 @@
 typedef NS_ENUM(NSInteger, MCDRemoteSystemKind)
 ```
 
-Returns a string representation for a Remote System Kind.
+Contains values that represent remote system device types.
 
 ## Fields
 
@@ -16,3 +16,16 @@ MCDRemoteSystemKindHolographic | 2
 MCDRemoteSystemKindPhone | 3
 MCDRemoteSystemKindXbox | 4
 MCDRemoteSystemKindHub | 5
+
+## Methods
+
+### MCDRemoteSystemFriendlyNameForKind
+`NSString* MCDRemoteSystemFriendlyNameForKind(MCDRemoteSystemKind type);`
+
+Returns a string representation for a remote system kind.
+
+#### Parameters
+* `type` - The device type.
+
+#### Returns
+The string representation for the given remote system kind.

@@ -1,16 +1,16 @@
-# class `MCDOAuthCodeProviderDelegate`
+# protocol `MCDOAuthCodeProviderDelegate`
 
 ```
-@interface MCDOAuthCodeProviderDelegate : NSObject
+@protocol MCDOAuthCodeProviderDelegate
 ```
 
-Receives callbacks from the MCDPlatform when platform is initialized to get OAuth access token.
+Receives callbacks from the [MCDPlatform](MCDPlatform.md) when the platform is initialized to get OAuth access tokens.
 
 ## Summary
 Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
-appId | The OAuth app id code.
-getAccessCode | Asynchronously obtains a new OAuth access code.
+|appId | The OAuth app id code.|
+|getAccessCode | Asynchronously obtains a new OAuth access code.|
 
 ## Properties
 

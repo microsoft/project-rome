@@ -13,7 +13,7 @@ A static class to perform global scale commands to the Connected Devices platfor
 startWithOAuthCodeProviderDelegate | Initializes the Connected Devices Platform with an instance of the OAuth Token Provider Delegate. Must be invoked before attempting to use any Connected Devices functionality.
 suspend | Suspends the Connected Devices Platform. This should be called when your app is sent to the background.
 resume | Resumes the Connected Devices platform. This should be called when your app enters the foreground.
-shutdown | Shutdown the Connected Devices Platform.
+shutdown | Shuts down the Connected Devices Platform.
 
 ## Members
 

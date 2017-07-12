@@ -35,8 +35,10 @@ The device type of this remote system.
 
 ### isAvailableByProximity
 `@property (nonatomic, readonly) BOOL isAvailableByProximity;`
+
 Indicates whether the remote system can be reached by proximal connection (UDP or Bluetooth).
 
 ### status
 `@property (nonatomic, readonly) MCDRemoteSystemStatus status;`
+
 The availability of the remote system.

@@ -20,4 +20,4 @@ initWithKindsArray | Initializes the filter with an array of kinds to match for.
 Adds a device type to the set of types allowed by this filter.
 
 #### Parameters
-* `kinds` An array of device kinds to match with the filter. These should be values held by the [MCDRemoteSystemKind](MCDRemoteSystemKind.md) enum.
+* `kinds` An array of device kinds to match with the filter. These should be values provided by the [MCDRemoteSystemKind](MCDRemoteSystemKind.md) enum.
