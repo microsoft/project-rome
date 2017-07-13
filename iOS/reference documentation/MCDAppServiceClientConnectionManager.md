@@ -16,7 +16,7 @@ appServiceName | The name of the app service on the target device.
 appIdentifier | The ID of the app service on the target device. 
 initWithConnectionRequest | Initializes the [MCDAppServiceClientConnectionManager](MCDAppServiceClientConnectionManager.md) with a connection request.
 openRemote | Opens the connection to the app service.
-sendMessage | Sends a message to the remote app service.
+sendMessage | Sends a message to the remote app service and begins listening for a response. Responses are handled by the [MCDAppServiceClientConnectionManagerDelegate](MCDAppServiceClientConnectionManagerDelegate.md) for this class. If the connection is over the cloud, the listener times out after 60 seconds.
 close | Closes the connection to the app service.
 
 
@@ -66,7 +66,7 @@ Opens the connection to the app service.
 ### sendMessage
 `-(void)sendMessage:(nonnull NSDictionary*)dictionary;`
 
-Sends a message to the remote app service.
+Sends a message to the remote app service and begins listening for a response. Responses are handled by the [MCDAppServiceClientConnectionManagerDelegate](MCDAppServiceClientConnectionManagerDelegate.md) for this class. If the connection is over the cloud, the listener times out after 60 seconds.
 
 #### Parameters
 * `dictionary` The key-value set of data to be sent to the app service.
