@@ -11,5 +11,5 @@ Called when a response from a remote app service has been received through the C
 
 `void responseReceived(AppServiceResponse response)`
 
-**Parameters**  
+#### Parameters  
 *response* - an [**AppServiceResponse**](AppServiceResponse.md) instance representing the app service's response.

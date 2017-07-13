@@ -11,5 +11,5 @@ Called by the Connected Devices platform when it is initializing and has acquire
 
 `void onAuthCodeFetched(String authCode)`
 
-**Parameters**  
+#### Parameters  
 *authCode* - the previous authorization code that the system will attempt to refresh

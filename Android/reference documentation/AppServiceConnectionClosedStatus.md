@@ -17,5 +17,5 @@ Returns the int value for this AppServiceConnectionClosedStatus.
 
 `public int getValue()`
 
-**Return value**  
+#### return value  
 The int value for this AppServiceConnectionClosedStatus

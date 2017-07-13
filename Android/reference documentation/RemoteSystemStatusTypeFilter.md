@@ -11,7 +11,7 @@ Initializes an instance of the **RemoteSystemStatusTypeFilter** class.
 
 `public RemoteSystemStatusTypeFilter(RemoteSystemStatusType type)`
 
-**Parameters**  
+#### Parameters  
 *type* - the status type to target.
 
 ## Public methods
@@ -21,7 +21,7 @@ Returns the status type being targeted.
 
 `public RemoteSystemStatusType getType()`
 
-**Return value**  
+#### return value  
 The status type being targeted
 
 ### filter
@@ -29,8 +29,8 @@ Checks whether a remote system passes through the filter.
 
 `public boolean filter(RemoteSystem remoteSystem)`
 
-**Parameters**  
+#### Parameters  
 *remoteSystem* - the **RemoteSystem** to check
 
-**Return value**  
+#### return value  
 **true** if *remoteSystem* passes, otherwise **false**

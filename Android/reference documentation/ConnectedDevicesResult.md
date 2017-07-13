@@ -23,7 +23,7 @@ The value of the Android device platform error
 
 `public boolean isSuccess()`
 
- **Return value**  
+ #### return value  
  **true** if this instance represents a success, **false** if not
 
 ### isFailure
@@ -31,5 +31,5 @@ Determines whether the instance represents a failed result.
 
 `public boolean isFailure()`
 
-**Return value**  
+#### return value  
  **true** if this instance represents a failure, **false** if not

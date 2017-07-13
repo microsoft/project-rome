@@ -11,7 +11,7 @@ Retrieves the message sent by the remote app service, consisting of key/value pa
 
 `public Bundle getMessage()`
 
-**Return value**  
+#### return value  
  A [**Bundle**](https://developer.android.com/reference/android/os/Bundle.html) object containing String keys mapped to values of variable types.
 
 ### getStatus
@@ -19,5 +19,5 @@ Retrieves the status of the last message sent from the client app to the remote 
 
 `public AppServiceResponseStatus getStatus()`
 
-**Return value**  
+#### return value  
 An [**AppServiceResponseStatus**](AppServiceResponseStatus.md) value describing the status of the most recent message sent to the remote app service (such as a reason why the message data was not delivered).

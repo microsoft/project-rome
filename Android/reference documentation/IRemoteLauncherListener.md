@@ -11,5 +11,5 @@ Called when the remote URI launch has completed.
 
 `void onCompleted(RemoteLauncherUriStatus status)`
 
-**Parameters**  
+#### Parameters  
 *status* - the status of the remote launch

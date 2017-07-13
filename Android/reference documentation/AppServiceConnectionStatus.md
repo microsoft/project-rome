@@ -21,5 +21,5 @@ Returns the int value for this AppServiceConnectionStatus.
 
 `public int getValue()`
 
-**Return value**  
+#### return value  
 The int value for this AppServiceConnectionStatus

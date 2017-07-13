@@ -18,7 +18,7 @@ Initializes a new instance of the ConnectedDevicesException class with a message
 
 `public ConnectedDevicesException(String message)`
 
-**Parameters**  
+#### Parameters  
 *message* - the message for this exception
 
 ### ConnectedDevicesException
@@ -26,7 +26,7 @@ Initializes a new instance of the ConnectedDevicesException class with a message
 
 `public ConnectedDevicesException(int independentError, int platformError, String message)`
 
-**Parameters**  
+#### Parameters  
 *independentError* - the Remote Systems error code for this exception  
 *platformError* - the Android system error code for this exception  
 *message* - the message for this exception  
@@ -36,7 +36,7 @@ Initializes a new instance of the ConnectedDevicesException class with a message
 
 `public ConnectedDevicesException(int independentError, int platformError, String message, Throwable throwable)`
 
-**Parameters**  
+#### Parameters  
 *independentError* - the Remote Systems error code for this exception  
 *platformError* - the Android system error code for this exception  
 *message* - the message for this exception  

@@ -11,7 +11,7 @@ Initializes an instance of the AppServiceConnection class with a name and Id of 
 
 `public AppServiceConnection(String appServiceName, String appIdentifier, RemoteSystemConnectionRequest request, IAppServiceConnectionListener appServiceConnectionListener, IAppServiceResponseListener responseListener) throws InvalidParameterException`  
 
-**Parameters**  
+#### Parameters  
 *appServiceName* - the name of the remote app service. [See Create and consume an app service](https://docs.microsoft.com/en-us/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details.  
 *appIdentifier* - the package family name of the remote app service. See [See Create and consume an app service](https://docs.microsoft.com/en-us/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details.  
 *request* - a [**RemoteSystemConnectionRequest**](RemoteSystemConnectionRequest.md) object representing the intent to connect to a specific remote system  
@@ -30,7 +30,7 @@ Sends a message to the connected remote app service consisting of key/value pair
 
 `public void sendMessageAsync(Bundle messageBundle) throws ConnectedDevicesException`
 
-**Parameters**  
+#### Parameters  
 *messageBundle* - a [**Bundle**](https://developer.android.com/reference/android/os/Bundle.html) object containing String keys mapped to values of variable types
 
 ### closeAsync
@@ -43,7 +43,7 @@ Returns the app service name with which this AppServiceConnection instance was c
 
 `public String getAppServiceName()`
 
-**Return value**  
+#### return value  
 The name string of the target app service.
 
 ### getPackageFamilyName
@@ -51,5 +51,5 @@ Returns the package family name with which this AppServiceConnection instance wa
 
 `public String getPackageFamilyName()`
 
-**Return value**  
+#### return value  
 The package family name string of the target app service.

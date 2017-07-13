@@ -19,5 +19,5 @@ Returns the int value for this AppServiceResponseStatus.
 
 `public int getValue()`
 
-**Return value**  
+#### return value  
 The int value for this AppServiceResponseStatus

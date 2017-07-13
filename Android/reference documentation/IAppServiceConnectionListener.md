@@ -16,7 +16,7 @@ Called when the Connected Devices platform failed to establish a connection to a
 
 `void onError(AppServiceConnectionStatus status)`
 
-**Parameters**  
+#### Parameters  
 *status* - an [**AppServiceConnectionStatus**](AppServiceConnectionStatus.md) value describing the status of the connection (the cause of the error).
 
 ### onClosed
@@ -24,5 +24,5 @@ Called when the connection to a remote app service is closed.
 
 `void onClosed(AppServiceConnectionClosedStatus status)`
 
-**Parameters**  
+#### Parameters  
 *statues* - an [**AppServiceConnectionClosedStatus**](AppServiceConnectionClosedStatus.md) value describing the reason the app service connection was closed.

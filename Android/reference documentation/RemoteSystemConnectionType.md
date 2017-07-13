@@ -16,7 +16,7 @@ Gets the integer value of this RemoteSystemConnectionType instance
 
 `public int getValue()`
 
-**Return value**  
+#### return value  
 The integer value of this instance
 
 ### fromInt
@@ -24,10 +24,10 @@ Gets the ConnectedDevicesError for the given value.
 
 `public static ConnectedDevicesError fromInt(int value)`
 
-**Parameters**  
+#### Parameters  
 *value* - the value representing a ConnectedDevicesError
 
-**Return value**  
+#### return value  
 The ConnectedDevicesError for the given value.
 
 ### listFromInt
@@ -35,10 +35,10 @@ Returns a list of RemoteSystemConnectionType instances for the array of values p
 
 `public static List<RemoteSystemConnectionType> listFromInt(int[] values)`
 
-**Parameters**  
+#### Parameters  
 *values* - an array of integer values corresponding to RemoteSystemConnectionType values
 
-**Return value**  
+#### return value  
 A list of RemoteSystemConnectionType instances corresponding to the values provided. Returns an empty list if *values* does not contain any valid values.
 
 

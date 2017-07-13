@@ -16,7 +16,7 @@ Establishes the Remote Systems platform for use by the app.
 
 `public static void initialize(Context context, final IAuthCodeProvider authCodeProvider, final IPlatformInitializationHandler initializationHandler)`
 
-**Parameters**  
+#### Parameters  
 *context* - the **Context** for the current application  
 *authCodeProvider* - an implementation of [**IAuthCodeProvider**](IAuthCodeProvider.md) that can deliver the required authentication information for this app  
 *initializationHandler* - an implementation of [**IPlatformInitializationHandler**](IPlatformInitializationHandler.md) that determines what is done when this method succeeds or fails

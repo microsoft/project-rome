@@ -11,7 +11,7 @@ Initializes an instance of the RemoteSystemKindFilter class with a list of strin
 
 `public RemoteSystemKindFilter(List<RemoteSystemKinds> kinds)`
 
-**Parameters**  
+#### Parameters  
 *kinds* - A list of string representations of the device types to target. These strings should conform to the values in the **RemoteSystemKinds** enum.
 
 ## Public methods
@@ -21,7 +21,7 @@ Returns a list of the kinds of remote systems being targeted.
 
 `public List<RemoteSystemKinds> getKinds()`
     
-**Return value**  
+#### return value  
 A list of the kinds of remote systems being targeted.
 
 ### filter
@@ -29,9 +29,9 @@ Check whether a remote system passes through the filter.
 
 `public boolean filter(RemoteSystem remoteSystem)`
 
-**Parameters**  
+#### Parameters  
 *filter* - the **RemoteSystem** to check
 
-**Return value**  
+#### return value  
 **true** if *remoteSystem* passes, otherwise **false**
     

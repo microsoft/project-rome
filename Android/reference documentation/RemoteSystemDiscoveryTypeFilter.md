@@ -12,7 +12,7 @@ Initializes an instance of the RemoteSystemDiscoveryTypeFilter class.
 
 `public public RemoteSystemDiscoveryTypeFilter(RemoteSystemDiscoveryType type)` 
 
-**Parameters**  
+#### Parameters  
 *type* - the discovery type to target.
 
 ## Public methods
@@ -22,7 +22,7 @@ Returns the discovery type being targeted.
 
 `public RemoteSystemDiscoveryType getType()`
 
-**Return value**  
+#### return value  
 The discovery type being targeted
 
 ### filter
@@ -30,8 +30,8 @@ Checks whether a remote system passes through the filter.
 
 `public boolean filter(RemoteSystem remoteSystem)`
 
-**Parameters**  
+#### Parameters  
 *remoteSystem* - the **RemoteSystem** to check
 
-**Return value**  
+#### return value  
 **true** if *remoteSystem* passes, otherwise **false**
