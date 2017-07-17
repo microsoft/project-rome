@@ -27,11 +27,11 @@ Closes the Remote Systems platform.
 `public static void shutdown()`
 
 ### suspend
-Suspends the Remote Systems platform. Recommended to invoke in Activity.onPause(). Safe to call even if platform is not yet initialized.
+Suspends the Remote Systems platform. Recommended to invoke in ```Activity.onPause()```. Safe to call even if platform is not yet initialized.
 
 `public static void suspend()`
 
 ### resume
-Resumes the Remote Systems platform from suspension. Recommended to invoke in Activity.onPause(). Safe to call even if platform is not yet initialized.
+Resumes the Remote Systems platform from suspension. Recommended to invoke in ```Activity.onResume()```. Safe to call even if platform is not yet initialized.
 
 `public static void resume()`
