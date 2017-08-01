@@ -14,5 +14,5 @@ MCDRemoteLauncherUriStatusAppUnvailable | 2 | The target app is unavailable.
 MCDRemoteLauncherUriStatusProtocolUnavailable | 3 | The target app does not support this URI.
 MCDRemoteLauncherUriStatusRemoteSystemUnavailable | 4 | The target device was unavailable.
 MCDRemoteLauncherUriStatusBundleTooLarge | 5 | The data bundle sent to the target app was too large.
-MCDRemoteLauncherUriStatusDeniedByLocalSystem | 6 | The client system has prevented use of the Connected Devices Platform.
-MCDRemoteLauncherUriStatusDeniedByRemoteSystem | 7 | The target device has prevented use of the Connected Devices Platform.
+MCDRemoteLauncherUriStatusDeniedByLocalSystem | 6 | The client system has prevented use of the Remote Systems Platform.
+MCDRemoteLauncherUriStatusDeniedByRemoteSystem | 7 | The target device has prevented use of the Remote Systems Platform.
