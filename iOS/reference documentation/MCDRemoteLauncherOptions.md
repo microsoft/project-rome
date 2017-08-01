@@ -11,7 +11,7 @@ A class to represent options for the remote launch feature.
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
 fallbackUri | The fallback URI to launch on the web in case the app launch URI fails.
-preferredAppIds | The list of IDs of the apps which should be able to launch with this URI.
+preferredAppIds | A list of **NSString** objects representing IDs of the apps that should be able to launch with this URI. For Windows apps, the ID will be the app's package family name. 
 
 ## Properties
 
@@ -23,4 +23,4 @@ The fallback URI to launch on the web in case the app launch URI fails.
 ### preferredAppIds
 `@property (nonatomic, readonly, copy, nullable) NSArray* preferredAppIds;`
 
-The list of IDs of the apps which should be able to launch with this URI.
+A list of **NSString** objects representing IDs of the apps that should be able to launch with this URI. For Windows apps, the ID will be the app's package family name.

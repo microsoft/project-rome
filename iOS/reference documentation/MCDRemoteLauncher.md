@@ -10,53 +10,28 @@ A class used to launch an app on a remote device using a URI.
 
  Members | Descriptions                                
 ----|---------
-connectionRequest | The [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md) associated with the target device.
-initWithConnectionRequest | Initializes the [MCDRemoteLauncher](MCDRemoteLauncher.md) with a [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
-launchUri | Launches a URI against the Remote System specified in the previously initialized [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
-launchUri | Launches a URI with options against the Remote System specified in the previously initialized [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
-launchUri | Launches a URI with options and data against the Remote System specified in the previously initialized [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
-
-## Properties
-
-### connectionRequest
-`@property (nonatomic, readonly, strong, nonnull)MCDRemoteSystemConnectionRequest* connectionRequest;`
-
-The [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md) associated with the target device.
+launchUri | Launches a URI against the Remote System specified in an [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
+launchUri | Launches a URI with options against the Remote System specified in an [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
 
 ## Methods
 
-### initWithConnectionRequest
-`-(nullable instancetype)initWithConnectionRequest:(nonnull MCDRemoteSystemConnectionRequest*)request;`
-
-Initializes the [MCDRemoteLauncher](MCDRemoteLauncher.md) with a [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
-
-#### Parameters
-* `request` The connection request associated with the target device.
-
-#### Returns
-The initialized [MCDRemoteLauncher](MCDRemoteLauncher.md), otherwise nil.
-
 ### launchUri
-`-(nullable NSError*)launchUri:(nonnull NSString*)uri withCompletion:(nullable void (^)(MCDRemoteLauncherUriStatus))completionBlock;` 
+`+(void)launchUri:(nonnull NSString*)uri withRequest:(nonnull MCDRemoteSystemConnectionRequest*)request withCompletion:(nullable void (^)(MCDRemoteLauncherUriStatus))completion;` 
 
-Launches a URI against the Remote System specified in the previously initialized [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
+Launches a URI against the Remote System specified in an [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
 
 #### Parameters
 * `uri` The URI to launch.
-* `withCompletion` The block to invoke upon completion.
-
-#### Returns
-An error, if any occurred. 
+* `request` The connection request.
+* `completion` The block to invoke upon completion.
 
 ### launchUri
-`-(nullable NSError*)launchUri:(nonnull NSString*)uri withOptions:(nonnull MCDRemoteLauncherOptions*)options withCompletion:(nonnull void (^)(MCDRemoteLauncherUriStatus));`
+`+(void)launchUri:(nonnull NSString*)uri withRequest:(nonnull MCDRemoteSystemConnectionRequest*)request withOptions:(nonnull MCDRemoteLauncherOptions*)options withCompletion:(nonnull void (^)(MCDRemoteLauncherUriStatus))completion;`
 
-Launches a URI with options against the Remote System specified in the previously initialized [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
+Launches a URI with options against the Remote System specified in an [MCDRemoteSystemConnectionRequest](MCDRemoteSystemConnectionRequest.md).
 
 #### Parameters
 * `uri` The URI to launch.
-* `withOptions` The launcher options.
-* `withCompletion` The block to invoke upon completion.
-
-#### Returns
-An error, if any occurred.
+* `request` The connection request.
+* `options` The launcher options.
+* `completion` The block to invoke upon completion.

@@ -12,7 +12,7 @@ Members                        | Descriptions
 --------------------------------|---------------------------------------------
 message | The app service message received.
 status | The status of the message received.
-initWithDictionary | Initializes a [MCDAppServiceClientResponse](MCDAppServiceClientResponse.md) with a Dictionary instance.
+initWithDictionary | Initializes a [MCDAppServiceClientResponse](MCDAppServiceClientResponse.md) with an **NSDictionary** instance.
 
 ## Properties
 
@@ -31,7 +31,7 @@ The status of the message received.
 ### initWithDictionary
 `-(nullable instancetype)initWithDictionary:(nonnull NSDictionary*)dictionary status:(MCDAppServiceResponseStatus)status;`
 
-Initializes a [MCDAppServiceClientResponse](MCDAppServiceClientResponse.md) with a Dictionary instance.
+Initializes a [MCDAppServiceClientResponse](MCDAppServiceClientResponse.md) with an **NSDictionary** instance.
 
 #### Parameters
 * `dictionary` The key-value set of data.

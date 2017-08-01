@@ -10,19 +10,19 @@ A class used to discover remote systems.
 
  Members                        | Descriptions                                
 --------------------------------|---------------------------------------------
-delegate | The delegate that will receive events from this [MCDRemoteSystemDiscoveryManager](MCDRemoteSystemDiscoveryManager.md).
+delegate | The delegate to receive events that result from starting a discovery.
 initWithDelegate | Initializes the [MCDRemoteSystemDiscoveryManager](MCDRemoteSystemDiscoveryManager.md) with a delegate.
 initWithDelegate:withFilters | Initializes the [MCDRemoteSystemDiscoveryManager](MCDRemoteSystemDiscoveryManager.md) with a delegate and a set of discovery filters.
-startDiscovery | Begins discovering remote systems.
+startDiscovery | Begins discovering remote systems. It will cause an existing discovery to restart.
 stop | Stops the active discovery.
-StartWithHostName | Attempts to find a system proximally using its IP address.
+StartDiscoveryWithHostName | Attempts to find a system proximally using its IP address.
 
 ## Properties
 
 ### delegate
 `@property (nonatomic, readonly weak, nonnull) id< MCDRemoteSystemDiscoveryManagerDelegate>* delegate;`
 
-The delegate that will receive events from this [MCDRemoteSystemDiscoveryManager](MCDRemoteSystemDiscoveryManager.md).
+The delegate to receive events that result from starting a discovery.
 
 ## Methods
 
@@ -50,25 +50,16 @@ Initializes the [MCDRemoteSystemDiscoveryManager](MCDRemoteSystemDiscoveryManage
 The initialized [MCDRemoteSystemDiscoveryManager](MCDRemoteSystemDiscoveryManager.md) if successful, otherwise nil.
 
 ### startDiscovery
-`-(nullable NSError*)startDiscovery;` 
+`-(void)startDiscovery;` 
 
-Begins discovering remote systems.
-
-#### Returns
-An error describing why the discovery could not be initiated, otherwise nil.
+Begins discovering remote systems. It will cause an existing discovery to restart.
 
 ### stopDiscovery
-`(nullable NSError*)stopDiscovery;` 
+`(void)stopDiscovery;` 
 
 Stops the active discovery.
 
-#### Returns
-An error describing why the discovery could not be stopped, otherwise nil.
-
 ### startDiscoveryWithHostName
-`-(nullable NSError*) startWithHostName:` 
+`-(void)startDiscoveryWithHostName:(nonnull NSString*)hostname;` 
 
 Attempts to find a system proximally using its IP address.
-
-#### Returns
-An error describing why the discovery could not be initiated, otherwise nil.

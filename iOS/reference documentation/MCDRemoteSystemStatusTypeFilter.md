@@ -8,9 +8,17 @@ A class used to filter remote systems based on availability status type.
 
 ## Summary
 
- Members                        | Descriptions                                
---------------------------------|---------------------------------------------
-initWithRemoteSystemTypeFilter | Initializes the [MCDRemoteSystemStatusTypeFilter](MCDRemoteSystemStatusTypeFilter.md) with a [MCDRemoteSystemStatusType](MCDRemoteSystemStatusType.md).
+|Members       | Descriptions      | 
+|---------------|-----------------|
+|type | The remote system status type of this filter instance.|
+|initWithRemoteSystemTypeFilter | Initializes the [MCDRemoteSystemStatusTypeFilter](MCDRemoteSystemStatusTypeFilter.md) with a [MCDRemoteSystemStatusType](MCDRemoteSystemStatusType.md).|
+
+## Properties
+
+### type
+`@property (nonatomic, readonly)MCDRemoteSystemStatusType type;`
+
+The remote system status type of this filter instance.
 
 ## Methods
 
