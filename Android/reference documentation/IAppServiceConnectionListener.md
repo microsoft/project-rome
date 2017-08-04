@@ -12,7 +12,7 @@ Called when the connection to a remote app service was established successfully.
 `void onSuccess()`
 
 ### onError
-Called when the Connected Devices platform failed to establish a connection to a remote app service.
+Called when the Remote Systems platform failed to establish a connection to a remote app service.
 
 `void onError(AppServiceConnectionStatus status)`
 

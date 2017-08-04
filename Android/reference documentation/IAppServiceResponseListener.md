@@ -1,5 +1,5 @@
 # IAppServiceResponseListener interface
-Handles the receiving of information from a remote app service.
+Handles the receiving of a message sent from a remote app service in response to a previously sent message.
 
 ## Syntax
 `public interface IAppServiceResponseListener`
@@ -7,7 +7,7 @@ Handles the receiving of information from a remote app service.
 ## Public methods
 
 ### responseReceived
-Called when a response from a remote app service has been received through the Connected Devices platform.
+Called when a response from a remote app service has been received through the Remote Systems platform.
 
 `void responseReceived(AppServiceResponse response)`
 

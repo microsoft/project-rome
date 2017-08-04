@@ -16,7 +16,7 @@ Initializes an instance of the AppServiceConnection class with a name and Id of 
 *appIdentifier* - the package family name of the remote app service. See [See Create and consume an app service](https://docs.microsoft.com/en-us/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details.  
 *request* - a [**RemoteSystemConnectionRequest**](RemoteSystemConnectionRequest.md) object representing the intent to connect to a specific remote system  
 *appServiceConnectionListener* - an [**IAppServiceConnectionListener**](IAppServiceConnectionListener.md) that handles events related to the connection itself.  
-*requestListener* - an [**IAppServiceRequestListener**](IAppServiceRequestListener.md) that handles the app's request(TBD) for remote app service connection.
+*requestListener* - an [**IAppServiceRequestListener**](IAppServiceRequestListener.md) that handles incoming app service requests over the remote app service connection.
 
 ## Public methods
 
@@ -32,7 +32,7 @@ Sends a message to the connected remote app service consisting of key/value pair
 
 #### Parameters  
 *messageBundle* - a [**Bundle**](https://developer.android.com/reference/android/os/Bundle.html) object containing String keys mapped to values of variable types  
-*responseListener* - an [**IAppServiceResponseListener**](IAppServiceResponseListener.md) that handles messaging(TBD) events with the remote app service.
+*responseListener* - an [**IAppServiceResponseListener**](IAppServiceResponseListener.md) that handles the receipt of the remote app service's response to the message being sent.
 
 ### closeAsync
 Closes the connection to the remote app service. This is recommended when the client app closes or stops.
