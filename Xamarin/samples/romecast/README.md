@@ -85,7 +85,7 @@ Back over to our Xamarin Android poject, we can add the [Microsoft.ConnectedDevi
 ... and authenticate and initialize the Connected Devices platform:
 ```csharp
 Platform.FetchAuthCode += Platform_FetchAuthCode;
-var result = await Platform.InitializeAsync(this.ApplicationContext, CLIENT_ID); //CLIENT_ID from https://apps.dev.microsoft.com
+var result = await Platform.InitializeAsync(this.ApplicationContext, APP_ID); //APP_ID from https://apps.dev.microsoft.com
 ```
 The FetchAuthCode handler is used when the platform needs an authorization code from the user (i.e. form OAuth with Microsoft Account). See the sample for more details.
 ```csharp

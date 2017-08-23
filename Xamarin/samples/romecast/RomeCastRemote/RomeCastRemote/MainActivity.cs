@@ -14,8 +14,8 @@ namespace RomeCastRemote
 	[Activity(Label = "RomeCast Remote Control", MainLauncher = true, Icon = "@mipmap/icon")]
 	public class MainActivity : Activity
 	{
-		// Use your own client id
-		private const string CLIENT_ID = ""; //get a client ID from https://apps.dev.microsoft.com/
+		// Use your own app id
+		private const string APP_ID = ""; //get an app ID from https://apps.dev.microsoft.com/
 
 		private WebView _webView;
 		internal Dialog _authDialog;
@@ -33,7 +33,7 @@ namespace RomeCastRemote
 			SetContentView(Resource.Layout.Main);
 
 			Platform.FetchAuthCode += Platform_FetchAuthCode;
-			var result = await Platform.InitializeAsync(this.ApplicationContext, CLIENT_ID);
+			var result = await Platform.InitializeAsync(this.ApplicationContext, APP_ID);
 
             DiscoverDevices();
 
