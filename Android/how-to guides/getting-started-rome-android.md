@@ -63,10 +63,10 @@ Platform.initialize(getApplicationContext(),
         }
  
         @Override 
-        // Connected Devices platform also needs the app's client id to initialize
+        // Connected Devices platform also needs the app's client ID to initialize
         public String getClientId() { 
-            // recommended: retrieve client id previously and store as a global constant. 
-            // The client id is provided when you register your app on the Microsoft developer portal
+            // recommended: retrieve client ID previously and store as a global constant. 
+            // The client ID is provided when you register your app on the Microsoft developer portal
             return CLIENT_ID; 
         } 
     },  
