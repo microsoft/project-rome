@@ -29,8 +29,8 @@ As this is a preview release, there are some known bugs in the Remote Systems pl
 
 |Description | Workaround |
 | -----|-----|
-|Discovery may stop working if the application has been running for over an hour. | Reinitialize the platform by calling **CDPlatform::shutdown** and then **CDPlatform::initWithOAuthCodeProviderDelegate** |
-|Devices may connect over the cloud and not proximally (if available) on first discovery. | Initiate another discovery using **CDRemoteSystemDiscovery**. |
+|Discovery may stop working if the application has been running for over an hour. | Reinitialize the platform by calling **MCDPlatform::shutdown** and then **MCDPlatform::startWithOAuthCodeProviderDelegate** |
+|Devices may connect over the cloud and not proximally (if available) on first discovery. | Initiate another discovery using **MCDRemoteSystemDiscoveryManager**. |
 | You will receive a linker error regarding bit code in your new project. | Disable bitcode by selecting your project and going to Build Settings -> All -> Enable Bitcode|
 |  Any consuming app's documents on drive will grow monotonically in size over time.| No current workaround.|
 |App crashes without **CFBundleDisplayName** entry.|Create a **CFBundleDisplayName** entry in your _Info.plist_ file.|
