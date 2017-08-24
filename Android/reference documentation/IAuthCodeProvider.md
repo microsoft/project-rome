@@ -20,5 +20,5 @@ Called within the **Platform.initialize** method when the Remote Systems platfor
 
 `String getClientId()`
 
-#### return value  
-The client ID that represents the current application
+#### Return value  
+The ID that represents the current application

@@ -25,9 +25,9 @@ Project Rome is currently implemented for the following scenarios. Follow the li
 [android-sample]:          Android/sample
 [android-docs]:            Android/reference%20documentation
 
-[graph-sdk]:               https://developer.microsoft.com/en-us/graph/code-samples-and-sdks
+[graph-sdk]:               https://developer.microsoft.com/graph/docs/api-reference/beta/resources/project_rome_overview
 [graph-sdk-badge]:         https://img.shields.io/badge/REST-Beta-orange.svg?style=flat-square
-[graph-sample]:            https://developer.microsoft.com/en-us/graph/code-samples-and-sdks
+[graph-sample]:            https://developer.microsoft.com/graph/docs/api-reference/beta/resources/project_rome_overview
 [graph-docs]:              MSGraph/
 
 |  Platform Samples                       |           SDK Package                           | API Docs
