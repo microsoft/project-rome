@@ -9,15 +9,7 @@ Receives callbacks from the [MCDPlatform](MCDPlatform.md) when the platform is i
 ## Summary
 | Members | Descriptions  |                              
 |---------|---------------|
-|appId | The OAuth app id code.|
 |getAccessCode | Asynchronously obtains a new OAuth access code.|
-
-## Properties
-
-### appId
-`@property (nonatomic, readonly, copy, nonnull) NSString* appId;`
-
-The OAuth app id code.
 
 ## Methods
 
