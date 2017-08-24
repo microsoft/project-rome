@@ -29,7 +29,7 @@ The identifier for this remote system.
 The friendly display name of this remote system.
 
 ### kind
-`@property (nonatomic, readonly, copy, nonnull) NSString* kind;`
+`@property (nonatomic, readonly) MCDRemoteSystemKind kind;`
 
 The device type of this remote system.
 
