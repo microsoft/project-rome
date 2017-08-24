@@ -16,11 +16,11 @@ preferredAppIds | A list of **NSString** objects representing IDs of the apps th
 ## Properties
 
 ### fallbackUri
-`@property (nonatomic, readonly, copy, nullable) NSString* fallbackUri;`
+`@property (nonatomic, copy, nullable) NSString* fallbackUri;`
 
 The fallback URI to launch on the web in case the app launch URI fails.
 
 ### preferredAppIds
-`@property (nonatomic, readonly, copy, nullable) NSArray* preferredAppIds;`
+`@property (nonatomic, copy, nullable) NSArray* preferredAppIds;`
 
 A list of **NSString** objects representing IDs of the apps that should be able to launch with this URI. For Windows apps, the ID will be the app's package family name.
