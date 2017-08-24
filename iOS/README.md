@@ -18,7 +18,7 @@ The simplest way to add the Remote Systems platform to your iOS app is by using 
 platform :ios, '10.0'
 
 target 'ProjectName' do
-  pod 'ProjectRomeSdk', '~>0.0.3'
+  pod 'ProjectRomeSdk', '~>0.6.2'
 end
 ```
 

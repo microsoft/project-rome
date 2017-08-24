@@ -62,11 +62,12 @@ Platform.initialize(getApplicationContext(),
         }
  
         @Override 
-        // Connected Devices platform also needs the app's client id to initialize
+        // Connected Devices platform also needs the app id to initialize
         public String getClientId() { 
-            // recommended: retrieve client id previously and store as a global constant. 
-            // The client id is provided when you register your app on the Microsoft developer portal
-            return CLIENT_ID; 
+            // recommended: retrieve app id previously and store as a global constant. 
+            // The app id is provided when you register your app on the Microsoft developer portal
+            // (https://apps.dev.microsoft.com/)
+            return APP_ID; 
         } 
     },  
     // Implement an IPlatformInitializationHandler - not required
@@ -170,30 +171,30 @@ The Android client SDK, like the Windows implementation, uses a watcher pattern 
 Get an instance of **RemoteSystemDiscovery** using its corresponding Builder class. At this point you must also instantiate a custom **RemoteSystemsListener** to handle the discovery events. You may want to show and maintain a list view of all the available remote devices and their basic info.
 
 ```java
-RemoteSystemDiscovery.Builder discoveryBuilder; 
 
-discoveryBuilder = new RemoteSystemDiscovery.Builder().setListener(new IRemoteSystemDiscoveryListener() { 
-    @Override 
-    public void onRemoteSystemAdded(RemoteSystem remoteSystem) { 
-        // handle the added event. At minimum, you should acquire a 
-        // reference to the discovered device.
-    }
-    @Override
-    public void onRemoteSystemUpdated(RemoteSystem remoteSystem) {
-        // update the reference to the device
-    }
-    @Override
-    public void onRemoteSystemRemoved(String remoteSystemId) {
-        // remove the reference to the device
-    }
-    @Override
-    public void onComplete(){
-        // execute code when the initial discovery process has completed
-    }
-}); 
+// use the builder pattern to get a RemoteSystemDiscovery instance.
+RemoteSystemDiscovery discovery = new RemoteSystemDiscovery.Builder()
+    .setListener(new IRemoteSystemDiscoveryListener() {	// set the listener for discovery events
+        @Override 
+        public void onRemoteSystemAdded(RemoteSystem remoteSystem) { 
+            // handle the added event. At minimum, you should acquire a 
+            // reference to the discovered device.
+        }
+        @Override
+        public void onRemoteSystemUpdated(RemoteSystem remoteSystem) {
+            // update the reference to the device
+        }
+        @Override
+        public void onRemoteSystemRemoved(String remoteSystemId) {
+            // remove the reference to the device
+        }
+        @Override
+        public void onComplete(){
+            // execute code when the initial discovery process has completed
+        }
+    })
+    .getResult(); // return a RemoteSystemDiscovery instance
 
-// get the discovery instance
-RemoteSystemDiscovery discovery = discoveryBuilder.getResult(); 
 // begin watching for remote devices
 discovery.start(); 
 ```
