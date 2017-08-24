@@ -20,7 +20,7 @@ StartDiscoveryWithHostName | Attempts to find a system proximally using its IP a
 ## Properties
 
 ### delegate
-`@property (nonatomic, readonly weak, nonnull) id< MCDRemoteSystemDiscoveryManagerDelegate>* delegate;`
+`@property (nonatomic, readonly weak, nullable) id< MCDRemoteSystemDiscoveryManagerDelegate> delegate;`
 
 The delegate to receive events that result from starting a discovery.
 
