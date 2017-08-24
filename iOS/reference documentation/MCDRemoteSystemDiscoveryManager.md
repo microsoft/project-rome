@@ -15,7 +15,7 @@ initWithDelegate | Initializes the [MCDRemoteSystemDiscoveryManager](MCDRemoteSy
 initWithDelegate:withFilters | Initializes the [MCDRemoteSystemDiscoveryManager](MCDRemoteSystemDiscoveryManager.md) with a delegate and a set of discovery filters.
 startDiscovery | Begins discovering remote systems. It will cause an existing discovery to restart.
 stop | Stops the active discovery.
-StartDiscoveryWithHostName | Attempts to find a system proximally using its IP address.
+startDiscoveryWithHostName | Attempts to find a system proximally using its IP address.
 
 ## Properties
 

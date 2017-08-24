@@ -11,7 +11,7 @@ A class used to filter remote systems based on availability status type.
 |Members       | Descriptions      | 
 |---------------|-----------------|
 |type | The remote system status type of this filter instance.|
-|initWithRemoteSystemTypeFilter | Initializes the [MCDRemoteSystemStatusTypeFilter](MCDRemoteSystemStatusTypeFilter.md) with a [MCDRemoteSystemStatusType](MCDRemoteSystemStatusType.md).|
+|initWithStatusType | Initializes the [MCDRemoteSystemStatusTypeFilter](MCDRemoteSystemStatusTypeFilter.md) with a [MCDRemoteSystemStatusType](MCDRemoteSystemStatusType.md).|
 
 ## Properties
 
@@ -22,8 +22,8 @@ The remote system status type of this filter instance.
 
 ## Methods
 
-### initWithRemoteSystemTypeFilter
-`-(void)initWithRemoteSystemTypeFilter: (MCDRemoteSystemStatusType) statusType;`
+### initWithStatusType
+`-(nullable instancetype)initWithStatusType:(MCDRemoteSystemStatusType)statusType;`
 
 Initializes the [MCDRemoteSystemStatusTypeFilter](MCDRemoteSystemStatusTypeFilter.md) with a [MCDRemoteSystemStatusType](MCDRemoteSystemStatusType.md).
 
