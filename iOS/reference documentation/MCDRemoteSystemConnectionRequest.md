@@ -16,7 +16,7 @@ initWithRemoteSystem | Initializes the [MCDRemoteSystemConnectionRequest](MCDRem
 ## Properties
 
 ### remoteSystem
-`@property (nonatomic, readonly, copy, nonnull) MCDRemoteSystem* remoteSystem;`
+`@property (nonatomic, readonly, strong, nonnull) MCDRemoteSystem* remoteSystem;`
 
 The remote system to connect to.
 
