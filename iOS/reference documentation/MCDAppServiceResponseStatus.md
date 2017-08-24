@@ -15,4 +15,4 @@ MCDAppServiceResponseStatusFailure |1| The app service failed to receive and pro
 MCDAppServiceResponseStatusResourceLimitsExceeded |2| The app service exited because not enough resources were available.
 MCDAppServiceResponseStatusUnknown |3| An unknown error occurred.
 MCDAppServiceResponseStatusRemoteSystemUnavailable |4| The device to mwhich the message was sent is not available.
-MCDAppServiceResponseStatusMessageSizeTooLarge |5| The app service failed to process the message because it is too large.
+MCDAppServiceResponseStatusMessageTooLarge |5| The app service failed to process the message because it is too large.
