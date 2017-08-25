@@ -7,7 +7,7 @@
 
 @interface AppDataSource : NSObject
 
-@property (readwrite, nonatomic, weak) CDRemoteSystem* selectedSystem;
+@property (readwrite, nonatomic, weak) MCDRemoteSystem* selectedSystem;
 
 + (AppDataSource*)instance;
 

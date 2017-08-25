@@ -16,17 +16,17 @@
 
 - (void)applicationDidEnterBackground:(__unused UIApplication*)application
 {
-    [CDPlatform suspend];
+    [MCDPlatform suspend];
 }
 
 - (void)applicationWillEnterForeground:(__unused UIApplication*)application
 {
-    [CDPlatform resume];
+    [MCDPlatform resume];
 }
 
 - (void)applicationWillTerminate:(__used UIApplication*)application
 {
-    [CDPlatform shutdown];
+    [MCDPlatform shutdown];
 }
 
 @end

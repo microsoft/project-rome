@@ -13,7 +13,7 @@
 
 - (instancetype)initWithWebView:(nonnull UIWebView*)webView withClientId:(nonnull NSString*)clientId;
 
-- (void)fireAuthenticationComplete:(BOOL)isAuthenticated hasFailed:(BOOL)hasFailed authCode:(NSString*)authCode;
+- (void)fireAuthenticationComplete:(BOOL)isAuthenticated hasFailed:(BOOL)hasFailed refreshToken:(NSString*)refreshToken;
 
 - (NSError*)login:(NSString*)signInUri;
 - (NSError*)logout;

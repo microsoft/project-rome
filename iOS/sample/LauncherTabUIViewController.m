@@ -8,7 +8,7 @@
 
 @implementation LauncherTabUIViewController
 {
-    CDRemoteLauncher* _launcher;
+    MCDRemoteLauncher* _launcher;
 }
 
 - (void)viewDidLoad
@@ -56,39 +56,39 @@
 
 - (void)launchUriWithString:(NSString*)uri
 {
-    CDRemoteSystem* system = [AppDataSource instance].selectedSystem;
+    MCDRemoteSystem* system = [AppDataSource instance].selectedSystem;
 
     if (!system)
     {
         return;
     }
 
-    CDRemoteSystemConnectionRequest* request = [[CDRemoteSystemConnectionRequest alloc] initWithRemoteSystem:system];
+    MCDRemoteSystemConnectionRequest* request = [[MCDRemoteSystemConnectionRequest alloc] initWithRemoteSystem:system];
 
-    [CDRemoteLauncher launchUri:uri
+    [MCDRemoteLauncher launchUri:uri
                     withRequest:request
-                 withCompletion:^(CDRemoteLauncherUriStatus status) {
+                 withCompletion:^(MCDRemoteLauncherUriStatus status) {
                      dispatch_async(dispatch_get_main_queue(), ^{
 
                          NSString* title = nil;
                          NSString* message = nil;
 
-                         if (status == CDRemoteLauncherUriStatusSuccess)
+                         if (status == MCDRemoteLauncherUriStatusSuccess)
                          {
                              title = @"RemoteSystem Success";
                              message = @"The URI was successfully launched on the remote device.";
                          }
-                         else if (status == CDRemoteLauncherUriStatusRemoteSystemUnavailable)
+                         else if (status == MCDRemoteLauncherUriStatusRemoteSystemUnavailable)
                          {
                              title = @"RemoteSystem Unvailable";
                              message = @"The Remote System is unavailable.";
                          }
-                         else if (status == CDRemoteLauncherUriStatusDeniedByLocalSystem)
+                         else if (status == MCDRemoteLauncherUriStatusDeniedByLocalSystem)
                          {
                              title = @"Denied by Local System";
                              message = @"The request was denied by the local system.";
                          }
-                         else if (status == CDRemoteLauncherUriStatusDeniedByLocalSystem)
+                         else if (status == MCDRemoteLauncherUriStatusDeniedByLocalSystem)
                          {
                              title = @"Denied by Remote System";
                              message = @"The request was denied by the remote system.";

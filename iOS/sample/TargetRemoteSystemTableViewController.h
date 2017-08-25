@@ -7,9 +7,9 @@
 #import <UIKit/UIKit.h>
 
 @interface TargetRemoteSystemTableViewController
-    : UITableViewController <CDRemoteSystemDiscoveryManagerDelegate, MFMailComposeViewControllerDelegate>
+    : UITableViewController <MCDRemoteSystemDiscoveryManagerDelegate, MFMailComposeViewControllerDelegate>
 
 @property (strong, nonatomic) NSMutableArray* discoveredSystems;
-@property (strong, nonatomic) CDRemoteSystemDiscoveryManager* remoteSystemDiscoveryManager;
+@property (strong, nonatomic) MCDRemoteSystemDiscoveryManager* remoteSystemDiscoveryManager;
 
 @end

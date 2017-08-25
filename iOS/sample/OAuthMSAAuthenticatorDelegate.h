@@ -9,8 +9,8 @@
 @protocol OAuthMSAAuthenticatorDelegate <NSObject>
 
 - (void)oauthMSAAuthenticator:(OAuthMSAAuthenticator*)authenticator
-    didFinishWithAuthenticationResult:(BOOL)isAuthenticated
-                            hasFailed:(BOOL)hasFailed
-                             authCode:(NSString*)authCode;
+didFinishWithAuthenticationResult:(BOOL)isAuthenticated
+                    hasFailed:(BOOL)hasFailed
+                 refreshToken:(NSString*)refreshToken;
 
 @end

@@ -56,7 +56,7 @@
     }
 
     self.discoveredSystems = [NSMutableArray new];
-    self.remoteSystemDiscoveryManager = [[CDRemoteSystemDiscoveryManager alloc] initWithDelegate:self];
+    self.remoteSystemDiscoveryManager = [[MCDRemoteSystemDiscoveryManager alloc] initWithDelegate:self];
 
     [self.remoteSystemDiscoveryManager startDiscovery];
     [self setPrompt:@"Discovering All Devices..."];
@@ -114,7 +114,7 @@
         return nil;
     }
 
-    CDRemoteSystem* system = self.discoveredSystems[indexPath.row];
+    MCDRemoteSystem* system = self.discoveredSystems[indexPath.row];
 
     cell.textLabel.text = system.displayName;
 
@@ -159,8 +159,8 @@
 
 #pragma mark CDRemoveSystemDiscoveryManagerDelegate
 
-- (void)remoteSystemDiscoveryManager:(__unused CDRemoteSystemDiscoveryManager*)discoveryManager
-                             didFind:(CDRemoteSystem*)remoteSystem
+- (void)remoteSystemDiscoveryManager:(__unused MCDRemoteSystemDiscoveryManager*)discoveryManager
+                             didFind:(MCDRemoteSystem*)remoteSystem
 {
     @synchronized(self)
     {
@@ -172,8 +172,8 @@
     }
 }
 
-- (void)remoteSystemDiscoveryManager:(__unused CDRemoteSystemDiscoveryManager*)discoveryManager
-                           didUpdate:(CDRemoteSystem*)remoteSystem
+- (void)remoteSystemDiscoveryManager:(__unused MCDRemoteSystemDiscoveryManager*)discoveryManager
+                           didUpdate:(MCDRemoteSystem*)remoteSystem
 {
     NSString* id = remoteSystem.id;
 
@@ -181,7 +181,7 @@
     {
         for (unsigned i = 0; i < self.discoveredSystems.count; i++)
         {
-            CDRemoteSystem* currentRemoteSystem = [self.discoveredSystems objectAtIndex:i];
+            MCDRemoteSystem* currentRemoteSystem = [self.discoveredSystems objectAtIndex:i];
             NSString* currentId = currentRemoteSystem.id;
 
             if ([currentId isEqualToString:id])
@@ -195,7 +195,7 @@
     }
 }
 
-- (void)remoteSystemDiscoveryManagerDidComplete:(__unused CDRemoteSystemDiscoveryManager*)discoveryManager
+- (void)remoteSystemDiscoveryManagerDidComplete:(__unused MCDRemoteSystemDiscoveryManager*)discoveryManager
                                       withError:(NSError*)error
 {
     if (error)

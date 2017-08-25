@@ -6,7 +6,7 @@
 #import "OAuthMsaAuthenticatorDelegate.h"
 
 @interface AuthenticationViewController
-    : UIViewController <OAuthMSAAuthenticatorDelegate, UIAlertViewDelegate, CDOAuthCodeProviderDelegate>
+: UIViewController <OAuthMSAAuthenticatorDelegate, UIAlertViewDelegate, MCDRefreshTokenProviderDelegate>
 
 @property (nonatomic, readwrite) BOOL shouldSignOut;
 
