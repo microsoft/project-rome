@@ -77,18 +77,6 @@ public class MainActivity extends FragmentActivity implements ActivityCompat.OnR
         super.onPostCreate(savedInstanceState);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Platform.resume();
-    }
-
-    @Override
-    public void onPause() {
-        Platform.suspend();
-        super.onPause();
-    }
-
     public void onLoginClick(View view) {
         _signInButton.setEnabled(false);
         _web.loadUrl(_oauthUrl);

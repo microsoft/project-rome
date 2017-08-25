@@ -8,11 +8,17 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,16 +28,18 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.microsoft.connecteddevices.AppServiceClientConnectionClosedStatus;
-import com.microsoft.connecteddevices.AppServiceClientConnection;
-import com.microsoft.connecteddevices.AppServiceClientConnectionStatus;
-import com.microsoft.connecteddevices.AppServiceClientResponse;
+import com.microsoft.connecteddevices.AppServiceConnection;
+import com.microsoft.connecteddevices.AppServiceConnectionClosedStatus;
+import com.microsoft.connecteddevices.AppServiceConnectionStatus;
+import com.microsoft.connecteddevices.AppServiceResponse;
+import com.microsoft.connecteddevices.AppServiceRequest;
 import com.microsoft.connecteddevices.AppServiceResponseStatus;
 import com.microsoft.connecteddevices.ConnectedDevicesException;
-import com.microsoft.connecteddevices.IAppServiceClientConnectionListener;
+import com.microsoft.connecteddevices.IAppServiceConnectionListener;
 import com.microsoft.connecteddevices.IAppServiceResponseListener;
+import com.microsoft.connecteddevices.IAppServiceResponseStatusListener;
+import com.microsoft.connecteddevices.IAppServiceRequestListener;
 import com.microsoft.connecteddevices.IRemoteLauncherListener;
-import com.microsoft.connecteddevices.Platform;
 import com.microsoft.connecteddevices.RemoteLaunchUriStatus;
 import com.microsoft.connecteddevices.RemoteLauncher;
 import com.microsoft.connecteddevices.RemoteSystemConnectionRequest;
@@ -42,9 +50,16 @@ import static com.microsoft.connecteddevices.RemoteLaunchUriStatus.SUCCESS;
 public class DeviceActivity extends Activity implements AdapterView.OnItemSelectedListener {
     private static final String TAG = DeviceActivity.class.getName();
 
-    private static final String APP_SERVICE = ""; // Fill in your app service name
-    private static final String APP_IDENTIFIER = ""; // Fill in your app identifier
+    // Event log colors
+    private static final int APP_SERVICE_CONNECTION_COLOR = (0xff) << 24 | (0x52) << 16 | (0x6d) << 8 | (0x9b);
+    private static final int APP_SERVICE_REQUEST_COLOR = (0xff) << 24 | (0x01) << 16 | (0x00) << 8 | (0x72);
+    private static final int APP_SERVICE_RESPONSE_COLOR = (0xff) << 24 | (0x61) << 16 | (0x00) << 8 | (0x8e);
+    private static final int LAUNCH_URI_COLOR = (0xff) << 24 | (0x72) << 16 | (0x5d) << 8 | (0x00);
+    private static final int SUCCESS_COLOR = (0xff) << 24 | (0x00) << 16 | (0x8e) << 8 | (0x17);
+    private static final int FAILURE_COLOR = (0xff) << 24 | (0x8e) << 16 | (0x00) << 8 | (0x00);
 
+    private static final String APP_SERVICE = "com.microsoft.test.cdppingpongservice";
+    private static final String APP_IDENTIFIER = "5085ShawnHenry.RomanTestApp_jsjw7knzsgcce";
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
     private static final String TIME_STAMP_FORMAT = "HH:mm:ss.SSS";
 
@@ -52,12 +67,12 @@ public class DeviceActivity extends Activity implements AdapterView.OnItemSelect
     private Device device;
     private TextView _launchLog;
     private EditText _launchUriEditText;
-
     private Button _sendPingButton;
     private Button _connectButton;
-    private String _id = null;
+    private String _id;
 
-    private AppServiceClientConnection _appServiceClientConnection;
+    private long _messageId = 0;
+    private AppServiceConnection _appServiceConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,45 +127,75 @@ public class DeviceActivity extends Activity implements AdapterView.OnItemSelect
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
     public void onConnectClick() {
         if (device.getSystem() != null) {
             _connectButton.setEnabled(false);
-            logMessage("Waiting for connection response");
+            LogMessage(LogLevel.Info, "Waiting for connection response", APP_SERVICE_CONNECTION_COLOR);
             connectAppService(new RemoteSystemConnectionRequest(device.getSystem()));
         }
     }
 
     public void onSendPingClick() {
-        logMessage("Waiting for ping response");
+        final long messageId = ++_messageId;
 
-        Bundle message = new Bundle();
-        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-        message.putString("Type", "ping");
-        message.putString("CreationDate",  df.format(new Date()));
-        message.putString("TargetId", _id);
+        LogMessage(LogLevel.Verbose, "Waiting for ping response for message [" + Long.toString(messageId) + "]", APP_SERVICE_REQUEST_COLOR);
+
+        Bundle message = CreatePingMessage();
 
         try {
-            _appServiceClientConnection.sendMessageAsync(message);
+            _appServiceConnection.sendMessageAsync(message, new IAppServiceResponseListener() {
+                @Override
+                public void responseReceived(AppServiceResponse response) {
+                    AppServiceResponseStatus status = response.getStatus();
+                    if (status == AppServiceResponseStatus.SUCCESS)
+                    {
+                        Bundle bundle = response.getMessage();
+                        LogMessage(LogLevel.Info, "Received successful AppService response to message [" + Long.toString(messageId) + "]", SUCCESS_COLOR);
+                        String dateStr = bundle.getString("CreationDate");
+                        DateFormat df = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
+                        try {
+                            Date startDate = df.parse(dateStr);
+                            Date nowDate = new Date();
+                            long diff = nowDate.getTime() - startDate.getTime();
+                            runOnUiThread(new SetPingText(Long.toString(diff)));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else
+                    {
+                        LogMessage(LogLevel.Error, "Did not receive successful AppService response", FAILURE_COLOR);
+                    }
+                }
+            });
         } catch (ConnectedDevicesException e) {
+            LogMessage(LogLevel.Error, "Failed to send Ping request through AppServices", FAILURE_COLOR);
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Platform.resume();
+    private Bundle CreatePingMessage() {
+        Bundle bundle = new Bundle();
+        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        bundle.putString("Type", "ping");
+        bundle.putString("CreationDate",  df.format(new Date()));
+        bundle.putString("TargetId", _id);
+
+        return bundle;
     }
 
-    @Override
-    public void onPause() {
-        Platform.suspend();
-        super.onPause();
+    private Bundle CreatePongMessage(Bundle bundle) {
+        bundle.putString("Type", "pong");
+        return bundle;
     }
 
     public void onLaunchClick() {
         if (device.getSystem() != null) {
-            logMessage("Launching Uri");
             launchUri(new RemoteSystemConnectionRequest(device.getSystem()));
         }
     }
@@ -165,43 +210,31 @@ public class DeviceActivity extends Activity implements AdapterView.OnItemSelect
     }
 
     private void connectAppService(RemoteSystemConnectionRequest connectionRequest) {
-        _appServiceClientConnection = new AppServiceClientConnection(APP_SERVICE, APP_IDENTIFIER, connectionRequest,
-                new AppServiceClientConnectionListener(),
-                new IAppServiceResponseListener() {
+        _appServiceConnection = new AppServiceConnection(APP_SERVICE, APP_IDENTIFIER, connectionRequest,
+                new AppServiceConnectionListener(),
+                new IAppServiceRequestListener() {
                     @Override
-                    public void responseReceived(AppServiceClientResponse response) {
-                        AppServiceResponseStatus status = response.getStatus();
+                    public void requestReceived(AppServiceRequest request) {
+                        LogMessage(LogLevel.Info, "Received AppService request. Sending response.", APP_SERVICE_RESPONSE_COLOR);
 
-                        if (status == AppServiceResponseStatus.SUCCESS)
-                        {
-                            Bundle bundle = response.getMessage();
-                            Log.i(TAG, "Received successful AppService response");
-                            logMessage("Received successful AppService response");
-
-                            String dateStr = bundle.getString("CreationDate");
-
-                            DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-                            try {
-                                Date startDate = df.parse(dateStr);
-                                Date nowDate = new Date();
-                                long diff = nowDate.getTime() - startDate.getTime();
-                                runOnUiThread(new SetPingText(Long.toString(diff)));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
+                        Bundle message = CreatePongMessage(request.getMessage());
+                        request.sendResponseAsync(message, new IAppServiceResponseStatusListener() {
+                            @Override
+                            public void statusReceived(AppServiceResponseStatus status) {
+                                if (status == AppServiceResponseStatus.SUCCESS) {
+                                    LogMessage(LogLevel.Info, "Successfully sent response.", SUCCESS_COLOR);
+                                } else {
+                                    LogMessage(LogLevel.Info, "Failed to send response.", FAILURE_COLOR);
+                                }
                             }
-                        }
-                        else
-                        {
-                            Log.e(TAG, "IAppServiceResponseListener.responseReceived status != SUCCESS");
-                            logMessage("Did not receive successful AppService response");
-                        }
+                        });
                     }
                 });
 
         _id = connectionRequest.getRemoteSystem().getId();
 
         try {
-            _appServiceClientConnection.openRemoteAsync();
+            _appServiceConnection.openRemoteAsync();
         } catch (ConnectedDevicesException e) {
             e.printStackTrace();
         }
@@ -217,9 +250,9 @@ public class DeviceActivity extends Activity implements AdapterView.OnItemSelect
 
     private void launchUri(RemoteSystemConnectionRequest connectionRequest) {
         try {
-            String url = _launchUriEditText.getText().toString();
-            logMessage("Launching URI: " + url + " on " + connectionRequest.getRemoteSystem().getDisplayName());
-            new RemoteLauncher().LaunchUriAsync(connectionRequest, url,
+            Uri uri = Uri.parse(_launchUriEditText.getText().toString());
+            LogMessage(LogLevel.Info, "Launching URI on " + connectionRequest.getRemoteSystem().getDisplayName(), LAUNCH_URI_COLOR);
+            RemoteLauncher.LaunchUriAsync(connectionRequest, uri,
                     new IRemoteLauncherListener() {
                         @Override
                         public void onCompleted(RemoteLaunchUriStatus status) {
@@ -227,32 +260,72 @@ public class DeviceActivity extends Activity implements AdapterView.OnItemSelect
                             if (status == SUCCESS)
                             {
                                 message = "Launch succeeded";
-                                Log.i(TAG, message);
+                                LogMessage(LogLevel.Info, message, SUCCESS_COLOR);
                             }
                             else
                             {
                                 message = "Launch failed with status " + status.toString();
-                                Log.e(TAG, message);
+                                LogMessage(LogLevel.Error, message, FAILURE_COLOR);
                             }
-                            logMessage(message);
                             DeviceActivity.this.runOnUiThread(new PrintToast(message));
                         }
                     });
         } catch (ConnectedDevicesException e) {
-            e.printStackTrace();
+            LogMessage(LogLevel.Error, "Failed to launch URI. Error: " + e.getMessage(), FAILURE_COLOR);
+        } catch (android.net.ParseException e) {
+            LogMessage(LogLevel.Error, "Failed to parse provided URI. Error: " + e.getMessage(), FAILURE_COLOR);
         }
     }
 
-    private void logMessage(final String message) {
+    private enum LogLevel {
+        Error(0),
+        Warning(1),
+        Info(2),
+        Verbose(3);
+
+        public final int id;
+
+        LogLevel(int id) {
+            this.id = id;
+        }
+    }
+
+    private void LogMessage(final LogLevel level, final String message, final int color) {
+        final String levelStr;
+
+        switch (level) {
+            case Error:
+                Log.e(TAG, message);
+                levelStr = "Error";
+                break;
+            case Warning:
+                Log.w(TAG, message);
+                levelStr = "Warning";
+                break;
+            case Info:
+                Log.i(TAG, message);
+                levelStr = "Info";
+                break;
+            case Verbose:
+                Log.v(TAG, message);
+                levelStr = "Verbose";
+                break;
+            default:
+                levelStr = "Unknown";
+        }
+
         DeviceActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (_launchLog == null) {
                     return;
                 }
-                CharSequence prevText = _launchLog.getText();
-                String newText = prevText + "\n" + message + " ["+getTimeStamp()+"]";
-                _launchLog.setText(newText);
+
+                String newText = "\n" + "[" + getTimeStamp() + "] " + message;
+
+                Spannable insertText = new SpannableString(newText);
+                insertText.setSpan(new ForegroundColorSpan(color), 0, newText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                _launchLog.append(insertText);
             }
         });
     }
@@ -265,38 +338,68 @@ public class DeviceActivity extends Activity implements AdapterView.OnItemSelect
                 Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
                 toast.show();
             }
-        };
+        }
     }
 
     private String getTimeStamp() {
-        DateFormat df = new SimpleDateFormat(TIME_STAMP_FORMAT);
+        DateFormat df = new SimpleDateFormat(TIME_STAMP_FORMAT, Locale.getDefault());
         return df.format(new Date());
     }
 
-    private class AppServiceClientConnectionListener implements IAppServiceClientConnectionListener {
+    private class AppServiceConnectionListener implements IAppServiceConnectionListener {
 
         @Override
         public void onSuccess() {
-            Log.i(TAG, "AppServiceClientConnectionListener onSuccess");
-            logMessage("AppService connection opened");
-            _sendPingButton.setEnabled(true);
-            _connectButton.setEnabled(true);
+            LogMessage(LogLevel.Info, "AppService connection opened", SUCCESS_COLOR);
+
+            DeviceActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    _sendPingButton.setEnabled(true);
+                    _connectButton.setEnabled(true);
+                }
+            });
         }
 
         @Override
-        public void onError(AppServiceClientConnectionStatus status) {
-            Log.e(TAG, "AppServiceClientConnectionListener onError status [" + status.toString()+"]");
-            logMessage("AppService connection error");
-            _sendPingButton.setEnabled(false);
-            _connectButton.setEnabled(true);
+        public void onError(AppServiceConnectionStatus status) {
+            if (status == AppServiceConnectionStatus.APPSERVICE_UNAVAILABLE)
+            {
+                LogMessage(LogLevel.Warning, "AppService connection was lost. Attempting to reconnect", FAILURE_COLOR);
+                // Since we tried to connect before sending a message, we lost the appservice connection and so need to reconnect
+                try {
+                    _appServiceConnection.openRemoteAsync();
+                } catch (ConnectedDevicesException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if (status == AppServiceConnectionStatus.APP_NOT_INSTALLED)
+            {
+                LogMessage(LogLevel.Warning, "RomanApp is not installed on the target machine.", FAILURE_COLOR);
+            }
+            else
+            {
+                LogMessage(LogLevel.Error, "AppService connection error [" + status.toString() + "]", FAILURE_COLOR);
+            }
+            DeviceActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    _sendPingButton.setEnabled(false);
+                    _connectButton.setEnabled(true);
+                }
+            });
         }
 
         @Override
-        public void onClosed(AppServiceClientConnectionClosedStatus status) {
-            Log.i(TAG, "AppServiceClientConnectionListener onClosed status [" + status.toString()+"]");
-            logMessage("AppService connection closed");
-            _sendPingButton.setEnabled(false);
-            _connectButton.setEnabled(true);
+        public void onClosed(AppServiceConnectionClosedStatus status) {
+            LogMessage(LogLevel.Error, "AppService connection closed [" + status.toString() + "]", FAILURE_COLOR);
+            DeviceActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    _sendPingButton.setEnabled(false);
+                    _connectButton.setEnabled(true);
+                }
+            });
         }
     }
 }

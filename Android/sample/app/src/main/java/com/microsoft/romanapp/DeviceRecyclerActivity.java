@@ -160,18 +160,6 @@ public class DeviceRecyclerActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Platform.resume();
-    }
-
-    @Override
-    public void onPause() {
-        Platform.suspend();
-        super.onPause();
-    }
-
     public void onDiscoverClicked(View view) {
         initializeData();
     }
