@@ -26,8 +26,8 @@ namespace Microsoft.ConnectedDevices
                 {
                     tcs.TrySetResult(r);
                 };
-
-                RemoteLauncher.LaunchUriAsync(connectionRequest, uri.OriginalString, launchUriListener);
+                
+                RemoteLauncher.LaunchUriAsync(connectionRequest, SystemUriToAndroidUri(uri), launchUriListener);
             }
             catch (Exception e)
             {
@@ -35,6 +35,11 @@ namespace Microsoft.ConnectedDevices
             }
 
             return tcs.Task;
+        }
+
+        private static Android.Net.Uri SystemUriToAndroidUri(System.Uri uri)
+        {
+            return Android.Net.Uri.Parse(uri.OriginalString);
         }
     }
 

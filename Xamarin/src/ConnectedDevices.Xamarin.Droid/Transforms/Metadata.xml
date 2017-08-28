@@ -10,9 +10,17 @@
   <!-- Change the visibility of a class -->
   <attr path="/api/package[@name='com.microsoft.connecteddevices']" name="managedName">Microsoft.ConnectedDevices</attr>
   <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='Listenable']" name="visibility">public</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection']/method[@name='sendMessageAsync']" name="visibility">private</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection']/method[@name='openRemoteAsync']" name="visibility">private</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IWebAccountProvider']" name="visibility">public</attr>
 
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection']/method[@name='openRemoteAsync']" name="managedName">OpenRemoteAsynchronous</attr>
-  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceClientConnection']/method[@name='sendMessageAsync']" name="managedName">SendMessageAsynchronous</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IBinaryClientListenerInternal']" name="visibility">internal</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='IDeviceListenerInternal']" name="visibility">internal</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='Platform.IWebAccountProviderObjectCache']" name="visibility">internal</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/interface[@name='Platform.IWebAccountProviderFirstTokenFetchCallback']" name="visibility">internal</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='Platform.WebAccountProviderObjectType']" name="visibility">internal</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='Platform.OAuthWebAccountProvider.RefreshTokenRefresher']" name="visibility">internal</attr>
+  
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceConnection']/method[@name='sendMessageAsync']" name="managedName">SendMessageAsynchronous</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceConnection']/method[@name='openRemoteAsync']" name="managedName">OpenRemoteAsynchronous</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceConnection']" name="managedName">AppServiceConnectionInternal</attr>
+  <attr path="/api/package[@name='com.microsoft.connecteddevices']/class[@name='AppServiceRequest']/method[@name='sendResponseAsync']" name="managedName">SendResponseAsynchronous</attr>
 </metadata>
