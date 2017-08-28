@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies { 
-    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armv7', version: '0.4.0', ext: 'aar', classifier: 'release')
+    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armeabi-v7a', version: '0.6.2', ext: 'aar', classifier: 'release')
 }
 
 ```
