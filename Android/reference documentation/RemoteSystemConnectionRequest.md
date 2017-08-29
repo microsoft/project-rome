@@ -13,7 +13,7 @@ Initializes a new instance of the RemoteSystemConnectionRequest class for a part
 
 `public RemoteSystemConnectionRequest(RemoteSystem remote)`
 
-**Parameters**  
+#### Parameters  
 *remote* - the **RemoteSystem** object to attempt to connect to.
 
 ## Public methods
@@ -23,5 +23,5 @@ Retrieves the **RemoteSystem** object for this particular connection request.
 
 `public RemoteSystem getRemoteSystem()`
 
-**Return value**  
+#### return value  
 The **RemoteSystem** object for this particular connection request

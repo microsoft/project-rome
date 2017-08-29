@@ -11,5 +11,5 @@ Called to check whether a **RemoteSystem** passes through the implemented filter
 
 `boolean filter (RemoteSystem remoteSystem)`
 
-**Parameters**  
+#### Parameters  
 *remoteSystem* - the **RemoteSystem** object to check against the filter

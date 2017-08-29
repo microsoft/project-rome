@@ -1,4 +1,4 @@
-# AppServiceClientConnectionStatus enum
+# AppServiceConnectionStatus enum
 Contains the values that describe a connection to a remote app service.
 
 ## Fields
@@ -17,9 +17,9 @@ Contains the values that describe a connection to a remote app service.
 ## Public methods
 
 ### getValue
-Returns the int value for this AppServiceClientConnectionStatus.
+Returns the int value for this AppServiceConnectionStatus.
 
 `public int getValue()`
 
-**Return value**  
-The int value for this AppServiceClientConnectionStatus
+#### return value  
+The int value for this AppServiceConnectionStatus

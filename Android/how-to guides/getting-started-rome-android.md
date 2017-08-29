@@ -21,14 +21,17 @@ repositories {
 }
 
 dependencies { 
-    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armv7', version: '0.4.0', ext: 'aar', classifier: 'release')
+    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armeabi-v7a', version: '0.6.2', ext: 'aar', classifier: 'release')
 }
 
 ```
 
 If you wish to use ProGuard in your app, add the ProGuard Rules for these new APIs. Create a file called *proguard-rules.txt* in the *App* folder of your project, and paste in the contents of [ProGuard_Rules_for_Android_Rome_SDK.txt](../ProGuard_Rules_for_Android_Rome_SDK.txt).
 
-In your project's *AndroidManifest.xml* file, add the following permissions inside the `<manifest>` element (if they are not already present). This gives your app permission to connect to the Internet.
+In your project's *AndroidManifest.xml* file, add the following permissions inside the `<manifest>` element (if they are not already present). This gives your app permission to connect to the Internet and to enable Bluetooth discovery on your device.
+
+> Note: The Bluetooth-related permissions are only necessary for using Bluetooth discovery; they are not needed for the other features in the Connected Devices platform. Additionally, `ACCESS_COARSE_LOCATION` is only required on Android SDKs 21 and later. On Android SDKs 23 and later, the developer must also prompt the user to grant location access at runtime.
+
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -62,10 +65,10 @@ Platform.initialize(getApplicationContext(),
         }
  
         @Override 
-        // Connected Devices platform also needs the app id to initialize
+        // Connected Devices platform also needs the app ID to initialize
         public String getClientId() { 
-            // recommended: retrieve app id previously and store as a global constant. 
-            // The app id is provided when you register your app on the Microsoft developer portal
+            // recommended: retrieve app ID previously and store as a global constant. 
+            // The app ID is provided when you register your app on the Microsoft developer portal
             // (https://apps.dev.microsoft.com/)
             return APP_ID; 
         } 

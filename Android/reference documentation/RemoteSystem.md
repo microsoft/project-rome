@@ -11,7 +11,7 @@ Returns the "friendly name" of the remote system.
 
 `public String getDisplayName()`
 
-**Return value**  
+#### return value  
 The "friendly name" of the remote system
    
 ### getKind
@@ -19,7 +19,7 @@ Returns the kind of the remote system.
 
 `public RemoteSystemKinds getKind()`
 
-**Return value**  
+#### return value  
 The **RemoteSystemKinds** value corresponding to the kind of device this remote system is classified as
 
 ### getStatus
@@ -27,7 +27,7 @@ Returns the status of the remote system.
 
 `public RemoteSystemStatus getStatus()`
 
-**Return value**  
+#### return value  
 The **RemoteSystemStatus** value representing the remote system's availability status
 
 ### getId
@@ -35,7 +35,7 @@ Returns the unique device id of the remote system.
 
 `public String getId()`
 
-**Return value**  
+#### return value  
 The unique device id of the remote system
 
 ### isAvailableByProximity
@@ -43,7 +43,7 @@ Checks whether the device is available by either UDP or Bluetooth.
 
 `public boolean isAvailableByProximity()`
 
-**Return value**  
+#### return value  
 **true** if the the device is available by UDP or Bluetooth, otherwise **false**
 
 ### isAvailableByCloud
@@ -51,5 +51,5 @@ Checks whether the device is available cloud connection.
 
 `public boolean isAvailableByCloud()`
 
-**Return value**  
+#### return value  
 **true** if the the device is available by cloud connection, otherwise **false**

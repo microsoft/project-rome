@@ -11,7 +11,7 @@ Called when a remote system is discovered.
 
 `void onRemoteSystemAdded(RemoteSystem remoteSystem)`
 
-**Parameters**  
+#### Parameters  
 *remoteSystem* - a **RemoteSystem** object representing the discovered device.
 
 ### onRemoteSystemUpdated
@@ -19,7 +19,7 @@ Called when a previously discovered remote system has been updated as being avai
 
 `void onRemoteSystemUpdated(RemoteSystem remoteSystem)`
 
-**Parameters**  
+#### Parameters  
 *remoteSystem* - the **RemoteSystem** object representing the device that was updated
     
 ### onRemoteSystemRemoved
@@ -27,7 +27,7 @@ Called when a previously discovered remote system is no longer available.
 
 `void onRemoteSystemRemoved(String remoteSystemId)`
 
-**Parameters**  
+#### Parameters  
 *remoteSystemId* - the unique device id of the removed remote system
 
 ### onComplete

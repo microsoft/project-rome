@@ -11,10 +11,10 @@ Adds an **IRemoteSystemFilter** to this builder's list of filters and returns th
 
 `public Builder filter(IRemoteSystemFilter filter)`
 
-**Parameters**  
+#### Parameters  
 *filter* - the **IRemoteSystemFilter** to add
 
-**Return value**  
+#### return value  
 This builder object
 
 ### setListener
@@ -22,10 +22,10 @@ Sets an **IRemoteSystemDiscoveryListener** to handle the discovery events that t
 
 `public Builder setListener(IRemoteSystemDiscoveryListener listener)`
 
-**Parameters**  
+#### Parameters  
 *listener* - the **IRemoteSystemDiscoveryListener** to handle discovery events
 
-**Return value**  
+#### return value  
 This builder object
 
 ### getResult
@@ -33,5 +33,5 @@ Creates and returns the **RemoteSystemDiscovery** object from this builder, with
 
 `public RemoteSystemDiscovery getResult()`
 
-**Return value**  
+#### return value  
 The **RemoteSystemDiscovery** object created by this builder

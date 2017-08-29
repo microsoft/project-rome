@@ -11,7 +11,7 @@ Called within the **Platform.initialize** method when the Remote Systems platfor
 
 `void fetchAuthCodeAsync(String url, Platform.IAuthCodeHandler handler)`
 
-**Parameters**  
+#### Parameters  
 *url* - The URL that should be used to sign in the user with OAuth  
 *handler* - The handler that the app will later invoke with the new auth code
 
@@ -20,5 +20,5 @@ Called within the **Platform.initialize** method when the Remote Systems platfor
 
 `String getClientId()`
 
-**Return value**  
+#### Return value  
 The ID that represents the current application

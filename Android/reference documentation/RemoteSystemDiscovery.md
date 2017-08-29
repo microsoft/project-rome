@@ -26,5 +26,5 @@ Attempts to discover a device using an identifying string
 
 `public void findByHostName(String hostname) throws ConnectedDevicesException`
 
-**Parameters**  
+#### Parameters  
 *hostname* - the IP address or the machine name of the targeted remote device

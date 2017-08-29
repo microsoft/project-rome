@@ -11,7 +11,7 @@ Starts the default app associated with the URI scheme name for the specified URI
 
 `public static void LaunchUriAsync(RemoteSystemConnectionRequest remoteSystemConnectionRequest, String uri, IRemoteLauncherListener listener) throws ConnectedDevicesException`
 
-**Parameters**  
+#### Parameters  
 *remoteSystemConnectionRequest* - Specifies which remote system to connect to  
 *uri* - The URI which will cause the launching of an app, according to its scheme  
 *listener* - The **IRemoteLauncherListener** to handle the outcome of this launch attempt
@@ -21,7 +21,7 @@ Starts the default app associated with the URI scheme name for the specified URI
 
 `public static void LaunchUriAsync(RemoteSystemConnectionRequest remoteSystemConnectionRequest, String uri, RemoteLauncherOptions options, IRemoteLauncherListener listener) throws ConnectedDevicesException`
 
-**Parameters**  
+#### Parameters  
 *remoteSystemConnectionRequest* - Specifies which remote system to connect to  
 *uri* - The URI which will cause the launching of an app, according to its scheme  
 *options* - The launch specifications for the app  

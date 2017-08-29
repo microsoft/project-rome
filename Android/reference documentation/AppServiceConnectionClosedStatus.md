@@ -1,4 +1,4 @@
-# AppServiceClientConnectionClosedStatus
+# AppServiceConnectionClosedStatus
 Contains the values that describe the reason that an app service connection was closed.
 
 ## Fields
@@ -13,9 +13,9 @@ Contains the values that describe the reason that an app service connection was 
 ## Public methods
 
 ### getValue
-Returns the int value for this AppServiceClientConnectionClosedStatus.
+Returns the int value for this AppServiceConnectionClosedStatus.
 
 `public int getValue()`
 
-**Return value**  
-The int value for this AppServiceClientConnectionClosedStatus
+#### return value  
+The int value for this AppServiceConnectionClosedStatus

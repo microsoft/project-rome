@@ -1,5 +1,5 @@
 # AppServiceResponseStatus enum
-Contains values that describe the status of a message sent from the client app to a remote app service (whether the message data was successfully delivered).
+Contains values that describe the status of a message sent from one app service to another (whether the message data was successfully delivered).
 
 ## Fields
 
@@ -19,5 +19,5 @@ Returns the int value for this AppServiceResponseStatus.
 
 `public int getValue()`
 
-**Return value**  
+#### return value  
 The int value for this AppServiceResponseStatus
