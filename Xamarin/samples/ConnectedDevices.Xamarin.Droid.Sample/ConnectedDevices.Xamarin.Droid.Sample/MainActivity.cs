@@ -9,62 +9,107 @@
 //*********************************************************
 
 using System;
-using Android.App;
-using Android.Content;
-using Android.Widget;
-using Android.OS;
-using Android.Webkit;
-using Microsoft.ConnectedDevices;
 using System.Collections.Generic;
 using System.Linq;
+using Android;
+using Android.App;
+using Android.Content;
+using Android.OS;
+using Android.Widget;
+using Android.Webkit;
+using Microsoft.ConnectedDevices;
 using Android.Views;
+using Android.Content.PM;
 
 namespace ConnectedDevices.Xamarin.Droid.Sample
 {
     [Activity(Label = "Connected Devices", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : ListActivity
     {
-        // Use your own app id
-        // private const string APP_ID = ""; //get an app ID from https://apps.dev.microsoft.com/
+        // Use your own client id. Get a client ID from https://apps.dev.microsoft.com/
+        private const string CLIENT_ID = Secrets.CLIENT_ID;
 
-        private WebView _webView;
-        internal Dialog _authDialog;
-        RemoteSystemAdapter _adapter;
+        internal Dialog authDialog;
+        private WebView webView;
+        private RemoteSystemAdapter adapter;
 
-        private RemoteSystemWatcher _remoteSystemWatcher;
+        private List<RemoteSystemKinds> remoteSystemKind = new List<RemoteSystemKinds> { RemoteSystemKinds.Unknown, RemoteSystemKinds.Desktop, RemoteSystemKinds.Holographic, RemoteSystemKinds.Phone, RemoteSystemKinds.Xbox };
+        private RemoteSystemDiscoveryType remoteSystemDiscoveryKind = RemoteSystemDiscoveryType.Any;
+
+        private RemoteSystemWatcher remoteSystemWatcher;
+        private Button refreshButton;
+
+        private int permissionRequestCode;
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
 
             // Set our view from the "main" layout resource
-            SetContentView(Resource.Layout.Main);
+            this.SetContentView(Resource.Layout.Main);
 
-            Button callButton = FindViewById<Button>(Resource.Id.RefreshButton);
-            callButton.Click += (object sender, EventArgs e) =>
+            refreshButton = FindViewById<Button>(Resource.Id.RefreshButton);
+            refreshButton.Enabled = false;
+            refreshButton.Click += (object sender, EventArgs e) =>
             {
                 RefreshDevices();
             };
 
-            if(string.IsNullOrEmpty(APP_ID))
+            if (string.IsNullOrEmpty(CLIENT_ID))
             {
-                Toast.MakeText(this, "APP_ID not set!", ToastLength.Long).Show();
+                Toast.MakeText(this, "CLIENT_ID not set!", ToastLength.Long).Show();
             }
 
-            InitializeAsync();
+            // Prompt for location permission if it hasn't been granted
+            if (CheckSelfPermission(Manifest.Permission.AccessCoarseLocation) == Permission.Granted)
+            {
+                this.InitializeAsync();
+            }
+            else
+            {
+                Random rand = new Random();
+                this.permissionRequestCode = rand.Next(128);
+                RequestPermissions(new string[] { Manifest.Permission.AccessCoarseLocation }, this.permissionRequestCode);
+            }
 
-            _adapter = new RemoteSystemAdapter(this, new List<RemoteSystem>());
-            this.ListAdapter = _adapter;
+            this.adapter = new RemoteSystemAdapter(this, new List<RemoteSystem>());
+            this.ListAdapter = this.adapter;
+        }
+
+        public override async void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+        {
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            if (requestCode == this.permissionRequestCode)
+            {
+                // Platform handles if no permission granted for bluetooth, no need to do anything special.
+                this.permissionRequestCode = -1;
+
+                this.InitializeAsync();
+            }
+        }
+
+        protected override void OnListItemClick(ListView l, View v, int position, long id)
+        {
+            var detailsActivity = new Intent(this, typeof(RemoteSystemActivity));
+
+            RemoteSystem selectedDevice = adapter.GetItem(position);
+
+            ConnectedDevicesApplication.SelectedRemoteSystem = selectedDevice;
+
+            StartActivity(detailsActivity);
         }
 
         internal async void InitializeAsync()
         {
             Platform.FetchAuthCode += Platform_FetchAuthCode;
-            var result = await Platform.InitializeAsync(this.ApplicationContext, APP_ID);
+            var result = await Platform.InitializeAsync(this.ApplicationContext, CLIENT_ID);
 
             if (result == true)
             {
                 Console.WriteLine("Initialized platform successfully");
+                refreshButton.Enabled = true;
+                InitializeSpinners();
                 RefreshDevices();
             }
             else
@@ -73,48 +118,136 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
             }
         }
 
-        private void Platform_FetchAuthCode(string oauthUrl)
-        {
-            _authDialog = new Dialog(this);
-
-            var linearLayout = new LinearLayout(_authDialog.Context);
-            _webView = new WebView(_authDialog.Context);
-            linearLayout.AddView(_webView);
-            _authDialog.SetContentView(linearLayout);
-
-            _webView.SetWebChromeClient(new WebChromeClient());
-            _webView.Settings.JavaScriptEnabled = true;
-            _webView.Settings.DomStorageEnabled = true;
-            _webView.LoadUrl(oauthUrl);
-
-            _webView.SetWebViewClient(new MsaWebViewClient(this));
-            _authDialog.Show();
-            _authDialog.SetCancelable(true);
-        }
-
         internal void RefreshDevices()
         {
-            _adapter.Clear();
-             DiscoverDevices();
+            adapter.Clear();
+            DiscoverDevices();
+        }
+
+        private RemoteSystemDiscoveryType StringToDiscoveryType(string str)
+        {
+            RemoteSystemDiscoveryType kind = RemoteSystemDiscoveryType.Any;
+
+            switch (str)
+            {
+                case "All":
+                    kind = RemoteSystemDiscoveryType.Any;
+                    break;
+                case "Cloud":
+                    kind = RemoteSystemDiscoveryType.Cloud;
+                    break;
+                case "Proximal":
+                    kind = RemoteSystemDiscoveryType.Proximal;
+                    break;
+            }
+
+            return kind;
+        }
+
+        private List<RemoteSystemKinds> StringToSystemKind(string str)
+        {
+            List<RemoteSystemKinds> kinds = new List<RemoteSystemKinds> { RemoteSystemKinds.Unknown };
+
+            switch (str)
+            {
+                case "All":
+                    kinds = new List<RemoteSystemKinds> { RemoteSystemKinds.Unknown, RemoteSystemKinds.Desktop, RemoteSystemKinds.Holographic, RemoteSystemKinds.Phone, RemoteSystemKinds.Xbox };
+                    break;
+                case "Unknown":
+                    kinds = new List<RemoteSystemKinds> { RemoteSystemKinds.Unknown };
+                    break;
+                case "Desktop":
+                    kinds = new List<RemoteSystemKinds> { RemoteSystemKinds.Desktop };
+                    break;
+                case "Holographic":
+                    kinds = new List<RemoteSystemKinds> { RemoteSystemKinds.Holographic };
+                    break;
+                case "Phone":
+                    kinds = new List<RemoteSystemKinds> { RemoteSystemKinds.Phone };
+                    break;
+                case "Xbox":
+                    kinds = new List<RemoteSystemKinds> { RemoteSystemKinds.Xbox };
+                    break;
+            }
+
+            return kinds;
+        }
+
+        private void InitializeSpinners()
+        {
+            Spinner discoveryTypeSpinner = FindViewById<Spinner>(Resource.Id.discovery_type_filter_spinner);
+            discoveryTypeSpinner.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs>(DiscoveryTypeItemSelected);
+            var discoveryTypeAdapter = ArrayAdapter.CreateFromResource(this, Resource.Array.discovery_type_filter_array, Android.Resource.Layout.SimpleSpinnerItem);
+            discoveryTypeAdapter.SetDropDownViewResource(Android.Resource.Layout.SimpleSpinnerDropDownItem);
+            discoveryTypeSpinner.Adapter = discoveryTypeAdapter;
+            discoveryTypeSpinner.SetSelection(0);
+
+            Spinner systemKindSpinner = FindViewById<Spinner>(Resource.Id.system_kind_filter_spinner);
+            systemKindSpinner.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs>(SystemKindItemSelected);
+            var systemKindAdapter = ArrayAdapter.CreateFromResource(this, Resource.Array.system_kind_filter_array, Android.Resource.Layout.SimpleSpinnerItem);
+            systemKindAdapter.SetDropDownViewResource(Android.Resource.Layout.SimpleSpinnerDropDownItem);
+            systemKindSpinner.Adapter = systemKindAdapter;
+            systemKindSpinner.SetSelection(0);
+        }
+
+        private void DiscoveryTypeItemSelected(object sender, AdapterView.ItemSelectedEventArgs e)
+        {
+            Spinner spinner = (Spinner)sender;
+            string discoveryTypeStr = spinner.GetItemAtPosition(e.Position).ToString();
+            remoteSystemDiscoveryKind = StringToDiscoveryType(discoveryTypeStr);
+            RefreshDevices();
+        }
+
+        private void SystemKindItemSelected(object sender, AdapterView.ItemSelectedEventArgs e)
+        {
+            Spinner spinner = (Spinner)sender;
+            string systemKindStr = spinner.GetItemAtPosition(e.Position).ToString();
+            remoteSystemKind = StringToSystemKind(systemKindStr);
+            RefreshDevices();
+        }       
+
+        private void Platform_FetchAuthCode(string oauthUrl)
+        {
+            authDialog = new Dialog(this);
+
+            var linearLayout = new LinearLayout(authDialog.Context);
+            webView = new WebView(authDialog.Context);
+            linearLayout.AddView(webView);
+            authDialog.SetContentView(linearLayout);
+
+            webView.SetWebChromeClient(new WebChromeClient());
+            webView.Settings.JavaScriptEnabled = true;
+            webView.Settings.DomStorageEnabled = true;
+            webView.LoadUrl(oauthUrl);
+
+            webView.SetWebViewClient(new MsaWebViewClient(this));
+            authDialog.Show();
+            authDialog.SetCancelable(true);
         }
 
         private void DiscoverDevices()
         {
-            _remoteSystemWatcher = RemoteSystem.CreateWatcher();
+            if (remoteSystemWatcher != null)
+            {
+                remoteSystemWatcher.Stop();
+            }
 
-            _remoteSystemWatcher.RemoteSystemAdded += RemoteSystemWatcherOnRemoteSystemAdded;
-            _remoteSystemWatcher.RemoteSystemRemoved += RemoteSystemWatcher_RemoteSystemRemoved;
-            _remoteSystemWatcher.RemoteSystemUpdated += RemoteSystemWatcher_RemoteSystemUpdated;
+            var filters = new List<IRemoteSystemFilter> { new RemoteSystemKindFilter(remoteSystemKind), new RemoteSystemDiscoveryTypeFilter(remoteSystemDiscoveryKind) };
+            remoteSystemWatcher = RemoteSystem.CreateWatcher(filters);
 
-            _remoteSystemWatcher.Start();
+            remoteSystemWatcher.RemoteSystemAdded += RemoteSystemWatcherOnRemoteSystemAdded;
+            remoteSystemWatcher.RemoteSystemRemoved += RemoteSystemWatcher_RemoteSystemRemoved;
+            remoteSystemWatcher.RemoteSystemUpdated += RemoteSystemWatcher_RemoteSystemUpdated;
+
+            remoteSystemWatcher.Start();
         }
 
         private void RemoteSystemWatcher_RemoteSystemUpdated(RemoteSystemWatcher watcher, RemoteSystemUpdatedEventArgs args)
         {
             RunOnUiThread(() =>
                 {
-                    _adapter.Remove(_adapter.Items.FirstOrDefault(system => system.Id == args.P0.Id));
-                    _adapter.Add(args.P0);
+                    adapter.Remove(adapter.Items.FirstOrDefault(system => system.Id == args.P0.Id));
+                    adapter.Add(args.P0);
                 }
             );
         }
@@ -122,28 +255,16 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
         private void RemoteSystemWatcher_RemoteSystemRemoved(RemoteSystemWatcher watcher, RemoteSystemRemovedEventArgs args)
         {
             RunOnUiThread(() =>
-                _adapter.Remove(_adapter.Items.FirstOrDefault(system => system.Id == args.P0))
+                adapter.Remove(adapter.Items.FirstOrDefault(system => system.Id == args.P0))
             );
         }
 
         private void RemoteSystemWatcherOnRemoteSystemAdded(RemoteSystemWatcher watcher, RemoteSystemAddedEventArgs args)
         {
-            RunOnUiThread(() => _adapter.Add(args.P0));
+            RunOnUiThread(() => adapter.Add(args.P0));
         }
-
-        protected override void OnListItemClick(ListView l, View v, int position, long id)
-        {
-            var detailsActivity = new Intent(this, typeof(RemoteSystemActivity));
-
-            RemoteSystem selectedDevice = _adapter.GetItem(position);
-
-            ConnectedDevicesApplication.SelectedRemoteSystem = selectedDevice;
-
-            StartActivity(detailsActivity);
-        }
-
-
     }
+
     public class RemoteSystemAdapter : ArrayAdapter<RemoteSystem>
     {
         private static readonly Dictionary<RemoteSystemKinds, int> RemoteSystemKindImages = new Dictionary<RemoteSystemKinds, int>
@@ -170,8 +291,12 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
             var item = this.GetItem(position);
 
             View view = convertView;
-            if (view == null) // no view to re-use, create new
+            // no view to re-use, create new
+            if (view == null)
+            {
                 view = context.LayoutInflater.Inflate(Resource.Layout.RemoteSystemView, null);
+            }
+
             view.FindViewById<TextView>(Resource.Id.Text1).Text = item.DisplayName;
             view.FindViewById<TextView>(Resource.Id.Text2).Text = item.IsAvailableByProximity ? "Proximal" : "Cloud";
             int id = RemoteSystemKindImages.ContainsKey(item.Kind) ? RemoteSystemKindImages[item.Kind] : RemoteSystemKindImages[RemoteSystemKinds.Unknown];
@@ -185,10 +310,10 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
     {
         bool authComplete = false;
 
-        private readonly MainActivity _parentActivity;
+        private readonly MainActivity parentActivity;
         public MsaWebViewClient(MainActivity activity)
         {
-            _parentActivity = activity;
+            this.parentActivity = activity;
         }
 
         public override void OnPageFinished(WebView view, string url)
@@ -201,7 +326,7 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
 
                 var uri = Android.Net.Uri.Parse(url);
                 string token = uri.GetQueryParameter("code");
-                _parentActivity._authDialog.Dismiss();
+                this.parentActivity.authDialog.Dismiss();
                 Platform.SetAuthCode(token);
             }
             else if (url.Contains("error=access_denied"))
@@ -209,10 +334,9 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
                 authComplete = true;
                 Console.WriteLine("Page finished failed with ACCESS_DENIED_HERE");
                 Intent resultIntent = new Intent();
-                _parentActivity.SetResult(0, resultIntent);
-                _parentActivity._authDialog.Dismiss();
+                this.parentActivity.SetResult(0, resultIntent);
+                this.parentActivity.authDialog.Dismiss();
             }
-            
         }
     }
     internal class ConnectedDevicesApplication
@@ -220,4 +344,3 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
         public static RemoteSystem SelectedRemoteSystem { get; internal set; }
     }
 }
-

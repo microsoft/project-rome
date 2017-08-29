@@ -3,6 +3,31 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:id="@+id/filter_layout"
+          android:weightSum="1" >
+
+    <Spinner
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight=".5"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/discovery_type_filter_spinner" />
+
+    <Spinner
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight=".5"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/discovery_type_filter_spinner"
+        android:id="@+id/system_kind_filter_spinner" />
+
+  </LinearLayout>
+  
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -20,11 +20,19 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
     [Activity(Label = "Remote System Details")]
     public class RemoteSystemActivity : Activity
     {
-        private const string AppService = ""; // Fill in your app service name
-        private const string AppIdentifier = ""; // Fill in your app identifier
+        // Your app service name
+        private const string AppService = Secrets.AppService;
+        // Your app identifier
+        private const string AppIdentifier = Secrets.AppIdentifier;
 
         private string id;
-        private AppServiceClientConnection appServiceClientConnection;
+        private AppServiceConnection appServiceConnection;
+
+        private TextView launchLog;
+        private EditText textBox;
+        private Button pingBtn;
+
+        private long messageId = 0;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -35,63 +43,108 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
             var remoteSystem = ConnectedDevicesApplication.SelectedRemoteSystem;
             if (remoteSystem != null)
             {
-                FindViewById<TextView>(Resource.Id.detailed_name_text).Text = remoteSystem.DisplayName;
-                FindViewById<TextView>(Resource.Id.detailed_id_text).Text = remoteSystem.Id;
-                FindViewById<TextView>(Resource.Id.detailed_kind_text).Text = (string)remoteSystem.Kind;
-                FindViewById<TextView>(Resource.Id.detailed_proximity_text).Text = remoteSystem.IsAvailableByProximity ? "True" : "False";
+                FindViewById<TextView>(Resource.Id.device_name).Text = remoteSystem.DisplayName;
+                FindViewById<TextView>(Resource.Id.device_type).Text = (string)remoteSystem.Kind;
 
                 SetPingText(this as Activity, string.Empty);
 
-                Button launchBtn = FindViewById<Button>(Resource.Id.detailed_launch_button);
-                launchBtn.Click += delegate
-                {
-                    EditText textBox = (EditText)FindViewById(Resource.Id.detailed_url_text);
-                    string uri = textBox.Text;
+                this.launchLog = (TextView)FindViewById(Resource.Id.launch_log);
+                this.textBox = (EditText)FindViewById(Resource.Id.launch_uri_edit_text);
 
-                    Console.WriteLine("Launching URI");
-                    this.RemoteLaunchUriAsync(ConnectedDevicesApplication.SelectedRemoteSystem, new Uri(uri));
-                };
-
-                Button connectBtn = FindViewById<Button>(Resource.Id.detailed_connect_button);
-                connectBtn.Click += delegate
-                {
-                    Console.WriteLine("Attempting connection to AppService");
-                    this.ConnectAppService(AppService, AppIdentifier, new RemoteSystemConnectionRequest(ConnectedDevicesApplication.SelectedRemoteSystem));
-                };
-
-                Button pingBtn = FindViewById<Button>(Resource.Id.detailed_ping_button);
-                pingBtn.Click += delegate
-                {
-                    Console.WriteLine("Sending ping message using AppServices");
-                    this.SendPingMessage();
-                };
+                InitializeButtons();
+                InitializeSpinner();
             }
         }
 
         private static void SetPingText(Activity activity, string text)
         {
-            activity.FindViewById<TextView>(Resource.Id.detailed_ping_text).Text = text;
+            activity.FindViewById<TextView>(Resource.Id.ping_value).Text = text;
+        }
+
+        private void InitializeButtons()
+        {
+            Button launchBtn = FindViewById<Button>(Resource.Id.launch_uri_btn);
+            launchBtn.Click += delegate
+            {
+                string uri = this.textBox.Text;
+
+                Console.WriteLine("Launching URI");
+                this.RemoteLaunchUriAsync(ConnectedDevicesApplication.SelectedRemoteSystem, new Uri(uri));
+            };
+
+            Button connectBtn = FindViewById<Button>(Resource.Id.open_connection_btn);
+            connectBtn.Click += delegate
+            {
+                Console.WriteLine("Attempting connection to AppService");
+                this.ConnectAppService(AppService, AppIdentifier, new RemoteSystemConnectionRequest(ConnectedDevicesApplication.SelectedRemoteSystem));
+            };
+
+            this.pingBtn = FindViewById<Button>(Resource.Id.send_ping_btn);
+            this.pingBtn.Click += delegate
+            {
+                Console.WriteLine("Sending ping message using AppServices");
+                this.SendPingMessage();
+            };
+        }
+
+        private void InitializeSpinner()
+        {
+            Spinner uriSpinner = FindViewById<Spinner>(Resource.Id.launch_uri_spinner);
+            uriSpinner.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs>(spinner_ItemSelected);
+            var adapter = ArrayAdapter.CreateFromResource(this, Resource.Array.uri_array, Android.Resource.Layout.SimpleSpinnerItem);
+            adapter.SetDropDownViewResource(Android.Resource.Layout.SimpleSpinnerDropDownItem);
+            uriSpinner.Adapter = adapter;
+            uriSpinner.SetSelection(0);
+        }
+
+        private void spinner_ItemSelected(object sender, AdapterView.ItemSelectedEventArgs e)
+        {
+            if (this.textBox == null)
+            {
+                return;
+            }
+
+            Spinner spinner = (Spinner)sender;
+            string url = spinner.GetItemAtPosition(e.Position).ToString();
+            this.textBox.SetText(url.ToCharArray(), 0, url.Length);
         }
 
         private async void RemoteLaunchUriAsync(RemoteSystem remoteSystem, Uri uri)
         {
+            this.LogMessage("Launching URI: " + uri + " on " + remoteSystem.DisplayName);
             var launchUriStatus = await RemoteLauncher.LaunchUriAsync(new RemoteSystemConnectionRequest(remoteSystem), uri);
 
-            if (launchUriStatus != RemoteLaunchUriStatus.Success)
+            if (launchUriStatus == RemoteLaunchUriStatus.Success)
             {
-                Console.WriteLine("Failed to Launch!");
+                this.LogMessage("Launch succeeded");
+            }
+            else
+            {
+                this.LogMessage("Launch failed due to [" + launchUriStatus.ToString() + "]");
             }
         }
 
         private async void ConnectAppService(string appService, string appIdentifier, RemoteSystemConnectionRequest connectionRequest)
         {
-            this.appServiceClientConnection = new AppServiceClientConnection(appService, appIdentifier, connectionRequest);
+            this.appServiceConnection = new AppServiceConnection(appService, appIdentifier, connectionRequest);
+            this.appServiceConnection.RequestReceived += AppServiceConnectionRequestReceived;
+
             this.id = connectionRequest.RemoteSystem.Id;
 
             try
             {
-                var status = await this.appServiceClientConnection.OpenRemoteAsync();
-                Console.WriteLine("App Service connection returned with status " + status.ToString());
+                this.LogMessage("Sending AppServices connection request. Waiting for connection response");
+                var status = await this.appServiceConnection.OpenRemoteAsync();
+                
+                if (status == AppServiceConnectionStatus.Success)
+                {
+                    this.LogMessage("App Service connection successful!");
+                    this.pingBtn.Enabled = true;
+                }
+                else
+                {
+                    this.LogMessage("App Service connection failed, returning status " + status.ToString());
+                }
             }
             catch (ConnectedDevicesException e)
             {
@@ -100,20 +153,51 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
             }
         }
 
+        private Bundle CreatePingMessage()
+        {
+            Bundle bundle = new Bundle();
+            bundle.PutString("Type", "ping");
+            bundle.PutString("CreationDate", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+            bundle.PutString("TargetId", this.id);
+    
+            return bundle;
+        }
+
+        private Bundle CreatePongMessage(Bundle bundle)
+        {
+            bundle.PutString("Type", "pong");
+            return bundle;
+        }
+
+        private async void AppServiceConnectionRequestReceived(AppServiceRequest request)
+        {
+            this.LogMessage("Received AppService request. Sending response.");
+
+            var status = await request.SendResponseAsync(this.CreatePongMessage(request.Message));
+            if (status == AppServiceResponseStatus.Success)
+            {
+                this.LogMessage("Successfully sent response.");
+            }
+            else
+            {
+                this.LogMessage("Failed to send response.");
+            }
+        }
+
         private async void SendPingMessage()
         {
-            Bundle message = new Bundle();
-            message.PutString("Type", "ping");
-            message.PutString("CreationDate", DateTime.Now.ToString(CultureInfo.InvariantCulture));
-            message.PutString("TargetId", this.id);
+            long id = ++this.messageId;
 
             try
             {
-                var response = await this.appServiceClientConnection.SendMessageAsync(message);
+                this.LogMessage("Sending AppServices message [" + id.ToString() + "]. Waiting for ping response");
+                var response = await this.appServiceConnection.SendMessageAsync(this.CreatePingMessage());
                 AppServiceResponseStatus status = response.Status;
 
                 if (status == AppServiceResponseStatus.Success)
                 {
+                    this.LogMessage("Received successful AppService response to message [" + id.ToString() + "]");
+
                     Bundle bundle = response.Message;
                     string type = bundle.GetString("Type");
                     DateTime creationDate = DateTime.Parse(bundle.GetString("CreationDate"));
@@ -127,12 +211,38 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
                         SetPingText(this as Activity, diff.ToString());
                     });
                 }
+                else
+                {
+                    this.LogMessage("Did not receive successful AppService response");
+                }
             }
             catch (ConnectedDevicesException e)
             {
                 Console.WriteLine("Failed to send message using AppServices");
                 e.PrintStackTrace();
             }
+        }
+
+        private void LogMessage(string message)
+        {
+            if (this.launchLog == null)
+            {
+                return;
+            }
+
+            Console.WriteLine(message);
+
+            String newText = "\n" + message + " [" + this.GetTimeStamp() + "]";
+            // UI elements can only be modified on the UI thread.
+            this.RunOnUiThread(() =>
+            {
+                this.launchLog.Append(newText);
+            });
+        }
+
+        private string GetTimeStamp()
+        {
+            return DateTime.Now.ToString("HH:mm:ss.fff");
         }
     }
 }

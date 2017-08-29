@@ -28,6 +28,28 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
 		{
 		}
 		
+		public partial class Array
+		{
+			
+			// aapt resource value: 0x7f050001
+			public const int discovery_type_filter_array = 2131034113;
+			
+			// aapt resource value: 0x7f050002
+			public const int system_kind_filter_array = 2131034114;
+			
+			// aapt resource value: 0x7f050000
+			public const int uri_array = 2131034112;
+			
+			static Array()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Array()
+			{
+			}
+		}
+		
 		public partial class Attribute
 		{
 			
@@ -81,53 +103,77 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f05000c
-			public const int Image = 2131034124;
+			// aapt resource value: 0x7f060014
+			public const int Image = 2131099668;
 			
-			// aapt resource value: 0x7f050000
-			public const int RefreshButton = 2131034112;
+			// aapt resource value: 0x7f060003
+			public const int RefreshButton = 2131099651;
 			
-			// aapt resource value: 0x7f05000d
-			public const int Text = 2131034125;
+			// aapt resource value: 0x7f060015
+			public const int Text = 2131099669;
 			
-			// aapt resource value: 0x7f05000e
-			public const int Text1 = 2131034126;
+			// aapt resource value: 0x7f060016
+			public const int Text1 = 2131099670;
 			
-			// aapt resource value: 0x7f05000f
-			public const int Text2 = 2131034127;
+			// aapt resource value: 0x7f060017
+			public const int Text2 = 2131099671;
 			
-			// aapt resource value: 0x7f05000a
-			public const int detailed_connect_button = 2131034122;
+			// aapt resource value: 0x7f060004
+			public const int device_card = 2131099652;
 			
-			// aapt resource value: 0x7f050002
-			public const int detailed_id_text = 2131034114;
+			// aapt resource value: 0x7f060005
+			public const int device_name = 2131099653;
 			
-			// aapt resource value: 0x7f050003
-			public const int detailed_kind_text = 2131034115;
+			// aapt resource value: 0x7f060006
+			public const int device_type = 2131099654;
 			
-			// aapt resource value: 0x7f050006
-			public const int detailed_launch_button = 2131034118;
+			// aapt resource value: 0x7f060001
+			public const int discovery_type_filter_spinner = 2131099649;
 			
-			// aapt resource value: 0x7f050001
-			public const int detailed_name_text = 2131034113;
+			// aapt resource value: 0x7f060007
+			public const int feedback_btn = 2131099655;
 			
-			// aapt resource value: 0x7f05000b
-			public const int detailed_ping_button = 2131034123;
+			// aapt resource value: 0x7f060000
+			public const int filter_layout = 2131099648;
 			
-			// aapt resource value: 0x7f050008
-			public const int detailed_ping_text = 2131034120;
+			// aapt resource value: 0x7f060013
+			public const int launch_log = 2131099667;
 			
-			// aapt resource value: 0x7f050004
-			public const int detailed_proximity_text = 2131034116;
+			// aapt resource value: 0x7f06000c
+			public const int launch_uri_btn = 2131099660;
 			
-			// aapt resource value: 0x7f050005
-			public const int detailed_url_text = 2131034117;
+			// aapt resource value: 0x7f06000a
+			public const int launch_uri_button_layout = 2131099658;
 			
-			// aapt resource value: 0x7f050009
-			public const int linearLayout1 = 2131034121;
+			// aapt resource value: 0x7f060008
+			public const int launch_uri_card = 2131099656;
 			
-			// aapt resource value: 0x7f050007
-			public const int linearLayout2 = 2131034119;
+			// aapt resource value: 0x7f06000b
+			public const int launch_uri_edit_text = 2131099659;
+			
+			// aapt resource value: 0x7f060009
+			public const int launch_uri_spinner = 2131099657;
+			
+			// aapt resource value: 0x7f060011
+			public const int open_connection_btn = 2131099665;
+			
+			// aapt resource value: 0x7f060010
+			public const int ping_buttons_layout = 2131099664;
+			
+			// aapt resource value: 0x7f06000d
+			public const int ping_card = 2131099661;
+			
+			// aapt resource value: 0x7f06000e
+			public const int ping_layout = 2131099662;
+			
+			// aapt resource value: 0x7f06000f
+			public const int ping_value = 2131099663;
+			
+			// aapt resource value: 0x7f060012
+			public const int send_ping_btn = 2131099666;
+			
+			// aapt resource value: 0x7f060002
+			public const int system_kind_filter_spinner = 2131099650;
 			
 			static Id()
 			{
