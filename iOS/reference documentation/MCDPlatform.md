@@ -15,7 +15,7 @@ suspend | Suspends the Remote Systems Platform. This should be called when your 
 resume | Resumes the Remote Systems platform. This should be called when your app enters the foreground.
 shutdown | Shuts down the Remote Systems Platform.
 
-## Members
+## Methods
 
 ### startWithOAuthCodeProviderDelegate
 `+(void) startWithOAuthCodeProviderDelegate: (id<MCDOAuthCodeProviderDelegate>)delegate completion:(void (^)(NSError* error)completion);`

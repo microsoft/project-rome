@@ -16,7 +16,7 @@ appServiceName | The name of the app service on the target device. See [Create a
 appIdentifier | The package family name of the remote app service. See [Create and consume an app service](https://docs.microsoft.com/windows/uwp/launch-resume/how-to-create-and-consume-an-app-service) for details.  
 initWithConnectionRequest | Initializes the [MCDAppServiceClientConnectionManager](MCDAppServiceClientConnectionManager.md) with connection request details. The class instance will not request a connection until **openRemote** is called.
 openRemote | Attempts to open a connection to the remote device. Successful connections will invoke the **appServiceClientConnectionManagerDidOpen** method of the delegate.
-sendMessage | Sends a message to the remote app service and begins listening for a response. Responses are handled by the [MCDAppServiceClientConnectionManagerDelegate](MCDAppServiceClientConnectionManagerDelegate.md) for this class. If the connection is over the cloud, the listener times out after 60 seconds.
+sendMessage | Sends a message to the remote app service and begins listening for a response. Responses are handled by the [MCDAppServiceClientConnectionManagerDelegate](MCDAppServiceClientConnectionManagerDelegate.md) for this class.
 close | Closes the connection to the app service.
 
 
@@ -66,7 +66,7 @@ Attempts to open a connection to the remote device. Successful connections will 
 ### sendMessage
 `-(void)sendMessage:(nonnull NSDictionary*)dictionary;`
 
-Sends a message to the remote app service and begins listening for a response. Responses are handled by the [MCDAppServiceClientConnectionManagerDelegate](MCDAppServiceClientConnectionManagerDelegate.md) for this class. This method should only be called after the connection was opened successfully. If the connection is over the cloud, the listener times out after 60 seconds.
+Sends a message to the remote app service and begins listening for a response. Responses are handled by the [MCDAppServiceClientConnectionManagerDelegate](MCDAppServiceClientConnectionManagerDelegate.md) for this class. This method should only be called after the connection was opened successfully.
 
 #### Parameters
 * `dictionary` The key-value set of data to be sent to the app service.

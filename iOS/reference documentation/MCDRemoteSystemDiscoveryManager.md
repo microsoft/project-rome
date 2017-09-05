@@ -20,7 +20,7 @@ startDiscoveryWithHostName | Attempts to find a system proximally using its IP a
 ## Properties
 
 ### delegate
-`@property (nonatomic, readonly weak, nullable) id< MCDRemoteSystemDiscoveryManagerDelegate> delegate;`
+`@property (nonatomic, readonly, weak, nullable) id<MCDRemoteSystemDiscoveryManagerDelegate> delegate;`
 
 The delegate to receive events that result from starting a discovery.
 
@@ -44,7 +44,7 @@ Initializes the [MCDRemoteSystemDiscoveryManager](MCDRemoteSystemDiscoveryManage
 
 #### Parameters
 * `delegate` The delegate to use for initialization.
-* `filters` The set of discovery filters to apply to remote system discovery.
+* `filters` The set of discovery filters (implementing the **[MCDRemoteSystemFilter](MCDRemoteSystemFilter.md)** interface) to apply to remote system discovery. 
 
 #### Returns
 The initialized [MCDRemoteSystemDiscoveryManager](MCDRemoteSystemDiscoveryManager.md) if successful, otherwise nil.
