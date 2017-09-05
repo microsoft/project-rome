@@ -9,7 +9,7 @@ Receives callbacks from the [MCDPlatform](MCDPlatform.md) when the platform is i
 ## Summary
 | Members | Descriptions  |                              
 |---------|---------------|
-|MCDAuthCodeCallback| 
+|MCDAuthCodeCallback| The block to invoke upon completion of the call to **getAccessCode**.|
 |getAccessCode | Asynchronously obtains a new OAuth access code.|
 
 ## Structures
