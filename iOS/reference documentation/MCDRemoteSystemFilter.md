@@ -1,7 +1,7 @@
-# protocol `CDRemoteSystemFilter`
+# protocol `MCDRemoteSystemFilter`
 
 ```
-@protocol CDRemoteSystemFilter
+@protocol MCDRemoteSystemFilter
 ```
 
 Set of methods to be implemented by objects acting as remote system discovery filters.
@@ -15,7 +15,7 @@ matchesRemoteSystem | Checks whether a remote system passes the current filter.
 ## Methods
 
 ### matchesRemoteSystem
-`-(BOOL)matchesRemoteSystem:(nonnull CDRemoteSystem*)remoteSystem;`
+`-(BOOL)matchesRemoteSystem:(nonnull MCDRemoteSystem*)remoteSystem;`
 
 Checks whether a remote system passes the current filter.
 

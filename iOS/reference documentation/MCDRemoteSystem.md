@@ -1,7 +1,7 @@
-# class `CDRemoteSystem` 
+# class `MCDRemoteSystem` 
 
 ```
-@interface CDRemoteSystem : NSObject
+@interface MCDRemoteSystem : NSObject
 ```  
 
 A class to represent a remote system.
@@ -29,14 +29,16 @@ The identifier for this remote system.
 The friendly display name of this remote system.
 
 ### kind
-`@property (nonatomic, readonly, copy, nonnull) NSString* kind;`
+`@property (nonatomic, readonly) MCDRemoteSystemKind kind;`
 
 The device type of this remote system.
 
 ### isAvailableByProximity
 `@property (nonatomic, readonly) BOOL isAvailableByProximity;`
+
 Indicates whether the remote system can be reached by proximal connection (UDP or Bluetooth).
 
 ### status
-`@property (nonatomic, readonly) CDRemoteSystemStatus status;`
+`@property (nonatomic, readonly) MCDRemoteSystemStatus status;`
+
 The availability of the remote system.
