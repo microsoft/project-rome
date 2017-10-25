@@ -1,5 +1,5 @@
 platform :ios, '10.0'
 
 target 'RomanApp' do
-  pod 'ProjectRomeSdk', '~>0.6.0'
+  pod 'ProjectRomeSdk', '~>0.7.3’
 end
