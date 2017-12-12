@@ -20,6 +20,7 @@ using Android.Webkit;
 using Microsoft.ConnectedDevices;
 using Android.Views;
 using Android.Content.PM;
+using Android.Runtime;
 
 namespace ConnectedDevices.Xamarin.Droid.Sample
 {
@@ -40,6 +41,8 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
         private Button refreshButton;
 
         private int permissionRequestCode;
+
+        private JavaList<RemoteSystem> devicesList;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -72,7 +75,8 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
                 RequestPermissions(new string[] { Manifest.Permission.AccessCoarseLocation }, this.permissionRequestCode);
             }
 
-            this.adapter = new RemoteSystemAdapter(this, new List<RemoteSystem>());
+            this.devicesList = new JavaList<RemoteSystem>();
+            this.adapter = new RemoteSystemAdapter(this, devicesList);
             this.ListAdapter = this.adapter;
         }
 
@@ -151,7 +155,7 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
             switch (str)
             {
                 case "All":
-                    kinds = new List<RemoteSystemKinds> { RemoteSystemKinds.Unknown, RemoteSystemKinds.Desktop, RemoteSystemKinds.Holographic, RemoteSystemKinds.Phone, RemoteSystemKinds.Xbox };
+                    kinds = null;
                     break;
                 case "Unknown":
                     kinds = new List<RemoteSystemKinds> { RemoteSystemKinds.Unknown };
@@ -232,7 +236,11 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
                 remoteSystemWatcher.Stop();
             }
 
-            var filters = new List<IRemoteSystemFilter> { new RemoteSystemKindFilter(remoteSystemKind), new RemoteSystemDiscoveryTypeFilter(remoteSystemDiscoveryKind) };
+            var filters = new List<IRemoteSystemFilter> {  new RemoteSystemDiscoveryTypeFilter(remoteSystemDiscoveryKind) };
+            if(remoteSystemKind != null)
+            {
+                filters.Add(new RemoteSystemKindFilter(remoteSystemKind));
+            }
             remoteSystemWatcher = RemoteSystem.CreateWatcher(filters);
 
             remoteSystemWatcher.RemoteSystemAdded += RemoteSystemWatcherOnRemoteSystemAdded;
@@ -244,24 +252,30 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
 
         private void RemoteSystemWatcher_RemoteSystemUpdated(RemoteSystemWatcher watcher, RemoteSystemUpdatedEventArgs args)
         {
-            RunOnUiThread(() =>
-                {
-                    adapter.Remove(adapter.Items.FirstOrDefault(system => system.Id == args.P0.Id));
-                    adapter.Add(args.P0);
-                }
-            );
+            var deviceToRemove = devicesList.FirstOrDefault(system => system.Id == args.P0.Id);
+            if (deviceToRemove != null)
+            {
+                devicesList.Remove(deviceToRemove);
+            }
+
+            devicesList.Add(args.P0);
+
+            RunOnUiThread(() =>adapter.NotifyDataSetChanged());
         }
 
         private void RemoteSystemWatcher_RemoteSystemRemoved(RemoteSystemWatcher watcher, RemoteSystemRemovedEventArgs args)
         {
-            RunOnUiThread(() =>
-                adapter.Remove(adapter.Items.FirstOrDefault(system => system.Id == args.P0))
-            );
+            devicesList.Remove(devicesList.FirstOrDefault(system => system.Id == args.P0));
+
+            RunOnUiThread(() => adapter.NotifyDataSetChanged());
+
         }
 
         private void RemoteSystemWatcherOnRemoteSystemAdded(RemoteSystemWatcher watcher, RemoteSystemAddedEventArgs args)
         {
-            RunOnUiThread(() => adapter.Add(args.P0));
+            devicesList.Add(args.P0);
+
+            RunOnUiThread(() => adapter.NotifyDataSetChanged());
         }
     }
 
@@ -274,16 +288,17 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
             { RemoteSystemKinds.Xbox, Resource.Drawable.Xbox },
             { RemoteSystemKinds.Holographic, Resource.Drawable.Hololens },
             { RemoteSystemKinds.Hub, Resource.Drawable.SurfaceHub },
+            { RemoteSystemKinds.Laptop, Resource.Drawable.Laptop },
+            { RemoteSystemKinds.Tablet, Resource.Drawable.Tablet },
+            { RemoteSystemKinds.Iot, Resource.Drawable.Iot },
             { RemoteSystemKinds.Unknown, Resource.Drawable.Unknown}
         };
 
-        public List<RemoteSystem> Items { get; }
         Activity context;
-        public RemoteSystemAdapter(Activity context, List<RemoteSystem> items)
+        public RemoteSystemAdapter(Activity context, IList<RemoteSystem> items)
         : base(context, Resource.Layout.RemoteSystemView, items)
         {
             this.context = context;
-            this.Items = items;
         }
 
         public override View GetView(int position, View convertView, ViewGroup parent)
@@ -304,6 +319,7 @@ namespace ConnectedDevices.Xamarin.Droid.Sample
 
             return view;
         }
+
     }
 
     internal class MsaWebViewClient : WebViewClient
