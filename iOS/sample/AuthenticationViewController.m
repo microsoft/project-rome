@@ -26,8 +26,6 @@ static NSString* const MsaDdsRegisterScope = @"dds.register";
     OAuthMSAAuthenticator* _oauthAuthenticator;
     
     MCDRefreshTokenCallback _getTokenCallback;
-    
-    BOOL _visible;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -42,12 +40,10 @@ static NSString* const MsaDdsRegisterScope = @"dds.register";
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    _visible = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    _visible = NO;
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     [super viewWillDisappear:animated];
 }
@@ -140,15 +136,7 @@ static NSString* const MsaDdsRegisterScope = @"dds.register";
 
 - (void)showLogin:(NSString*)signInUri
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (!_visible)
-        {
-            [self showAlertMessage:@"MSA Login"
-                           message:@"There was a problem refreshing your MSA token. "
-             @"Please re-login."];
-            return;
-        }
-        
+    dispatch_async(dispatch_get_main_queue(), ^{      
         [self showWebView];
         
         [_spinner removeFromSuperview];
