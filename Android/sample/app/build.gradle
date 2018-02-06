@@ -51,6 +51,6 @@ dependencies {
     compile 'com.android.support:design:23.2.0'
     compile 'com.android.support:cardview-v7:23.2.0'
     compile 'com.android.support:recyclerview-v7:23.2.0'
-    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armeabi-v7a', version: '0.7.3', ext: 'aar', classifier: 'release')
+    compile(group: 'com.microsoft.connecteddevices', name: 'connecteddevices-sdk-armeabi-v7a', version: '0.8.1', ext: 'aar', classifier: 'release')
     testCompile 'junit:junit:4.12'
 }
