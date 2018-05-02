@@ -7,7 +7,7 @@ Visit the [Project Rome landing page](https://developer.microsoft.com/en-us/wind
 Project Rome is currently implemented for the following scenarios. Follow the links for each corresponding section.
 
 [windows-sdk]:             https://developer.microsoft.com/en-us/windows/downloads
-[windows-sdk-badge]:       https://img.shields.io/badge/sdk-Creators%20Update-brightgreen.svg?style=flat-square
+[windows-sdk-badge]:       https://img.shields.io/badge/sdk-April%202018%20Update-brightgreen.svg?style=flat-square
 [windows-sample]:          https://github.com/Microsoft/Windows-universal-samples/tree/master/Samples/RemoteSystems
 [windows-docs]:            https://docs.microsoft.com/en-us/windows/uwp/launch-resume/connected-apps-and-devices
 
@@ -15,13 +15,13 @@ Project Rome is currently implemented for the following scenarios. Follow the li
 [xamarin-sdk-badge]:       https://img.shields.io/nuget/v/Microsoft.ConnectedDevices.Xamarin.Droid.svg?style=flat-square
 [xamarin-sample]:          Xamarin/samples
 
-[ios-sdk]:                 https://cocoapods.org/?q=ProjectRomeSdk
+[ios-sdk]:                 https://cocoapods.org/pods/ProjectRomeSdk
 [ios-sdk-badge]:           https://img.shields.io/cocoapods/v/ProjectRomeSdk.svg?style=flat-square
 [ios-sample]:              iOS/sample 
 [ios-docs]:                iOS/reference%20documentation
 
-[android-sdk]:             https://bintray.com/projectrome/maven/public_sdk/_latestVersion
-[android-sdk-badge]:       https://img.shields.io/bintray/v/projectrome/maven/public_sdk.svg?style=flat-square
+[android-sdk]:             https://bintray.com/projectrome/maven/com.microsoft.connecteddevices:connecteddevices-sdk/_latestVersion
+[android-sdk-badge]:       https://img.shields.io/bintray/v/projectrome/maven/com.microsoft.connecteddevices:connecteddevices-sdk.svg?style=flat-square
 [android-sample]:          Android/sample
 [android-docs]:            Android/reference%20documentation
 
