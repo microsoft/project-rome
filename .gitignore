@@ -201,3 +201,12 @@ FakesAssemblies/
 xamarin/src/ConnectedDevices.Xamarin.Droid.Core/Jars/connecteddevices-core-armv7-externalRelease.aar
 xamarin/src/ConnectedDevices.Xamarin.Droid/Jars/connecteddevices-sdk-armv7-externalRelease.aar
 
+# Mac
+.DS_Store
+
+# Xcode
+!**/*ios*/*.pch
+xcuserdata/
+Pods/
+Podfile.lock
+*.xcworkspace/

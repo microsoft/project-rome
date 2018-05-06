@@ -1,0 +1,16 @@
+//
+//  Copyright (c) Microsoft Corporation. All rights reserved.
+//
+
+/* The text of the toast notification to display when a remote command is received */
+
+"ROME_REMOTE_LAUNCH" = "%1$@ wants to launch this app";
+
+"ROME_REMOTE_LAUNCH_FROM_APP" = "%1$@ on %2$@ wants to launch this app";
+
+
+
+/* The text of the toast notification to display when multiple remote commands are received simultaneously */
+
+"ROME_CONNECT_TEXT_MANY" = "Another device wants to launch this app";
+

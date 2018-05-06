@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.microsoft.connecteddevices.nearshare.MainActivity"
+    tools:showIn="@layout/activity_main">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/selectedDeviceControls">
+
+            <TextView
+                android:id="@+id/txtSelectDevice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_device"
+                android:textSize="@dimen/heading_size"
+                android:textStyle="bold" />
+
+            <CheckBox
+                android:id="@+id/chkProximalDiscovery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/proximalonly" />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimaryDark"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginTop="@dimen/fab_margin"
+            android:layout_below="@id/selectedDeviceControls"
+            android:id="@+id/listDevices">
+
+            <ListView
+                android:id="@+id/listRemoteSystems"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:choiceMode="singleChoice"
+                tools:listSelector="@color/invertedBackground" />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimaryDark"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/listDevices"
+            android:id="@+id/sendUriControls"
+            android:layout_marginTop="@dimen/fab_margin">
+
+            <TextView
+                android:id="@+id/labelSendUri"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/uri_to_send"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textSize="@dimen/text_size"
+                android:textStyle="bold"
+                android:typeface="normal"
+                tools:layout_centerInParent="false" />
+
+            <EditText
+                android:id="@+id/txtUri"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:layout_alignTop="@id/labelSendUri"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/fab_margin"
+                android:layout_toEndOf="@id/labelSendUri"
+                android:scrollbars="none"
+                android:singleLine="true"
+                android:text="@string/default_uri" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sendFilesControls"
+            android:layout_below="@id/sendUriControls"
+            android:layout_marginTop="@dimen/fab_margin">
+            <Button
+                android:id="@+id/btnSendUri"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/uri_to_send"
+                android:textSize="@dimen/btn_text_size"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/btn_margin"
+                android:layout_toRightOf="@id/btnSendUri"
+                android:text="@string/send_file_text"
+                android:textSize="@dimen/btn_text_size"
+                android:id="@+id/btnSendFile"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/btn_margin"
+                android:layout_toRightOf="@id/btnSendFile"
+                android:textSize="20sp"
+                android:text="@string/cancel"
+                android:enabled="false"
+                android:id="@+id/btnCancel"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

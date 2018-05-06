@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+    <!ENTITY appname "Rome App for Android">
+    ]>
+
+<resources>
+    <string name="app_name">&appname;</string>
+    <string name="drawer_open">Open drawer</string>
+    <string name="drawer_close">Close drawer</string>
+    <string name="label_id">ID:</string>
+
+    <!-- RemoteSystemWatcher Page Values -->
+    <string name="button_discover_devices">Discover Devices</string>
+    <string name="label_proximal">Proximal:</string>
+    <string name="label_spatial">Spatial:</string>
+    <string name="label_kind">Kind:</string>
+    <string name="label_make_model">Make/Model:</string>
+    <string name="label_applications">Applications:</string>
+    <string name="label_system_status">System Status:</string>
+    <string name="label_system_kind">System Kind:</string>
+    <string name="label_discovery_type">Discovery Type:</string>
+    <string name="label_authorization_kind">Authorization Kind:</string>
+    <string name="label_platform_type">Platform Type:</string>
+    <string name="label_local_visibility_kind">Local Visibility Kind:</string>
+    <!-- Login Page Values -->
+    <string name="button_sign_in">Sign in</string>
+    <string name="button_sign_out">Sign out</string>
+    <string name="launch_uri_provider_name">LaunchUri Echo</string>
+    <!-- Module Select Page Values -->
+    <string name="button_device_relay">Device Relay</string>
+    <string name="button_activities">Activities</string>
+    <string name="button_hosting">Hosting</string>
+    <string name="label_select">Select action:</string>
+    <!-- AppService Page Values -->
+    <string name="button_appservice_new">Connect to App Service</string>
+    <string name="button_appservice_close_connection">Close App Service Connection</string>
+    <string name="button_appservice_message">Message</string>
+    <string name="instances_text">Number</string>
+    <!-- Name of the application registered in the Microsoft Store. Accessed from the Windows Dev Center dashboard. -->
+    <string name="appservice_identifier_romanapp">5085ShawnHenry.RomanTestApp_jsjw7knzsgcce</string>
+    <!-- Status labels for initialization and sign in. -->
+    <string name="status_login_false">Currently signed out.</string>
+    <string name="status_login_true">Currently signed in.</string>
+    <!-- Name of the "AppService" to connect to. It is declared in the Manifest file for UWPs. -->
+    <string name="appservice_name_romanapp">com.microsoft.test.cdppingpongservice</string>
+    <string name="appservice_name_echo">com.microsoft.test.echo</string>
+    <string-array name="appservice_name_array">
+        <item>@string/appservice_name_romanapp</item>
+        <item>@string/appservice_name_echo</item>
+    </string-array>
+    <!-- Launch Page Values -->
+    <string name="button_launch_uri">Launch URI</string>
+    <string name="available_text">AVAILABLE</string>
+    <string name="unavailable_text">UNAVAILABLE</string>
+    <string name="input_launch_uri_default_value">http://bing.com</string>
+    <string name="hosting_launch_uri_provider_name">LaunchUri Echo</string>
+
+    <!-- User Activities Page Values -->
+    <string name="label_activity_id">Activity ID:</string>
+    <string name="label_activity_text">Activity Display Text:</string>
+    <string name="label_activity_uri">Activity URI:</string>
+    <string name="label_activity_icon_uri">Activity Icon URI (optional):</string>
+    <string name="button_create_activity">Create New Activity</string>
+    <string name="button_start_activity_session">Start Session</string>
+    <string name="button_stop_activity_session">Stop Session</string>
+    <string name="button_read_activities">Read Activities</string>
+    <string name="default_activity_display_text">"Created by &appname;"</string>
+    <string name="default_activity_uri">"http://contoso.com"</string>
+    <string name="default_activity_icon_uri">"http://contoso.com/icon.png"</string>
+    <string name="status_activities_signin_required">Must be signed in and initialized for UserActivity!</string>
+    <string name="status_activities_initialize_pending">UserActivityFeed not yet initialized. Please wait…</string>
+    <string name="status_activities_initialize">Initializing UserActivityFeed…</string>
+    <string name="status_activities_initialize_complete">UserActivityFeed initialized</string>
+    <string name="status_activities_create_activity">Creating UserActivity…</string>
+    <string name="status_activities_get_channel">Getting UserActivityChannel…</string>
+    <string name="status_activities_get_channel_success">Got UserActivityChannel successfully</string>
+    <string name="status_activities_get_channel_failed">Failed to get UserActivityChannel!</string>
+    <string name="status_activities_create_activity_success">Created UserActivity successfully</string>
+    <string name="status_activities_create_activity_failed">Failed to create user activity!</string>
+    <string name="status_activities_save_activity_success">Saved UserActivity successfully</string>
+    <string name="status_activities_save_activity_failed">Failed to save UserActivity!</string>
+    <string name="status_activities_read_activity_success">Read UserActivity successfully</string>
+    <string name="status_activities_read_activity_failed">Failed to read UserActivity!</string>
+    <string name="status_activities_channel_null">ActivityChannel is null (is platform initialization complete?)</string>
+    <string name="status_activities_read_activity">Reading UserActivities…</string>
+    <string name="status_activities_session_activity_required">Must create UserActivity before starting session!</string>
+    <string name="status_activities_session_start">UserActivitySession started</string>
+    <string name="status_activities_session_stop">UserActivitySession stopped</string>
+    <string name="label_discovery_help">Select the remote application to launch URI or App Services</string>
+</resources>

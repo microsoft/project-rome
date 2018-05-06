@@ -1,0 +1,2 @@
+include ':app', ':sampleAccountProviders'
+project(':sampleAccountProviders').projectDir = new File('sampleAccountProviders')

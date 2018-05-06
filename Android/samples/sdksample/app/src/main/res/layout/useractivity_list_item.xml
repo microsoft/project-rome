@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="30dp" >
+
+    <TextView
+        android:id="@+id/label_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:text="ID: " />
+
+    <TextView
+        android:id="@+id/activity_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/label_id"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/label_displaytext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/activity_id"
+        android:text="DisplayText: " />
+
+    <TextView
+        android:id="@+id/activity_displaytext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/activity_id"
+        android:layout_toEndOf="@id/label_displaytext"/>
+
+    <TextView
+        android:id="@+id/label_activationuri"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/label_displaytext"
+        android:text="ActivationUri: " />
+
+    <TextView
+        android:id="@+id/activity_activationuri"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/label_displaytext"
+        android:layout_toEndOf="@id/label_activationuri"/>
+
+    <TextView
+        android:id="@+id/label_activationiconuri"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/label_activationuri"
+        android:text="ActivationIconUri: " />
+
+    <TextView
+        android:id="@+id/activity_activationiconuri"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/label_activationuri"
+        android:layout_toEndOf="@id/label_activationiconuri"/>
+
+    <TextView
+        android:id="@+id/label_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/label_activationiconuri"
+        android:text="Start: " />
+
+    <TextView
+        android:id="@+id/activity_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/label_activationiconuri"
+        android:layout_toEndOf="@id/label_start"/>
+
+    <TextView
+        android:id="@+id/label_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/label_start"
+        android:text="Stop: " />
+
+    <TextView
+        android:id="@+id/activity_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/label_start"
+        android:layout_toEndOf="@id/label_end"/>
+
+</RelativeLayout>

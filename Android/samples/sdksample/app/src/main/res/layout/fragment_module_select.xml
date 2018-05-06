@@ -1,0 +1,71 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"></LinearLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:text="@string/label_select"
+        android:textAlignment="center"
+        android:textSize="10pt" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/device_relay_button"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_weight=".5"
+            android:background="@color/md_light_blue_600"
+            android:text="@string/button_device_relay"
+            android:textColor="@color/md_white_1000"
+            android:textSize="8pt" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5" />
+
+        <Button
+            android:id="@+id/activities_button"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_weight=".5"
+            android:background="@color/md_light_blue_600"
+            android:text="@string/button_activities"
+            android:textColor="@color/md_white_1000"
+            android:textSize="8pt" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5" />
+
+        <Button
+            android:id="@+id/hosting_button"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_weight=".5"
+            android:background="@color/md_light_blue_600"
+            android:text="@string/button_hosting"
+            android:textColor="@color/md_white_1000"
+            android:textSize="8pt" />
+    </LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceListItemSmall"
+    android:paddingStart="@dimen/drawer_list_item_horizontal_margin"
+    android:paddingEnd="@dimen/drawer_list_item_horizontal_margin"
+    android:gravity="center_vertical"
+    android:textSize="@dimen/drawer_list_item_text_size"
+    android:textColor="@color/md_white_1000"
+    android:background="?android:attr/activatedBackgroundIndicator"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"/>

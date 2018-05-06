@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="35dp">
+
+            <TextView
+                android:id="@+id/application_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:textStyle="bold"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/label_application_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/application_name"
+                android:text="@string/label_id" />
+
+            <TextView
+                android:id="@+id/application_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/application_name"
+                android:layout_toEndOf="@+id/label_application_id"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/label_application_proximal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/label_application_id"
+                android:text="@string/label_proximal" />
+
+            <TextView
+                android:id="@+id/application_proximal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/application_id"
+                android:layout_toEndOf="@+id/label_application_proximal" />
+
+            <TextView
+                android:id="@+id/label_application_spatial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/label_application_proximal"
+                android:text="@string/label_spatial" />
+
+            <TextView
+                android:id="@+id/application_spatial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/label_application_proximal"
+                android:layout_toEndOf="@+id/label_application_spatial" />
+
+</RelativeLayout>

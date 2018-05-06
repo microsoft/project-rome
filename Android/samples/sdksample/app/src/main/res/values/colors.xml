@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- google's material design colours from
+    http://www.google.com/design/spec/style/color.html#color-ui-color-palette -->
+
+    <color name="md_light_blue_600">#039BE5</color>
+    <color name="md_white_1000">#ffffff</color>
+    <color name="md_grey_300">#E0E0E0</color>
+    <color name="md_grey_900">#212121</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+</resources>

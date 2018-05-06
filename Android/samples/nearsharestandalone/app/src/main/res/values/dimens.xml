@@ -1,0 +1,10 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="btn_margin">10dp</dimen>
+    <dimen name="text_size">20sp</dimen>
+    <dimen name="btn_text_size">20sp</dimen>
+    <dimen name="heading_size">35sp</dimen>
+    <dimen name="device_name_width">200dp</dimen>
+    <dimen name="device_type_width">120dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+</resources>

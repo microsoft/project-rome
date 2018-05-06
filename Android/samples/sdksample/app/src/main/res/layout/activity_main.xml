@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/navigation_drawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Frame used to hold page fragments -->
+    <FrameLayout
+        android:id="@+id/navigation_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!-- List of pages in the drawer -->
+    <ListView
+        android:id="@+id/navigation_page_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:background="@color/md_grey_900"/>
+
+</android.support.v4.widget.DrawerLayout>

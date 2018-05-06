@@ -1,7 +1,7 @@
 # Project Rome for Android (preview release)
 
-Currently, Project Rome is implemented for Android-client-to-Windows-host scenarios. You will need an Android app development IDE and an Android device or emulator (Android 4.4.2 or later) to use this feature.
+ Here you can find sample apps that showcase Project Rome features on Android. You will need an Android app development IDE and an Android device or emulator (Android 4.4.2 or later) to use these features.
 
-* View developer tutorials in the [how-to guides](how-to%20guides/) folder.
-* View the API reference documentation in the [reference documentation](reference%20documentation/) folder.
-* See code samples for Android apps in the [sample](sample/) folder.
+> **Important:** Our docs have moved. You can find [API reference docs](https://docs.microsoft.com/windows/project-rome/android/api-reference/) and [developer tutorials](https://docs.microsoft.com/windows/project-rome/android/how-to-guides/) for Android on the Project Rome Docs site at Docs.Microsoft.com. 
+
+
