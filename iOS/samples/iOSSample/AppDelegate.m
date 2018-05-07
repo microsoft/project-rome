@@ -8,22 +8,7 @@
 #import <ConnectedDevices/Core/MCDNotificationRegistration.h>
 #import <ConnectedDevices/Core/MCDPlatform.h>
 
-@interface AppDelegate ()
-{
-    AppDataSource* _appDataSource;
-}
-@end
-
 @implementation AppDelegate
-
-- (instancetype)init
-{
-    if (self = [super init])
-    {
-        _appDataSource = [AppDataSource new];
-    }
-    return self;
-}
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
