@@ -25,7 +25,7 @@ Project Rome is currently implemented for the following scenarios. Follow the li
 [android-sdk]:             https://bintray.com/projectrome/maven/com.microsoft.connecteddevices:connecteddevices-sdk/_latestVersion
 [android-sdk-badge]:       https://api.bintray.com/packages/projectrome/maven/com.microsoft.connecteddevices%3Aconnecteddevices-sdk/images/download.svg
 [android-sample]:          Android/samples
-[android-docs]:            https://docs.microsoft.com/windows/project-rome/android
+[android-docs]:            https://github.com/MicrosoftDocs/project-rome/tree/GH-docs/project-rome-docs/Android
 
 [graph-sdk]:               https://developer.microsoft.com/graph/docs/api-reference/beta/resources/project_rome_overview
 [graph-sdk-badge]:         https://img.shields.io/badge/REST-Beta-orange.svg
@@ -70,3 +70,8 @@ See [Microsoft's privacy statement](https://privacy.microsoft.com/en-us/privacys
 ## Microsoft Open Source Code of Conduct
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## Give feedback
+
+|[UserVoice](https://wpdev.uservoice.com/forums/110705-universal-windows-platform/category/183208-connected-apps-and-devices-project-rome)|[Feedback Hub](https://support.microsoft.com/en-us/help/4021566/windows-10-send-feedback-to-microsoft-with-feedback-hub-app)|[Contact Us](mailto:projectrometeam@microsoft.com)|
+|-----|-----|-----|
