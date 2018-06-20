@@ -18,10 +18,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.microsoft.connecteddevices.base.AsyncOperation;
+import com.microsoft.connecteddevices.base.EventListener;
+import com.microsoft.connecteddevices.commanding.CloudRegistrationStatus;
 import com.microsoft.connecteddevices.core.Platform;
-import com.microsoft.connecteddevices.core.PlatformCreationResult;
-import com.microsoft.connecteddevices.core.PlatformCreationStatus;
+import com.microsoft.connecteddevices.core.UserAccount;
+import com.microsoft.connecteddevices.hosting.AppServiceProvider;
+import com.microsoft.connecteddevices.sampleaccountproviders.MSAAccountProvider;
 
 import java.util.ArrayList;
 
@@ -140,44 +142,48 @@ public class MainActivity extends AppCompatActivity {
     // endregion
 
     public void initializePlatform() {
-        Toast.makeText(getApplicationContext(), "Initializing the Rome platform", Toast.LENGTH_LONG).show();
+        raiseToast("Initializing the Rome platform");
 
         // Instantiate Platform using the UserAccountProvider the sign in helper provides
-        AsyncOperation<PlatformCreationResult> resultOperation = PlatformBroker.start(this);
+        MSAAccountProvider signInHelper = AccountProviderBroker.getSignInHelper();
+        GcmNotificationProvider gcmNotificationProvider = new GcmNotificationProvider(this);
+        mPlatform = PlatformBroker.createPlatform(this, signInHelper, gcmNotificationProvider);
 
-        // Can handle success/failure to create platform, simply give a toast
-        resultOperation.whenComplete(new AsyncOperation.ResultBiConsumer<PlatformCreationResult, Throwable>() {
+        raiseToast("Completed Rome initialization, starting registration...");
+
+        ArrayList<AppServiceProvider> appServiceProviders = new ArrayList<>();
+        appServiceProviders.add(new PingPongService(this));
+        appServiceProviders.add(new EchoService(this));
+
+        PlatformBroker.register(this, appServiceProviders, new SimpleLaunchHandler(this), new EventListener<UserAccount, CloudRegistrationStatus>() {
             @Override
-            public void accept(PlatformCreationResult platformCreationResult, Throwable throwable) throws Throwable {
-                if (throwable != null) {
-                    Log.e(TAG, "Platform init failed with exception: " + throwable.getMessage());
-                    throwable.printStackTrace();
-                } else {
-                    if (platformCreationResult.getStatus() == PlatformCreationStatus.FAILURE) {
-                        Log.e(TAG, "Failed to initialize platform");
-                    } else {
-                        mPlatform = platformCreationResult.getPlatform();
-                        Log.d(TAG, "Initialized platform successfully");
+            public void onEvent(UserAccount account, CloudRegistrationStatus status) {
+                switch (status) {
+                    case NOT_STARTED:
+                        Log.d(TAG, "Registration has not started.");
+                        break;
+                    case IN_PROGRESS:
+                        Log.d(TAG, "Registration in progress...");
+                        break;
+                    case SUCCEEDED:
+                        raiseToast("Completed Rome registration");
 
-                        // Inform MainActivity that the Rome platform has been initialized
-                        platformInitializationComplete();
-                    }
+                        // When the CDP platform has finished registering, initialize the UserActivity Feed
+                        getUserActivityFragment().initializeUserActivityFeed();
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                navigateToPage(SDK_SELECT);
+                            }
+                        });
+                        break;
+                    case FAILED:
+                        raiseToast("Rome registration failed!");
+                        break;
                 }
             }
         });
-    }
-
-    public void platformInitializationComplete() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), "Completed Rome initialization", Toast.LENGTH_SHORT).show();
-                navigateToPage(SDK_SELECT);
-            }
-        });
-
-        // When the CDP platform has finished initializing, initialize the UserActivity Feed
-        getUserActivityFragment().initializeUserActivityFeed();
     }
 
     /**
@@ -209,16 +215,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // region Navigation
+    public void navigateToPage(String page) {
+        navigateToPage(getNativationPage((page)));
+    }
+
     /**
      * Replaces the current fragment, if any, loaded in the navigation frame with the fragment
      * representing the selected page.
      *
      * @param position Index of the page to navigate to
      */
-    public void navigateToPage(String page) {
-        navigateToPage(getNativationPage((page)));
-    }
-
     private void navigateToPage(int position) {
         navigateToPage(mPages.get(position));
 
@@ -270,6 +276,15 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mNavigationDrawer.openDrawer(mNavigationList);
         }
+    }
+
+    private void raiseToast(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**

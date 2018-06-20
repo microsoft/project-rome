@@ -71,6 +71,7 @@
     <string name="status_activities_initialize_pending">UserActivityFeed not yet initialized. Please wait…</string>
     <string name="status_activities_initialize">Initializing UserActivityFeed…</string>
     <string name="status_activities_initialize_complete">UserActivityFeed initialized</string>
+    <string name="status_activities_initialize_failed">UserActivityFeed initialization failed</string>
     <string name="status_activities_create_activity">Creating UserActivity…</string>
     <string name="status_activities_get_channel">Getting UserActivityChannel…</string>
     <string name="status_activities_get_channel_success">Got UserActivityChannel successfully</string>

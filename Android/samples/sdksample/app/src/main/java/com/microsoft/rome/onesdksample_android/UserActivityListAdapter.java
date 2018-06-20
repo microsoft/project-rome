@@ -13,8 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.microsoft.connecteddevices.useractivities.UserActivity;
+import com.microsoft.connecteddevices.useractivities.UserActivityAttribution;
 import com.microsoft.connecteddevices.useractivities.UserActivitySessionHistoryItem;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,18 +40,34 @@ public class UserActivityListAdapter extends ArrayAdapter<UserActivitySessionHis
 
         if (history != null) {
             UserActivity activity = history.getUserActivity();
-            TextView id = (TextView)convertView.findViewById(R.id.activity_id);
+
+            TextView id = convertView.findViewById(R.id.activity_id);
             id.setText(activity.getActivityId().trim());
-            TextView displayText = (TextView)convertView.findViewById(R.id.activity_displaytext);
+
+            TextView displayText = convertView.findViewById(R.id.activity_displaytext);
             displayText.setText(activity.getVisualElements().getDisplayText());
-            TextView activationUri = (TextView)convertView.findViewById(R.id.activity_activationuri);
+
+            TextView activationUri = convertView.findViewById(R.id.activity_activationuri);
             activationUri.setText(activity.getActivationUri());
-            TextView activationIconUri = (TextView)convertView.findViewById(R.id.activity_activationiconuri);
-            activationIconUri.setText(activity.getVisualElements().getAttribution().getIconUri());
-            TextView start = (TextView)convertView.findViewById(R.id.activity_start);
+
+            String iconUri = "";
+            UserActivityAttribution attribution = activity.getVisualElements().getAttribution();
+            if (attribution != null) {
+                iconUri = attribution.getIconUri();
+            }
+            TextView activationIconUri = convertView.findViewById(R.id.activity_activationiconuri);
+            activationIconUri.setText(iconUri);
+
+            TextView start = convertView.findViewById(R.id.activity_start);
             start.setText(history.getStartTime().toString());
-            TextView end = (TextView)convertView.findViewById(R.id.activity_end);
-            end.setText(history.getEndTime().toString());
+
+            String endTimeValue = "";
+            Date endTime = history.getEndTime();
+            if (endTime != null) {
+                endTimeValue = endTime.toString();
+            }
+            TextView end = convertView.findViewById(R.id.activity_end);
+            end.setText(endTimeValue);
         }
 
         return convertView;

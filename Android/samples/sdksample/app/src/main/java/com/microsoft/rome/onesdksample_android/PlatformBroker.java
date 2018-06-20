@@ -4,20 +4,26 @@
 
 package com.microsoft.rome.onesdksample_android;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
-import com.microsoft.connecteddevices.base.AsyncOperation;
+import com.microsoft.connecteddevices.base.EventListener;
+import com.microsoft.connecteddevices.commanding.CloudRegistrationStatus;
+import com.microsoft.connecteddevices.commanding.IRemoteSystemApplicationRegistration;
+import com.microsoft.connecteddevices.core.NotificationProvider;
 import com.microsoft.connecteddevices.core.Platform;
-import com.microsoft.connecteddevices.core.PlatformCreationResult;
-import com.microsoft.connecteddevices.hosting.ApplicationRegistration;
-import com.microsoft.connecteddevices.hosting.ApplicationRegistrationBuilder;
-import com.microsoft.connecteddevices.sampleaccountproviders.MSAAccountProvider;
+import com.microsoft.connecteddevices.core.UserAccount;
+import com.microsoft.connecteddevices.core.UserAccountProvider;
+import com.microsoft.connecteddevices.hosting.AppServiceProvider;
+import com.microsoft.connecteddevices.hosting.LaunchUriProvider;
+import com.microsoft.connecteddevices.hosting.RemoteSystemApplicationRegistrationBuilder;
+import com.microsoft.connecteddevices.userdata.SyncScope;
+import com.microsoft.connecteddevices.userdata.UserDataFeed;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * Most importantly in MainActivity is the platform initialization, happening in init()
@@ -25,47 +31,81 @@ import java.util.Locale;
 public class PlatformBroker {
     // region Member Variables
     private static final String TAG = PlatformBroker.class.getName();
-    private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
-    private static final String TIMESTAMP_KEY = "TIMESTAMP_KEY";
-    private static final String PACKAGE_KEY = "PACKAGE_KEY";
-    private static final String PACKAGE_VALUE = "com.microsoft.rome.onesdksample_android";
-    // endregion
 
-    public static AsyncOperation<PlatformCreationResult> start(MainActivity mainActivity) {
-        // Register the builder to application with attributes and hosting providers .
-        ApplicationRegistrationBuilder builder = new ApplicationRegistrationBuilder();
-        builder.addAttribute(TIMESTAMP_KEY, getInitialRegistrationDateTime(mainActivity));
-        builder.addAttribute(PACKAGE_KEY, PACKAGE_VALUE);
+    public static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
+    public static final String TIMESTAMP_KEY = "TIMESTAMP_KEY";
+    public static final String PACKAGE_KEY = "PACKAGE_KEY";
+    public static final String GUID_KEY = "GUID_KEY";
+    public static final String PACKAGE_VALUE = "com.microsoft.oneRomanApp";
 
-        // We add 2 AppService providers.
-        builder.addAppServiceProvider(new PingPongService(mainActivity));
-        builder.addAppServiceProvider(new EchoService(mainActivity));
-        // We set the only LaunchUri provider.
-        builder.setLaunchUriProvider(new SimpleLaunchHandler(mainActivity));
+    private static Platform sPlatform;
 
-        GcmNotificationProvider gcmNotificationProvider = new GcmNotificationProvider(mainActivity);
-        ApplicationRegistration applicationRegistration = builder.buildRegistration();
-        MSAAccountProvider signInHelper = AccountProviderBroker.getSignInHelper();
+    private PlatformBroker() { }
 
-        // Instantiate Platform using the UserAccountProvider the sign in helper provides
-        return Platform.createInstanceAsync(mainActivity, gcmNotificationProvider, applicationRegistration, signInHelper);
+    public static synchronized Platform getPlatform() {
+        return sPlatform;
     }
 
-    private static String getInitialRegistrationDateTime(Activity activity) {
-        SharedPreferences preferences = activity.getPreferences(Context.MODE_PRIVATE);
-        // Check that the SharedPreferences has the timestamp. This should be true after the first clean install -> Platform init.
-        if (preferences.contains(TIMESTAMP_KEY)) {
-            // You must provide a default value. Since we check that key exists we should never get a empty string.
-            String timestamp = preferences.getString(TIMESTAMP_KEY, "");
-            if (timestamp.isEmpty()) {
-                throw new RuntimeException("Failed to get TimeStamp after verifying it exists");
-            }
-            return timestamp;
+    public static synchronized Platform createPlatform(Context context, UserAccountProvider accountProvider, NotificationProvider notificationProvider) {
+        sPlatform = new Platform(context, accountProvider, notificationProvider);
+        return sPlatform;
+    }
+
+    public static synchronized Platform getOrCreatePlatform(Context context, UserAccountProvider accountProvider, NotificationProvider notificationProvider) {
+        Platform platform = getPlatform();
+
+        if (platform == null) {
+            platform = createPlatform(context, accountProvider, notificationProvider);
         }
 
-        // Create the initial timestamp for RemoteSystemApplication registration and store it in SharedPreferences
-        String timestamp = new SimpleDateFormat(DATE_FORMAT, Locale.US).format(new Date());
-        preferences.edit().putString(TIMESTAMP_KEY, timestamp).apply();
+        return platform;
+    }
+
+    public static void register(Context context, ArrayList<AppServiceProvider> appServiceProviders, LaunchUriProvider launchUriProvider, EventListener<UserAccount, CloudRegistrationStatus> listener) {
+        // Initialize the platform with all possible services
+        RemoteSystemApplicationRegistrationBuilder builder = new RemoteSystemApplicationRegistrationBuilder();
+        builder.addAttribute(TIMESTAMP_KEY, getInitialRegistrationDateTime(context));
+        builder.addAttribute(PACKAGE_KEY, PACKAGE_VALUE);
+
+        // Add the given AppService and LaunchUri Providers to the registration builder
+        if (appServiceProviders != null) {
+            for (AppServiceProvider provider : appServiceProviders) {
+                builder.addAppServiceProvider(provider);
+            }
+        }
+        if (launchUriProvider != null) {
+            builder.setLaunchUriProvider(launchUriProvider);
+        }
+
+        IRemoteSystemApplicationRegistration registration = builder.buildRegistration();
+        // Add an EventListener to handle registration completion
+        registration.addCloudRegistrationStatusChangedListener(listener);
+        registration.start();
+    }
+
+    /**
+     * Grab the initial registration date-time if one is found, otherwise generate a new one.
+     * @param context
+     * @return Datetime to insert into the RemoteSystemApplicationRegistrationBuilder
+     */
+    private static String getInitialRegistrationDateTime(final Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
+
+        String timestamp;
+        // Check that the SharedPreferences has the timestamp. This should be true after the first clean install -> Platform init.
+        if (preferences.contains(TIMESTAMP_KEY)) {
+            // The `getString` API requires a default value. Since we check that key exists we should never get the default value of empty
+            // string.
+            timestamp = preferences.getString(TIMESTAMP_KEY, "");
+            if (timestamp.isEmpty()) {
+                Log.e(TAG, "getInitialRegistrationDateTime failed to get the TimeStamp although the key exists");
+                throw new RuntimeException("Failed to get TimeStamp after verifying it exists");
+            }
+        } else {
+            // Create the initial timestamp for RemoteSystemApplication registration and store it in SharedPreferences
+            timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
+            preferences.edit().putString(TIMESTAMP_KEY, timestamp).apply();
+        }
 
         return timestamp;
     }

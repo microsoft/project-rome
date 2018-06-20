@@ -16,15 +16,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.microsoft.connecteddevices.base.AsyncOperation;
+import com.microsoft.connecteddevices.base.EventListener;
 import com.microsoft.connecteddevices.core.UserAccount;
 import com.microsoft.connecteddevices.useractivities.UserActivity;
 import com.microsoft.connecteddevices.useractivities.UserActivityChannel;
 import com.microsoft.connecteddevices.useractivities.UserActivitySession;
 import com.microsoft.connecteddevices.useractivities.UserActivitySessionHistoryItem;
+import com.microsoft.connecteddevices.userdata.SyncScope;
+import com.microsoft.connecteddevices.userdata.UserDataFeed;
+import com.microsoft.connecteddevices.userdata.UserDataSyncStatus;
+import com.microsoft.connecteddevices.usernotifications.UserNotificationChannel;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
+
+import static com.microsoft.rome.onesdksample_android.StaticContextApp.getStringValue;
 
 /**
  * Creates, publishes, and reads User Activities
@@ -59,7 +66,6 @@ import java.util.UUID;
 public class UserActivityFragment extends BaseFragment implements View.OnClickListener {
     private static final String TAG = UserActivityFragment.class.getName();
 
-    // private Button mAfcInitButton;
     private TextView mActivityStatus;
     private Button mNewButton;
     private Button mStartButton;
@@ -74,27 +80,43 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
     private UserActivity mActivity;
     private UserActivitySession mActivitySession;
     private UserActivityChannel mActivityChannel;
+    private UserDataFeed mUserDataFeed;
+    private String mStatusText;
 
     @Nullable
     private UserActivityChannel getUserActivityChannel() {
-        UserAccount[] accounts = AccountProviderBroker.getSignInHelper().getUserAccounts();
-        if (accounts.length <= 0) {
-            setStatus(R.string.status_activities_signin_required);
-            return null;
-        }
+        mStatusText = getStringValue(R.string.status_activities_get_channel);
+        Log.d(TAG, mStatusText);
 
-        setStatus(R.string.status_activities_get_channel);
         UserActivityChannel channel = null;
         try {
             // Step #1
             // create a UserActivityChannel for the signed in account
-            channel = new UserActivityChannel(accounts[0]);
-            setStatus(R.string.status_activities_get_channel_success);
+            channel = new UserActivityChannel(mUserDataFeed);
+
+            mStatusText = getStringValue(R.string.status_activities_get_channel_success);
+            Log.d(TAG, mStatusText);
         } catch (Exception e) {
             e.printStackTrace();
-            setStatus(R.string.status_activities_get_channel_failed);
+            mStatusText = getStringValue(R.string.status_activities_get_channel_failed);
+            Log.e(TAG, mStatusText);
         }
         return channel;
+    }
+
+    private UserDataFeed getUserDataFeed(SyncScope[] scopes, EventListener<UserDataFeed, Void> listener) {
+        UserAccount[] accounts = AccountProviderBroker.getSignInHelper().getUserAccounts();
+        if (accounts.length <= 0) {
+            mStatusText = getStringValue(R.string.status_activities_signin_required);
+            Log.e(TAG, mStatusText);
+            return null;
+        }
+
+        UserDataFeed feed = UserDataFeed.getForAccount(accounts[0], PlatformBroker.getPlatform(), Secrets.APP_HOST_NAME);
+        feed.addSyncStatusChangedListener(listener);
+        feed.addSyncScopes(scopes);
+        feed.startSync();
+        return feed;
     }
 
     private String createActivityId() {
@@ -108,10 +130,12 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
 
         try {
             activity = activityOperation.get();
-            setStatus(R.string.status_activities_create_activity_success);
+            mStatusText = getStringValue(R.string.status_activities_create_activity_success);
+            Log.d(TAG, mStatusText);
         } catch (Exception e) {
             e.printStackTrace();
-            setStatus(R.string.status_activities_create_activity_failed);
+            mStatusText = getStringValue(R.string.status_activities_create_activity_failed);
+            Log.e(TAG, mStatusText);
         }
         return activity;
     }
@@ -120,9 +144,24 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
      * Initializes the UserActivityFeed.
      */
     public void initializeUserActivityFeed() {
-        setStatus(R.string.status_activities_initialize);
+        mStatusText = getStringValue(R.string.status_activities_initialize);
+        Log.d(TAG, mStatusText);
+
+        SyncScope[] scopes = { UserActivityChannel.getSyncScope(), UserNotificationChannel.getSyncScope() };
+        mUserDataFeed = getUserDataFeed(scopes, new EventListener<UserDataFeed, Void>() {
+            @Override
+            public void onEvent(UserDataFeed userDataFeed, Void aVoid) {
+                if (userDataFeed.getSyncStatus() == UserDataSyncStatus.SYNCHRONIZED) {
+                    mStatusText = getStringValue(R.string.status_activities_initialize_complete);
+                    Log.d(TAG, mStatusText);
+                } else {
+                    mStatusText = getStringValue(R.string.status_activities_initialize_failed);
+                    Log.e(TAG, mStatusText);
+                }
+            }
+        });
+
         mActivityChannel = getUserActivityChannel();
-        setStatus(R.string.status_activities_initialize_complete);
     }
 
     @Override
@@ -149,6 +188,8 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
         mListView = rootView.findViewById(R.id.activityListView);
         mListAdapter = new UserActivityListAdapter(getContext(), mHistoryItems);
         mListView.setAdapter(mListAdapter);
+
+        setStatus(mStatusText);
 
         return rootView;
     }
@@ -284,7 +325,14 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
     }
 
     void setStatus(int resourceId) {
-        final String text = getString(resourceId);
+        setStatus(getStringValue(resourceId));
+    }
+
+    void setStatus(final String text) {
+        if (text == null) {
+            return;
+        }
+
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

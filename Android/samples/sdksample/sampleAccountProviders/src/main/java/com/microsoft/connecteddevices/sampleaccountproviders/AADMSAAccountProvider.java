@@ -44,11 +44,13 @@ public final class AADMSAAccountProvider implements UserAccountProvider {
 
     /**
      * @param msaClientId           id of the app's registration in the MSA portal
+     * @param msaScopeOverrides     scope overrides for the app
      * @param aadClientId           id of the app's registration in the Azure portal
-     * @param redirectUri           redirect uri the app is registered with in the Azure portal
+     * @param aadRedirectUri        redirect uri the app is registered with in the Azure portal
      * @param context
      */
-    public AADMSAAccountProvider(String msaClientId, String aadClientId, String aadRedirectUri, Context context) {
+    public AADMSAAccountProvider(
+        String msaClientId, final Map<String, String[]> msaScopeOverrides, String aadClientId, String aadRedirectUri, Context context) {
 
         // Chain the inner events to the event provided by this helper
         mListener = new EventListener<UserAccountProvider, Void>() {
@@ -58,7 +60,7 @@ public final class AADMSAAccountProvider implements UserAccountProvider {
             }
         };
 
-        mMSAProvider = new MSAAccountProvider(msaClientId, context);
+        mMSAProvider = new MSAAccountProvider(msaClientId, msaScopeOverrides, context);
         mAADProvider = new AADAccountProvider(aadClientId, aadRedirectUri, context);
 
         if (mMSAProvider.isSignedIn() && mAADProvider.isSignedIn()) {

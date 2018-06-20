@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 @Keep
-final class IOUtil {
+public final class IOUtil {
 
     /**
      * Writes UTF-8 output data to an output stream.
@@ -25,7 +25,7 @@ final class IOUtil {
      * @param data Data to write
      * @throws IOException Thrown if the output stream is unavailable, or encoding the data fails
      */
-    static void writeUTF8Stream(OutputStream stream, String data) throws IOException {
+    public static void writeUTF8Stream(OutputStream stream, String data) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream, "UTF-8"))) {
             writer.write(data);
         }
@@ -39,7 +39,7 @@ final class IOUtil {
      * @return All data received from the stream
      * @throws IOException Thrown if the input stream is unavailable, or decoding the data fails
      */
-    static String readUTF8Stream(InputStream stream) throws IOException {
+    public static String readUTF8Stream(InputStream stream) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"))) {
             String line;

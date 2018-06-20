@@ -41,6 +41,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -107,14 +109,14 @@ public final class MSAAccountProvider implements UserAccountProvider, MSATokenCa
 
     // CDP's SDK currently requires authorization for all features, otherwise platform initialization will fail.
     // As such, the user must sign in/consent for the following scopes. This may change to become more modular in the future.
-    private static final String[] REQUIRED_SCOPES = {
+    private static final String[] KNOWN_SCOPES = {
+        "wl.offline_access",                                                // read and update user info at any time
         "ccs.ReadWrite",                                                    // device commanding scope
         "dds.read",                                                         // device discovery scope (discover other devices)
         "dds.register",                                                     // device discovery scope (allow discovering this device)
-        "wns.connect",                                                      // notification scope
-        "wl.offline_access",                                                // read and update user info at any time
-        "https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp", // user activities scope
-        "asimovrome.telemetry"                                              // asimov token scope
+        "wns.connect",                                                      // push notification scope
+        "asimovrome.telemetry",                                             // asimov token scope
+        "https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp", // default useractivities scope
     };
 
     // OAuth URLs
@@ -125,6 +127,7 @@ public final class MSAAccountProvider implements UserAccountProvider, MSATokenCa
 
     // region Member Variables
     private final String mClientId;
+    private final Map<String, String[]> mScopeOverrideMap;
     private UserAccount mAccount = null;
     private MSATokenCache mTokenCache;
     private boolean mSignInSignOutInProgress;
@@ -135,11 +138,13 @@ public final class MSAAccountProvider implements UserAccountProvider, MSATokenCa
 
     // region Constructor
     /**
-     * @param clientId              id of the app's registration in the MSA portal
+     * @param clientId           id of the app's registration in the MSA portal
+     * @param scopeOverrides     scope overrides for the app
      * @param context
      */
-    public MSAAccountProvider(String clientId, Context context) {
+    public MSAAccountProvider(String clientId, final Map<String, String[]> scopeOverrides, Context context) {
         mClientId = clientId;
+        mScopeOverrideMap = scopeOverrides;
         mTokenCache = new MSATokenCache(clientId, context);
         mTokenCache.addListener(new MSATokenCache.Listener() {
             @Override
@@ -158,6 +163,22 @@ public final class MSAAccountProvider implements UserAccountProvider, MSATokenCa
     // endregion
 
     // region Private Helpers
+    private List<String> getAuthScopes(final String[] incoming) {
+        ArrayList<String> authScopes = new ArrayList<String>();
+
+        for (String scope : incoming) {
+            if (mScopeOverrideMap.containsKey(scope)) {
+                for (String replacement : mScopeOverrideMap.get(scope)) {
+                    authScopes.add(replacement);
+                }
+            } else {
+                authScopes.add(scope);
+            }
+        }
+
+        return authScopes;
+    }
+
     private AsyncOperation<Void> notifyListenersAsync() {
         return AsyncOperation.supplyAsync(new AsyncOperation.Supplier<Void>() {
             @Override
@@ -240,7 +261,7 @@ public final class MSAAccountProvider implements UserAccountProvider, MSATokenCa
         }
 
         final String signInUrl = AUTHORIZE_URL + "?redirect_uri=" + REDIRECT_URL + "&response_type=code&client_id=" + mClientId +
-                                 "&scope=" + TextUtils.join("+", REQUIRED_SCOPES);
+                                 "&scope=" + TextUtils.join("+", getAuthScopes(KNOWN_SCOPES));
         final AsyncOperation<String> authCodeOperation = new AsyncOperation<>();
         final AsyncOperation<Boolean> signInOperation = new AsyncOperation<>();
         mSignInSignOutInProgress = true;
@@ -396,7 +417,7 @@ public final class MSAAccountProvider implements UserAccountProvider, MSATokenCa
     public synchronized AsyncOperation<AccessTokenResult> getAccessTokenForUserAccountAsync(final String accountId, final String[] scopes) {
         if (mAccount != null && accountId != null && accountId.equals(mAccount.getId()) && scopes.length > 0) {
 
-            final String scope = TextUtils.join(" ", scopes);
+            final String scope = TextUtils.join(" ", getAuthScopes(scopes));
 
             return mTokenCache.getAccessTokenAsync(scope).thenComposeAsync(
                 new AsyncOperation.ResultFunction<String, AsyncOperation<AccessTokenResult>>() {
@@ -405,7 +426,6 @@ public final class MSAAccountProvider implements UserAccountProvider, MSATokenCa
                         if (accessToken != null) {
                             // token already exists in the cache, can early return
                             return AsyncOperation.completedFuture(new AccessTokenResult(AccessTokenRequestStatus.SUCCESS, accessToken));
-
                         } else {
                             // token does not yet exist in the cache, need to request a new one
                             return requestNewAccessTokenAsync(scope);

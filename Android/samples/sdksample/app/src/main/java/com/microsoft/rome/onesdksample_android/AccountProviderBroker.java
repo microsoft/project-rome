@@ -6,6 +6,7 @@ package com.microsoft.rome.onesdksample_android;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.ArrayMap;
 import android.util.Log;
 
 import com.microsoft.connecteddevices.base.AsyncOperation;
@@ -22,8 +23,8 @@ public class AccountProviderBroker {
 
     public AccountProviderBroker(Context context) {
         // Create sign-in helper from helper lib, which does user account and access token management for us
-        // Takes two parameters: a client id for msa, and a client id for aad, which are just strings we register with
-        mSignInHelper = new MSAAccountProvider(Secrets.MSA_CLIENT_ID, context);
+        // Takes three parameters: a client id for msa, a map of requested auto scopes to override, and the context
+        mSignInHelper = new MSAAccountProvider(Secrets.MSA_CLIENT_ID, new ArrayMap<String, String[]>(), context);
     }
 
     public void signIn(Activity activity, AsyncOperation.ResultBiConsumer<Boolean, Throwable> signInCompletionHandler) {
