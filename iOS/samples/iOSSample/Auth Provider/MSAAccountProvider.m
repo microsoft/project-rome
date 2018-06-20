@@ -55,13 +55,13 @@
 // CDP's SDK currently requires authorization for all features, otherwise platform initialization will fail.
 // As such, the user must sign in/consent for the following scopes. This may change to become more modular in the future.
 static NSString* const MsaRequiredScopes =                               //
+    @"wl.offline_access+"                                                // read and update user info at any time
     @"ccs.ReadWrite+"                                                    // device commanding scope
     @"dds.read+"                                                         // device discovery scope (discover other devices)
     @"dds.register+"                                                     // device discovery scope (allow discovering this device)
-    @"wns.connect+"                                                      // notification scope
-    @"wl.offline_access+"                                                // read and update user info at any time
-    @"https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp+" // user activities scope
-    @"asimovrome.telemetry";                                             // asimov token scope
+    @"wns.connect+"                                                      // push notification scope
+    @"asimovrome.telemetry+"                                             // asimov token scope
+    @"https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp"; // default useractivities scope
 
 // OAuth URLs
 static NSString* const MsaRedirectUrl = @"https://login.live.com/oauth20_desktop.srf";
@@ -88,9 +88,9 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
 @interface MSAAccountProvider () <MSATokenCacheDelegate, UIWebViewDelegate>
 {
     NSString* _clientId;
+    NSDictionary<NSString*, NSArray<NSString*>*>* _scopeOverrides;
     MCDUserAccount* _account;
     MSATokenCache* _tokenCache;
-
     BOOL _signInSignOutInProgress;
     SampleAccountProviderCompletionBlock _signInSignOutCallback;
     UIWebView* _webView;
@@ -102,12 +102,14 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
 @synthesize userAccountChanged = _userAccountChanged;
 
 - (instancetype)initWithClientId:(NSString*)clientId
+                  scopeOverrides:(NSDictionary<NSString*, NSArray<NSString*>*>*)scopes
 {
     NSLog(@"MSAAccountProvider initWithClientId");
 
     if (self = [super init])
     {
-        _clientId = clientId;
+        _clientId = [clientId copy];
+        _scopeOverrides = [scopes copy];
 
         _tokenCache = [MSATokenCache cacheWithClientId:_clientId delegate:self];
 
@@ -130,6 +132,24 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
 }
 
 #pragma mark - Private Helpers
+- (NSString*)_getAuthScopes: (NSArray<NSString*>*) incoming
+{
+    NSMutableArray<NSString*>* scopes = [NSMutableArray new];
+    for (NSString* scope in incoming)
+    {
+        NSArray<NSString*>* replacements = [_scopeOverrides objectForKey:scope];
+        if (replacements)
+        {
+            [scopes addObjectsFromArray:replacements];
+        }
+        else
+        {
+            [scopes addObject:scope];
+        }
+    }
+    return [scopes componentsJoinedByString:@"+"];
+}
+
 - (void)_raiseAccountChangedEvent
 {
     NSLog(@"Raise Account changed event");
@@ -275,8 +295,9 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
         _signInSignOutInProgress = YES;
 
         // issue request to sign in
+        NSArray* scopes = [MsaRequiredScopes componentsSeparatedByString:@"+"];
         [self _loadWebRequest:[NSString stringWithFormat:@"%@?redirect_uri=%@&response_type=code&client_id=%@&scope=%@", MsaAuthorizeUrl,
-                                        MsaRedirectUrl, _clientId, MsaRequiredScopes]];
+                                        MsaRedirectUrl, _clientId, [self _getAuthScopes:scopes]]];
     }
 }
 
@@ -415,7 +436,7 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
         @synchronized(self)
         {
             // check if access token cache already has a valid token
-            NSString* accessTokenScope = [scopes componentsJoinedByString:@"+"];
+            NSString* accessTokenScope = [self _getAuthScopes:scopes];
 
             // clang-format off
             [_tokenCache getAccessTokenForScopeAsync:accessTokenScope callback:^void(NSString* accessToken)

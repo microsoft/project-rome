@@ -3,7 +3,7 @@
 //
 
 #import "NotificationProvider.h"
-#import "ConnectedDevices/Core/MCDPlatform.h"
+#import <ConnectedDevices/Core/MCDPlatform.h>
 #import <UIKit/UIKit.h>
 
 @implementation NotificationProvider

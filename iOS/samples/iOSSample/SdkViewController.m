@@ -9,7 +9,7 @@
 #import "LaunchUriProvider.h"
 #import "NotificationProvider.h"
 #import <ConnectedDevices/Core/MCDPlatform.h>
-#import <ConnectedDevices/Hosting/MCDHostingApplicationRegistrationBuilder.h>
+#import <ConnectedDevices/Hosting/MCDHostingRemoteSystemApplicationRegistrationBuilder.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
@@ -32,13 +32,6 @@
 
 - (void)initializePlatform
 {
-    // Rome is initialized asynchronously
-    MCDHostingApplicationRegistrationBuilder* builder = [MCDHostingApplicationRegistrationBuilder new];
-    [builder setLaunchUriProvider:[[LaunchUriProvider alloc] initWithDelegate:[AppDataSource sharedInstance].inboundRequestLogger]];
-    [builder addAppServiceProvider:[[AppServiceProvider alloc] initWithDelegate:[AppDataSource sharedInstance].inboundRequestLogger]];
-    [builder addAttribute:@"ExampleAttribute" forName:@"ExampleName"];
-    MCDApplicationRegistration* registration = [builder buildRegistration];
-
     // Only register for APNs if this app is enabled for push notifications
     NotificationProvider* notificationProvider;
     if ([[UIApplication sharedApplication] isRegisteredForRemoteNotifications])
@@ -52,24 +45,38 @@
     }
 
     // Initialize platform
-    [MCDPlatform createWithNotificationProviderAsync:notificationProvider
-                             applicationRegistration:registration
-                                     accountProvider:[AppDataSource sharedInstance].accountProvider
-                                          completion:^(MCDPlatformCreationResult* result, __unused NSError* error) {
-                                              NSLog(@"Initialized platform callback");
-                                              if (result.status == MCDPlatformCreationStatusSuccess)
-                                              {
-                                                  dispatch_async(dispatch_get_main_queue(), ^{
-                                                      // Now the platform is initialized it's safe to enable button
-                                                      [self.deviceRelayButton setEnabled:YES];
-                                                      [self.activityFeedButton setEnabled:YES];
-                                                  });
-                                              }
-                                              else
-                                              {
-                                                  NSLog(@"Failed to initialize platform!");
-                                              }
-                                          }];
+    [AppDataSource sharedInstance].platform = [MCDPlatform platformWithAccountProvider:[AppDataSource sharedInstance].accountProvider notificationProvider:notificationProvider];
+
+    // App is registered asynchronously.
+    MCDHostingRemoteSystemApplicationRegistrationBuilder* builder = [MCDHostingRemoteSystemApplicationRegistrationBuilder new];
+    [builder setLaunchUriProvider:[[LaunchUriProvider alloc] initWithDelegate:[AppDataSource sharedInstance].inboundRequestLogger]];
+    [builder addAppServiceProvider:[[AppServiceProvider alloc] initWithDelegate:[AppDataSource sharedInstance].inboundRequestLogger]];
+    [builder addAttribute:@"ExampleAttribute" forName:@"ExampleName"];
+    MCDRemoteSystemApplicationRegistration* registration = [builder buildRegistration];
+    
+    [registration addCloudRegistrationStatusChangedListener:^(MCDUserAccount * _Nonnull account, MCDCloudRegistrationStatus status) {
+        NSLog(@"Cloud Registration Status Changed listener");
+        switch (status) {
+            case MCDCloudRegistrationStatusFailed:
+                NSLog(@"Cloud registration completed with status Failed");
+                break;
+            case MCDCloudRegistrationStatusInProgress:
+                NSLog(@"Cloud registration in progress");
+                break;
+            case MCDCloudRegistrationStatusNotStarted:
+                NSLog(@"Cloud registration not started");
+                break;
+            case MCDCloudRegistrationStatusSucceeded:
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    // The app has been registered.  It is safe to enable button.
+                    [self.deviceRelayButton setEnabled:YES];
+                    [self.activityFeedButton setEnabled:YES];
+                });
+                break;
+        }
+    }];
+    
+    [registration start];
 }
 
 - (void)_signOutClicked:(id)sender

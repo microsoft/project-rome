@@ -23,7 +23,6 @@
     }
     else
     {
-
         // app run in background and received the push notification, app is launched by user tapping the alert view
         [MCDNotificationReceiver receiveNotification:notificationInfo];
     }

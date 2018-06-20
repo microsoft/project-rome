@@ -6,7 +6,7 @@
 #import "AppDataSource.h"
 #import "MSAAccountProvider.h"
 #import "MainNavigationController.h"
-#import <ConnectedDevices/Core/MCDApplicationRegistrationBuilder.h>
+#import <ConnectedDevices/Commanding/MCDRemoteSystemApplicationRegistrationBuilder.h>
 #import <ConnectedDevices/Core/MCDPlatform.h>
 #import <UIKit/UIKit.h>
 

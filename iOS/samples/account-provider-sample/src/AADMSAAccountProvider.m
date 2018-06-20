@@ -19,13 +19,14 @@ static NSString* const AADMSAAccountProviderExceptionName = @"AADMSAAccountProvi
 @synthesize userAccountChanged = _userAccountChanged;
 
 - (instancetype)initWithMsaClientId:(NSString*)msaClientId
+                     msaScopeOverrides:(NSDictionary<NSString*, NSArray<NSString*>*>*)scopes
                    aadApplicationId:(NSString*)aadApplicationId
                      aadRedirectUri:(NSURL*)aadRedirectUri
 {
     if (self = [super init])
     {
         _userAccountChanged = [MCDUserAccountChangedEvent new];
-        _msaProvider = [[MSAAccountProvider alloc] initWithClientId:msaClientId];
+        _msaProvider = [[MSAAccountProvider alloc] initWithClientId:msaClientId scopeOverrides:scopes];
         _aadProvider = [[AADAccountProvider alloc] initWithClientId:aadApplicationId redirectUri:aadRedirectUri];
 
         if (_msaProvider.signedIn && _aadProvider.signedIn)

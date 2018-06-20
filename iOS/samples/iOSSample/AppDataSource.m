@@ -28,7 +28,9 @@
         // This sample provides the source files that are used to acquired the token under the 'Auth Provider' directory
         // The only requirement is to obtain a valid OAuth token
         // This sample shows one way it can be done; we are giving you the option to use the sample auth code or use your own
-        _accountProvider = [[MSAAccountProvider alloc] initWithClientId:CLIENT_ID];
+        // scopeOverrides allows you to override scopes that are requested by the auth provider. Apps do not normally need to override scopes.
+        NSDictionary<NSString*, NSArray<NSString*>*>* scopeOverrides = @{};
+        _accountProvider = [[MSAAccountProvider alloc] initWithClientId:CLIENT_ID scopeOverrides:scopeOverrides];
 
         _inboundRequestLogger = [InboundRequestLogger new];
     }

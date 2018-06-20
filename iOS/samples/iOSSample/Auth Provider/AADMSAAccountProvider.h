@@ -25,6 +25,7 @@ typedef NS_ENUM(NSInteger, AADMSAAccountProviderSignInState)
 // only the first scope in scopes[] passed to for getAccessTokenForUserAccountIdAsync: and onAccessTokenError:, is used
 //
 // msaClientId is a guid from the app's registration in the msa apps portal
+// msaScopeOverrides is a map for the app to specify special scopes to replace the default ones
 // aadApplicationId is a guid from the app's registration in the azure portal
 // aadRedirectUri is a Uri specified in the azure portal
 @interface AADMSAAccountProvider : NSObject <MCDUserAccountProvider>
@@ -33,6 +34,7 @@ typedef NS_ENUM(NSInteger, AADMSAAccountProviderSignInState)
 @property(readonly, nonatomic, copy, nonnull) NSString* aadApplicationId;
 
 - (nullable instancetype)initWithMsaClientId:(nonnull NSString*)msaClientId
+                              msaScopeOverrides:(nullable NSDictionary<NSString*, NSArray<NSString*>*>*) scopes
                             aadApplicationId:(nonnull NSString*)aadApplicationId
                               aadRedirectUri:(nonnull NSURL*)aadRedirectUri;
 - (void)signInMSAWithCompletionCallback:(nonnull SampleAccountProviderCompletionBlock)callback;
