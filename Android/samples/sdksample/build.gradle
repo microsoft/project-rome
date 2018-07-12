@@ -19,8 +19,8 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        maven { url 'https://maven.google.com' }
-        maven { url 'https://projectrome.bintray.com/maven/' }
+        google()
+        maven { url "${project.rootDir}/.packages" }
     }
 }
 
