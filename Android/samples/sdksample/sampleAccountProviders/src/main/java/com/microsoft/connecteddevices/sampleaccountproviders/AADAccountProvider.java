@@ -4,6 +4,7 @@
 
 package com.microsoft.connecteddevices.sampleaccountproviders;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -179,6 +180,7 @@ public final class AADAccountProvider implements UserAccountProvider {
         } else {
             cookieManager.removeAllCookies(new ValueCallback<Boolean>() {
                 @Override
+                @TargetApi(21)
                 public void onReceiveValue(Boolean value) {
                     cookieManager.flush();
                 }

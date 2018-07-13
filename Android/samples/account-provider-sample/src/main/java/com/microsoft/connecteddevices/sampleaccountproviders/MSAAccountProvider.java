@@ -4,16 +4,16 @@
 
 package com.microsoft.connecteddevices.sampleaccountproviders;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.Keep;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.Log;
-import android.util.Pair;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -28,30 +28,11 @@ import com.microsoft.connecteddevices.core.UserAccountProvider;
 import com.microsoft.connecteddevices.core.UserAccount;
 import com.microsoft.connecteddevices.core.UserAccountType;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Sample implementation of UserAccountProvider.
@@ -274,45 +255,37 @@ public final class MSAAccountProvider implements UserAccountProvider, MSATokenCa
         web.getSettings().setDomStorageEnabled(true);
 
         web.loadUrl(signInUrl);
-        web.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
 
-                if (url.startsWith(REDIRECT_URL)) {
-                    final Uri uri = Uri.parse(url);
-                    final String code = uri.getQueryParameter("code");
-                    final String error = uri.getQueryParameter("error");
-
-                    dialog.dismiss();
-
-                    if ((error != null) || (code == null) || (code.length() <= 0)) {
-                        synchronized (MSAAccountProvider.this) {
-                            mSignInSignOutInProgress = false;
-                        }
-
-                        signInOperation.complete(false);
-                        authCodeOperation.completeExceptionally(
-                            new Exception((error != null) ? error : "Failed to authenticate with unknown error"));
-                    } else {
-                        authCodeOperation.complete(code);
-                    }
-                }
-            }
-
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                super.onReceivedError(view, request, error);
-
-                Log.e(TAG, "Encountered web resource loading error while signing in: \'" + error.getDescription() + "\'");
-                synchronized (MSAAccountProvider.this) {
-                    mSignInSignOutInProgress = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            web.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    super.onPageFinished(view, url);
+                    onSignInPageFinishedInternal(url, dialog, authCodeOperation, signInOperation);
                 }
 
-                signInOperation.complete(false);
-                authCodeOperation.completeExceptionally(new Exception(error.getDescription().toString()));
-            }
-        });
+                @Override
+                @TargetApi(23)
+                public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                    super.onReceivedError(view, request, error);
+                    onReceivedSignInErrorInternal(error.getDescription().toString(), authCodeOperation, signInOperation);
+                }
+            });
+        } else {
+            web.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    super.onPageFinished(view, url);
+                    onSignInPageFinishedInternal(url, dialog, authCodeOperation, signInOperation);
+                }
+
+                @Override
+                public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                    super.onReceivedError(view, errorCode, description, failingUrl);
+                    onReceivedSignInErrorInternal(description, authCodeOperation, signInOperation);
+                }
+            });
+        }
 
         authCodeOperation // chain after successfully fetching the authcode (does not execute if authCodeOperation completed exceptionally)
             .thenComposeAsync(new AsyncOperation.ResultFunction<String, AsyncOperation<MSATokenRequest.Result>>() {
@@ -364,42 +337,37 @@ public final class MSAAccountProvider implements UserAccountProvider, MSATokenCa
         WebView web = (WebView)dialog.findViewById(R.id.webv);
 
         web.loadUrl(signOutUrl);
-        web.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
 
-                if (!url.contains("oauth20_desktop.srf")) {
-                    // finishing off loading intermediate pages,
-                    // e.g., input username/password page, consent interrupt page, wrong username/password page etc.
-                    // no need to handle them, return early.
-                    return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            web.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    super.onPageFinished(view, url);
+                    onSignOutPageFinishedInternal(url, dialog);
                 }
 
-                synchronized (MSAAccountProvider.this) {
-                    mSignInSignOutInProgress = false;
+                @Override
+                @TargetApi(23)
+                public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                    super.onReceivedError(view, request, error);
+                    onReceivedSignOutErrorInternal(error.getDescription().toString());
+                }
+            });
+        } else {
+            web.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    super.onPageFinished(view, url);
+                    onSignOutPageFinishedInternal(url, dialog);
                 }
 
-                final Uri uri = Uri.parse(url);
-                final String error = uri.getQueryParameter("error");
-                if (error != null) {
-                    Log.e(TAG, "Signed out failed with error: " + error);
+                @Override
+                public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                    super.onReceivedError(view, errorCode, description, failingUrl);
+                    onReceivedSignOutErrorInternal(description);
                 }
-
-                removeAccount();
-                dialog.dismiss();
-            }
-
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                super.onReceivedError(view, request, error);
-
-                Log.e(TAG, "Encountered web resource loading error while signing out: \'" + error.getDescription() + "\'");
-                synchronized (MSAAccountProvider.this) {
-                    mSignInSignOutInProgress = false;
-                }
-            }
-        });
+            });
+        }
     }
     // endregion
 
@@ -465,5 +433,70 @@ public final class MSAAccountProvider implements UserAccountProvider, MSATokenCa
     public void onTokenCachePermanentFailure() {
         onAccessTokenError(null, null, true);
     }
+    // endregion
+
+    // region  Internal Helpers
+
+    private void onSignInPageFinishedInternal(String url, Dialog dialog, AsyncOperation<String> authCodeOperation, AsyncOperation<Boolean> signInOperation) {
+        if (url.startsWith(REDIRECT_URL)) {
+            final Uri uri = Uri.parse(url);
+            final String code = uri.getQueryParameter("code");
+            final String error = uri.getQueryParameter("error");
+
+            dialog.dismiss();
+
+            if ((error != null) || (code == null) || (code.length() <= 0)) {
+                synchronized (MSAAccountProvider.this) {
+                    mSignInSignOutInProgress = false;
+                }
+
+                signInOperation.complete(false);
+                authCodeOperation.completeExceptionally(
+                    new Exception((error != null) ? error : "Failed to authenticate with unknown error"));
+            } else {
+                authCodeOperation.complete(code);
+            }
+        }
+    }
+
+    private void onReceivedSignInErrorInternal(String errorString, AsyncOperation<String> authCodeOperation, AsyncOperation<Boolean> signInOperation) {
+        Log.e(TAG, "Encountered web resource loading error while signing in: \'" + errorString + "\'");
+        synchronized (MSAAccountProvider.this) {
+            mSignInSignOutInProgress = false;
+        }
+
+        signInOperation.complete(false);
+        authCodeOperation.completeExceptionally(new Exception(errorString));
+    }
+
+    public void onSignOutPageFinishedInternal(String url, Dialog dialog) {
+        if (!url.contains("oauth20_desktop.srf")) {
+            // finishing off loading intermediate pages,
+            // e.g., input username/password page, consent interrupt page, wrong username/password page etc.
+            // no need to handle them, return early.
+            return;
+        }
+
+        synchronized (MSAAccountProvider.this) {
+            mSignInSignOutInProgress = false;
+        }
+
+        final Uri uri = Uri.parse(url);
+        final String error = uri.getQueryParameter("error");
+        if (error != null) {
+            Log.e(TAG, "Signed out failed with error: " + error);
+        }
+
+        removeAccount();
+        dialog.dismiss();
+    }
+
+    public void onReceivedSignOutErrorInternal(String errorString) {
+        Log.e(TAG, "Encountered web resource loading error while signing out: \'" + errorString + "\'");
+        synchronized (MSAAccountProvider.this) {
+            mSignInSignOutInProgress = false;
+        }
+    }
+
     // endregion
 }

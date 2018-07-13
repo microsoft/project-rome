@@ -1,0 +1,8 @@
+include ':sdksample',
+        ':sampleAccountProviders',
+        ':nearsharestandalone'
+
+project(':sdksample').projectDir = new File('sdksample/app')
+project(':sampleAccountProviders').projectDir = new File('sdksample/sampleAccountProviders')
+project(':nearsharestandalone').projectDir = new File('nearsharestandalone/app')
+
