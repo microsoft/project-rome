@@ -32,13 +32,13 @@ Project Rome is currently implemented for the following scenarios. Follow the li
 [graph-sample]:            https://developer.microsoft.com/graph/docs/api-reference/beta/resources/project_rome_overview
 [graph-docs]:              MSGraph/
 
-|  Platform Samples                       |           SDK Package                           | API Docs
-| --------------------------------------: | :---------------------------------------------: | :----------:
-| **[Windows][windows-sample]**           |  [![SDK][windows-sdk-badge]][windows-sdk]       | [docs][windows-docs]
-| **[Android][android-sample] (Preview)** | [![Maven][android-sdk-badge]][android-sdk]      | [docs][android-docs]
-| **[iOS][ios-sample] (Preview)**         |     [![CocoaPod][ios-sdk-badge]][ios-sdk]       | [docs][ios-docs]
-| **[Xamarin for Android][xamarin-sample] (Preview)** |[![Nuget][xamarin-sdk-badge]][xamarin-sdk]       | Coming Soon
-| **[MSGraph][graph-sample] (Preview)**   |[![REST][graph-sdk-badge]][graph-sdk]            | [docs][graph-docs]
+|  Platform Samples                       |           SDK Package                           | 
+| --------------------------------------: | :---------------------------------------------: | 
+| **[Windows][windows-sample]**           |  [![SDK][windows-sdk-badge]][windows-sdk]       | 
+| **[Android][android-sample] (Preview)** | [![Maven][android-sdk-badge]][android-sdk]      | 
+| **[iOS][ios-sample] (Preview)**         |     [![CocoaPod][ios-sdk-badge]][ios-sdk]       | 
+| **[Xamarin for Android][xamarin-sample] (Preview)** |[![Nuget][xamarin-sdk-badge]][xamarin-sdk]       | 
+| **MSGraph (Preview)**   |[![REST][graph-sdk-badge]][graph-sdk]            |
 
 ## Project Rome blog posts
 * [Cross-device experiences with Project Rome](https://blogs.windows.com/buildingapps/2016/10/11/cross-device-experience-with-project-rome/#iQTseFlAMJRopU9k.97)
