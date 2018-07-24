@@ -129,6 +129,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize the Rome platform
         initializePlatform();
+
+        // Initialize the UserActivity Feed
+        // Execute in background thread to avoid a known sdk issue
+        new Thread(new Runnable() {
+            @Override
+            public void run () {
+                getUserActivityFragment().initializeUserActivityFeed();
+            }
+        }).start();
     }
 
     @Override
@@ -167,9 +176,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case SUCCEEDED:
                         raiseToast("Completed Rome registration");
-
-                        // When the CDP platform has finished registering, initialize the UserActivity Feed
-                        getUserActivityFragment().initializeUserActivityFeed();
 
                         runOnUiThread(new Runnable() {
                             @Override

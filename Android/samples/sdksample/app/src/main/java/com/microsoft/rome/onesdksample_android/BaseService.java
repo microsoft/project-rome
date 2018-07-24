@@ -11,6 +11,7 @@ import com.microsoft.connecteddevices.base.EventListener;
 import com.microsoft.connecteddevices.commanding.AppServiceConnection;
 import com.microsoft.connecteddevices.commanding.AppServiceRequestReceivedEventArgs;
 import com.microsoft.connecteddevices.discovery.AppServiceDescription;
+import com.microsoft.connecteddevices.hosting.AppServiceConnectionOpenedEventArgs;
 import com.microsoft.connecteddevices.hosting.AppServiceProvider;
 
 /**
@@ -40,7 +41,8 @@ public abstract class BaseService implements AppServiceProvider, EventListener<A
      * Receive incoming connections and listen for subsequent requests.
      */
     @Override
-    public void onConnectionOpened(final @NonNull AppServiceConnection connection) {
+    public void onConnectionOpened(final @NonNull AppServiceConnectionOpenedEventArgs args) {
+        AppServiceConnection connection = args.getAppServiceConnection();
         Log.i(TAG, "Opened incoming connection to app service " + connection.getAppServiceDescription().getPackageId() + "/" +
                        connection.getAppServiceDescription().getName());
         connection.addRequestReceivedListener(this);

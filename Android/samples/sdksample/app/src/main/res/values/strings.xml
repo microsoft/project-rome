@@ -82,7 +82,7 @@
     <string name="status_activities_save_activity_failed">Failed to save UserActivity!</string>
     <string name="status_activities_read_activity_success">Read UserActivity successfully</string>
     <string name="status_activities_read_activity_failed">Failed to read UserActivity!</string>
-    <string name="status_activities_channel_null">ActivityChannel is null (is platform initialization complete?)</string>
+    <string name="status_activities_channel_null">UserActivityChannel is not available yet (is platform initialization complete?)</string>
     <string name="status_activities_read_activity">Reading UserActivities…</string>
     <string name="status_activities_session_activity_required">Must create UserActivity before starting session!</string>
     <string name="status_activities_session_start">UserActivitySession started</string>
