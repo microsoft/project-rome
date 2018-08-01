@@ -18,8 +18,6 @@ import com.microsoft.connecteddevices.core.UserAccountProvider;
 import com.microsoft.connecteddevices.hosting.AppServiceProvider;
 import com.microsoft.connecteddevices.hosting.LaunchUriProvider;
 import com.microsoft.connecteddevices.hosting.RemoteSystemApplicationRegistrationBuilder;
-import com.microsoft.connecteddevices.userdata.SyncScope;
-import com.microsoft.connecteddevices.userdata.UserDataFeed;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

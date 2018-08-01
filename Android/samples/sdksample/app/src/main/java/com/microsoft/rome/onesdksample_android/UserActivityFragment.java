@@ -22,10 +22,9 @@ import com.microsoft.connecteddevices.useractivities.UserActivity;
 import com.microsoft.connecteddevices.useractivities.UserActivityChannel;
 import com.microsoft.connecteddevices.useractivities.UserActivitySession;
 import com.microsoft.connecteddevices.useractivities.UserActivitySessionHistoryItem;
-import com.microsoft.connecteddevices.userdata.SyncScope;
 import com.microsoft.connecteddevices.userdata.UserDataFeed;
-import com.microsoft.connecteddevices.userdata.UserDataSyncStatus;
-import com.microsoft.connecteddevices.usernotifications.UserNotificationChannel;
+import com.microsoft.connecteddevices.userdata.UserDataFeedSyncScope;
+import com.microsoft.connecteddevices.userdata.UserDataFeedSyncStatus;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,16 +82,48 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
     private UserDataFeed mUserDataFeed;
     private String mStatusText;
 
-    @Nullable
-    private UserActivityChannel getUserActivityChannel() {
-        mStatusText = getStringValue(R.string.status_activities_get_channel);
+    private UserDataFeed getUserDataFeed(UserAccount account, UserDataFeedSyncScope[] scopes, EventListener<UserDataFeed, Void> listener) {
+        UserDataFeed feed = UserDataFeed.getForAccount(account, PlatformBroker.getPlatform(), Secrets.APP_HOST_NAME);
+        feed.addSyncStatusChangedListener(listener);
+        feed.addSyncScopes(scopes);
+        feed.startSync();
+        return feed;
+    }
+
+    public void initializeUserActivityFeed() {
+        mStatusText = getStringValue(R.string.status_activities_initialize);
         Log.d(TAG, mStatusText);
 
-        UserActivityChannel channel = null;
         try {
+            UserAccount[] accounts = AccountProviderBroker.getSignInHelper().getUserAccounts();
+            if (accounts.length <= 0) {
+                mStatusText = getStringValue(R.string.status_activities_signin_required);
+                Log.e(TAG, mStatusText);
+                return;
+            }
+
             // Step #1
-            // create a UserActivityChannel for the signed in account
-            channel = new UserActivityChannel(mUserDataFeed);
+            // get the UserDataFeed for the signed in account
+            UserDataFeedSyncScope[] scopes = { UserActivityChannel.getSyncScope() };
+            mUserDataFeed = getUserDataFeed(accounts[0], scopes, new EventListener<UserDataFeed, Void>() {
+                @Override
+                public void onEvent(UserDataFeed userDataFeed, Void aVoid) {
+                    if (userDataFeed.getSyncStatus() == UserDataFeedSyncStatus.SYNCHRONIZED) {
+                        mStatusText = getStringValue(R.string.status_activities_initialize_complete);
+                        Log.e(TAG, mStatusText);
+                    } else {
+                        mStatusText = getStringValue(R.string.status_activities_initialize_failed);
+                        Log.e(TAG, mStatusText);
+                    }
+                }
+            });
+
+            mStatusText = getStringValue(R.string.status_activities_get_channel);
+            Log.d(TAG, mStatusText);
+
+            // Step #2
+            // create a UserActivityChannel on the UserDataFeed
+            mActivityChannel = new UserActivityChannel(mUserDataFeed);
 
             mStatusText = getStringValue(R.string.status_activities_get_channel_success);
             Log.d(TAG, mStatusText);
@@ -101,34 +132,13 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
             mStatusText = getStringValue(R.string.status_activities_get_channel_failed);
             Log.e(TAG, mStatusText);
         }
-        return channel;
-    }
-
-    private UserDataFeed getUserDataFeed(SyncScope[] scopes, EventListener<UserDataFeed, Void> listener) {
-        UserAccount[] accounts = AccountProviderBroker.getSignInHelper().getUserAccounts();
-        if (accounts.length <= 0) {
-            mStatusText = getStringValue(R.string.status_activities_signin_required);
-            Log.e(TAG, mStatusText);
-            return null;
-        }
-
-        UserDataFeed feed = UserDataFeed.getForAccount(accounts[0], PlatformBroker.getPlatform(), Secrets.APP_HOST_NAME);
-        feed.addSyncStatusChangedListener(listener);
-        feed.addSyncScopes(scopes);
-        feed.startSync();
-        return feed;
-    }
-
-    private String createActivityId() {
-        return UUID.randomUUID().toString();
     }
 
     @Nullable
     private UserActivity createUserActivity(UserActivityChannel channel, String activityId) {
         UserActivity activity = null;
-        AsyncOperation<UserActivity> activityOperation = channel.getOrCreateUserActivityAsync(activityId);
-
         try {
+            AsyncOperation<UserActivity> activityOperation = channel.getOrCreateUserActivityAsync(activityId);
             activity = activityOperation.get();
             mStatusText = getStringValue(R.string.status_activities_create_activity_success);
             Log.d(TAG, mStatusText);
@@ -138,30 +148,6 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
             Log.e(TAG, mStatusText);
         }
         return activity;
-    }
-
-    /**
-     * Initializes the UserActivityFeed.
-     */
-    public void initializeUserActivityFeed() {
-        mStatusText = getStringValue(R.string.status_activities_initialize);
-        Log.d(TAG, mStatusText);
-
-        SyncScope[] scopes = { UserActivityChannel.getSyncScope(), UserNotificationChannel.getSyncScope() };
-        mUserDataFeed = getUserDataFeed(scopes, new EventListener<UserDataFeed, Void>() {
-            @Override
-            public void onEvent(UserDataFeed userDataFeed, Void aVoid) {
-                if (userDataFeed.getSyncStatus() == UserDataSyncStatus.SYNCHRONIZED) {
-                    mStatusText = getStringValue(R.string.status_activities_initialize_complete);
-                    Log.d(TAG, mStatusText);
-                } else {
-                    mStatusText = getStringValue(R.string.status_activities_initialize_failed);
-                    Log.e(TAG, mStatusText);
-                }
-            }
-        });
-
-        mActivityChannel = getUserActivityChannel();
     }
 
     @Override
@@ -184,8 +170,8 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
         mReadButton = rootView.findViewById(R.id.activityReadButton);
         mReadButton.setOnClickListener(this);
 
-        mHistoryItems = new ArrayList<>();
         mListView = rootView.findViewById(R.id.activityListView);
+        mHistoryItems = new ArrayList<>();
         mListAdapter = new UserActivityListAdapter(getContext(), mHistoryItems);
         mListView.setAdapter(mListAdapter);
 
@@ -196,26 +182,25 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-        // New activity button clicked
-        /*
-        Clicking the New button will generate default properties for the activity, create the activity,
-        and publish it.
-         */
+        // Create New activity button clicked
+        // Clicking it will generate default values for the activity, create the activity and publish it.
         if (mNewButton.equals(v)) {
+            setStatus(R.string.status_activities_create_activity);
+
             mActivity = null;
-            final String newId = createActivityId();
+            mActivitySession = null;
+
+            final String newActivityId = UUID.randomUUID().toString();
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mActivityId.setText(newId);
+                    mActivityId.setText(newActivityId);
                     mDisplayText.setText(R.string.default_activity_display_text);
                     mActivationUri.setText(R.string.default_activity_uri);
                     mActivityIconUri.setText(R.string.default_activity_icon_uri);
                     mStartButton.setText(R.string.button_start_activity_session);
                 }
             });
-
-            setStatus(R.string.status_activities_create_activity);
 
             // ActivityChannel has not been initialized
             if (mActivityChannel == null) {
@@ -263,7 +248,7 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
 
                     setStatus(R.string.status_activities_session_start);
                 } else {
-                    mActivitySession.close();
+                    mActivitySession.stop();
                     mActivitySession = null;
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
