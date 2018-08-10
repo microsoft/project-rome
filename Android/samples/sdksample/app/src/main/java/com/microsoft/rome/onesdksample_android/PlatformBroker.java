@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.commanding.CloudRegistrationStatus;
+import com.microsoft.connecteddevices.commanding.RegistrationStatus;
 import com.microsoft.connecteddevices.commanding.IRemoteSystemApplicationRegistration;
 import com.microsoft.connecteddevices.core.NotificationProvider;
 import com.microsoft.connecteddevices.core.Platform;
@@ -59,7 +59,7 @@ public class PlatformBroker {
         return platform;
     }
 
-    public static void register(Context context, ArrayList<AppServiceProvider> appServiceProviders, LaunchUriProvider launchUriProvider, EventListener<UserAccount, CloudRegistrationStatus> listener) {
+    public static void register(Context context, ArrayList<AppServiceProvider> appServiceProviders, LaunchUriProvider launchUriProvider, EventListener<UserAccount, RegistrationStatus> listener) {
         // Initialize the platform with all possible services
         RemoteSystemApplicationRegistrationBuilder builder = new RemoteSystemApplicationRegistrationBuilder();
         builder.addAttribute(TIMESTAMP_KEY, getInitialRegistrationDateTime(context));
@@ -77,7 +77,7 @@ public class PlatformBroker {
 
         IRemoteSystemApplicationRegistration registration = builder.buildRegistration();
         // Add an EventListener to handle registration completion
-        registration.addCloudRegistrationStatusChangedListener(listener);
+        registration.addRegistrationStatusChangedListener(listener);
         registration.start();
     }
 
