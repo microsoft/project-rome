@@ -37,7 +37,7 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
         int size = 0;
         RemoteSystem system = mSystems.valueAt(groupPosition);
         if (system != null) {
-            RemoteSystemApp[] apps = system.getApplications();
+            RemoteSystemApp[] apps = system.getApps();
             if (apps != null) {
                 size = apps.length;
             }
@@ -57,7 +57,7 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
 
         RemoteSystem system = mSystems.get(groupPosition);
         if (system != null) {
-            RemoteSystemApp[] apps = system.getApplications();
+            RemoteSystemApp[] apps = system.getApps();
             if (apps != null) {
                 app = apps[childPosition];
             }
@@ -149,6 +149,6 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
     // endregion
 
     public RemoteSystemApp getRemoteSystemApp(int groupPosition, int childPosition) {
-        return mSystems.valueAt(groupPosition).getApplications()[childPosition];
+        return mSystems.valueAt(groupPosition).getApps()[childPosition];
     }
 }

@@ -167,7 +167,7 @@
     return @{
         @"Type" : @"ping",
         @"CreationDate" : [_dateFormatter stringFromDate:[NSDate date]],
-        @"TargetId" : _selectedApplication.applicationId
+        @"TargetId" : _selectedApplication.identifier
     };
 }
 

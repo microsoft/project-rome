@@ -42,7 +42,7 @@ static NSString* const AADAccountProviderExceptionName = @"AADAccountProviderExc
         _userAccountChanged = [MCDUserAccountChangedEvent new];
 
 #if TARGET_OS_IPHONE
-        // Don't share token cache between applications, only need them to be cached for this application
+        // Don't share token cache between apps, only need them to be cached for this application
         // Without this, the MRRT is not cached, and the acquireTokenSilentWithResource: in getAccessToken
         // always fails with AD_ERROR_SERVER_USER_INPUT_NEEDED
         [[ADAuthenticationSettings sharedInstance] setDefaultKeychainGroup:nil];
