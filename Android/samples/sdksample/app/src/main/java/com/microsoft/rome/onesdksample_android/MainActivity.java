@@ -19,7 +19,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.commanding.RegistrationStatus;
+import com.microsoft.connecteddevices.commanding.RemoteSystemAppRegistrationStatus;
 import com.microsoft.connecteddevices.core.Platform;
 import com.microsoft.connecteddevices.core.UserAccount;
 import com.microsoft.connecteddevices.hosting.AppServiceProvider;
@@ -164,9 +164,9 @@ public class MainActivity extends AppCompatActivity {
         appServiceProviders.add(new PingPongService(this));
         appServiceProviders.add(new EchoService(this));
 
-        PlatformBroker.register(this, appServiceProviders, new SimpleLaunchHandler(this), new EventListener<UserAccount, RegistrationStatus>() {
+        PlatformBroker.register(this, appServiceProviders, new SimpleLaunchHandler(this), new EventListener<UserAccount, RemoteSystemAppRegistrationStatus>() {
             @Override
-            public void onEvent(UserAccount account, RegistrationStatus status) {
+            public void onEvent(UserAccount account, RemoteSystemAppRegistrationStatus status) {
                 switch (status) {
                     case NOT_STARTED:
                         Log.d(TAG, "Registration has not started.");
