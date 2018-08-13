@@ -5,9 +5,9 @@
 #import "RemoteSystemViewController.h"
 #import "IdentityViewController.h"
 #import "LaunchAndMessageViewController.h"
-#import <ConnectedDevices/Commanding/MCDRemoteSystemApplicationRegistrationBuilder.h>
+#import <ConnectedDevices/Commanding/MCDRemoteSystemAppRegistrationBuilder.h>
 #import <ConnectedDevices/Core/MCDPlatform.h>
-#import <ConnectedDevices/Discovery/MCDRemoteSystemApplication.h>
+#import <ConnectedDevices/Discovery/MCDRemoteSystemApp.h>
 #import <ConnectedDevices/Discovery/MCDRemoteSystemAuthorizationKindFilter.h>
 #import <ConnectedDevices/Discovery/MCDRemoteSystemDiscoveryTypeFilter.h>
 #import <ConnectedDevices/Discovery/MCDRemoteSystemKindFilter.h>
@@ -130,13 +130,13 @@
 - (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender
 {
 
-    // Choose from one of the RemoteSystemApplications in the list to communicate with
+    // Choose from one of the RemoteSystemApps in the list to communicate with
     if ([segue.identifier isEqualToString:@"launcher"])
     {
         UITableViewCell* sourceCell = (UITableViewCell*)sender;
         NSIndexPath* indexPath = [self.tableView indexPathForCell:sourceCell];
         MCDRemoteSystem* selectedSystem = [self.discoveredSystems objectAtIndex:indexPath.section];
-        MCDRemoteSystemApplication* selectedApplication = [selectedSystem.applications objectAtIndex:indexPath.row];
+        MCDRemoteSystemApp* selectedApplication = [selectedSystem.applications objectAtIndex:indexPath.row];
         LaunchAndMessageViewController* destination = (LaunchAndMessageViewController*)segue.destinationViewController;
         destination.selectedApplication = selectedApplication;
     }
@@ -182,7 +182,7 @@
     // A RemoteSystem is mapped to the device
     // A RemoteApplication belongs to a RemoteSystem, simply, the app running on the device
     MCDRemoteSystem* system = [self.discoveredSystems objectAtIndex:indexPath.section];
-    MCDRemoteSystemApplication* application = [system.applications objectAtIndex:indexPath.row];
+    MCDRemoteSystemApp* application = [system.applications objectAtIndex:indexPath.row];
 
     cell.textLabel.numberOfLines = 0;
     cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;

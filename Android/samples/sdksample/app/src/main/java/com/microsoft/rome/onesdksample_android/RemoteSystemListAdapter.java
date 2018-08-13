@@ -13,7 +13,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.microsoft.connecteddevices.discovery.RemoteSystem;
-import com.microsoft.connecteddevices.discovery.RemoteSystemApplication;
+import com.microsoft.connecteddevices.discovery.RemoteSystemApp;
 
 /**
  * Adapter for displaying systems and their applications in an expandable list
@@ -37,7 +37,7 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
         int size = 0;
         RemoteSystem system = mSystems.valueAt(groupPosition);
         if (system != null) {
-            RemoteSystemApplication[] apps = system.getApplications();
+            RemoteSystemApp[] apps = system.getApplications();
             if (apps != null) {
                 size = apps.length;
             }
@@ -53,11 +53,11 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        RemoteSystemApplication app = null;
+        RemoteSystemApp app = null;
 
         RemoteSystem system = mSystems.get(groupPosition);
         if (system != null) {
-            RemoteSystemApplication[] apps = system.getApplications();
+            RemoteSystemApp[] apps = system.getApplications();
             if (apps != null) {
                 app = apps[childPosition];
             }
@@ -121,7 +121,7 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
         TextView proximal = (TextView)convertView.findViewById(R.id.application_proximal);
         TextView spatial = (TextView)convertView.findViewById(R.id.application_spatial);
 
-        final RemoteSystemApplication app = getRemoteSystemApplication(groupPosition, childPosition);
+        final RemoteSystemApp app = getRemoteSystemApp(groupPosition, childPosition);
         name.setText(app.getDisplayName());
         id.setText(app.getId().trim());
         proximal.setText(Boolean.toString(app.getIsAvailableByProximity()));
@@ -133,8 +133,8 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 MainActivity mainActivity = (MainActivity)mContext;
-                // Set the selected RemoteSystemApplication then navigate to that page
-                mainActivity.getLaunchFragment().setRemoteSystemApplication(app);
+                // Set the selected RemoteSystemApp then navigate to that page
+                mainActivity.getLaunchFragment().setRemoteSystemApp(app);
                 mainActivity.navigateToPage(MainActivity.LAUNCH);
             }
         });
@@ -148,7 +148,7 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
     }
     // endregion
 
-    public RemoteSystemApplication getRemoteSystemApplication(int groupPosition, int childPosition) {
+    public RemoteSystemApp getRemoteSystemApp(int groupPosition, int childPosition) {
         return mSystems.valueAt(groupPosition).getApplications()[childPosition];
     }
 }

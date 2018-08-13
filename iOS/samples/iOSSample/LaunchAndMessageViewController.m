@@ -5,7 +5,7 @@
 #import "LaunchAndMessageViewController.h"
 #import "Secrets.h"
 #import <ConnectedDevices/Commanding/Commanding.h>
-#import <ConnectedDevices/Discovery/MCDRemoteSystemApplication.h>
+#import <ConnectedDevices/Discovery/MCDRemoteSystemApp.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
@@ -47,13 +47,13 @@
     }
 }
 
-// Send a remote launch of a uri to RemoteSystemApplication
+// Send a remote launch of a uri to RemoteSystemApp
 - (IBAction)launchUriButton:(id)sender
 {
     NSString* uri = self.uriField.text;
     MCDRemoteLauncher* remoteLauncher = [[MCDRemoteLauncher alloc] init];
     MCDRemoteSystemConnectionRequest* connectionRequest =
-        [MCDRemoteSystemConnectionRequest requestWithRemoteSystemApplication:self.selectedApplication];
+        [MCDRemoteSystemConnectionRequest requestWithRemoteSystemApp:self.selectedApplication];
     [remoteLauncher launchUriAsync:uri
              withConnectionRequest:connectionRequest
                         completion:^(MCDRemoteLaunchUriStatus result, NSError* _Nullable error) {
@@ -93,7 +93,7 @@
     @try
     {
         MCDRemoteSystemConnectionRequest* connectionRequest =
-            [MCDRemoteSystemConnectionRequest requestWithRemoteSystemApplication:self.selectedApplication];
+            [MCDRemoteSystemConnectionRequest requestWithRemoteSystemApp:self.selectedApplication];
         [connection openRemoteAsync:connectionRequest
                          completion:^(MCDAppServiceConnectionStatus status, NSError* error) {
                              if (error)

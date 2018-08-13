@@ -23,7 +23,7 @@ import com.microsoft.connecteddevices.commanding.RemoteLaunchUriStatus;
 import com.microsoft.connecteddevices.commanding.RemoteLauncher;
 import com.microsoft.connecteddevices.commanding.RemoteSystemConnectionRequest;
 import com.microsoft.connecteddevices.discovery.AppServiceDescription;
-import com.microsoft.connecteddevices.discovery.RemoteSystemApplication;
+import com.microsoft.connecteddevices.discovery.RemoteSystemApp;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -60,7 +60,7 @@ public class LaunchFragment extends BaseFragment {
 
     private AtomicInteger mMessageIdLaunch = new AtomicInteger(0);
     private TextView mRemoteSystemsText;
-    private RemoteSystemApplicationWrapper mRemoteSystemApplication;
+    private RemoteSystemAppWrapper mRemoteSystemApp;
     private StringStorageItemSelectedListener mUriListener;
 
     private String launchString;
@@ -82,8 +82,8 @@ public class LaunchFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.fragment_launch, container, false);
 
         mRemoteSystemsText = (TextView)rootView.findViewById(R.id.remoteSystemText);
-        if (mRemoteSystemApplication != null) {
-            mRemoteSystemsText.setText("App: " + mRemoteSystemApplication.getDisplayName());
+        if (mRemoteSystemApp != null) {
+            mRemoteSystemsText.setText("App: " + mRemoteSystemApp.getDisplayName());
         } else {
             mRemoteSystemsText.setText("Error: no remote system found");
         }
@@ -147,9 +147,9 @@ public class LaunchFragment extends BaseFragment {
      * (i.e. the RemoteSystemsWatcher fragment)
      * @param remoteSystemApplication
      */
-    public void setRemoteSystemApplication(RemoteSystemApplication remoteSystemApplication) {
-        mRemoteSystemApplication = new RemoteSystemApplicationWrapper(remoteSystemApplication);
-        mRemoteSystemsText.setText("App: " + mRemoteSystemApplication.getDisplayName());
+    public void setRemoteSystemApp(RemoteSystemApp remoteSystemApplication) {
+        mRemoteSystemApp = new RemoteSystemAppWrapper(remoteSystemApplication);
+        mRemoteSystemsText.setText("App: " + mRemoteSystemApp.getDisplayName());
     }
 
     /**
@@ -157,16 +157,16 @@ public class LaunchFragment extends BaseFragment {
      * thread as to not block user interaction, a result of the delay between API calls.
      */
     private void onLaunchUriButtonClicked() {
-        launchUri(launchString, mRemoteSystemApplication, mMessageIdLaunch.incrementAndGet());
+        launchUri(launchString, mRemoteSystemApp, mMessageIdLaunch.incrementAndGet());
     }
 
     /**
      * Responsible for calling into the Rome API to launch the given URI and provides
      * the logic to handle the RemoteLaunchUriStatus response.
      * @param uri URI to launch
-     * @param system The RemoteSystemApplicationWrapper target for the launch URI request
+     * @param system The RemoteSystemAppWrapper target for the launch URI request
      */
-    private void launchUri(final String uri, final RemoteSystemApplicationWrapper system, final long messageId) {
+    private void launchUri(final String uri, final RemoteSystemAppWrapper system, final long messageId) {
         RemoteLauncher remoteLauncher = new RemoteLauncher();
         AsyncOperation<RemoteLaunchUriStatus> resultOperation =
             remoteLauncher.launchUriAsync(system.getRemoteSystemConnectionRequest(), uri);
@@ -194,7 +194,7 @@ public class LaunchFragment extends BaseFragment {
         connection = new AppServiceConnection();
         connection.setAppServiceDescription(new AppServiceDescription(mAppServiceName, mPackageIdentifier));
 
-        if (mRemoteSystemApplication == null) {
+        if (mRemoteSystemApp == null) {
             return;
         }
 
@@ -226,7 +226,7 @@ public class LaunchFragment extends BaseFragment {
         String title = String.format("Outbound open connection request");
         mLogList.logTraffic(title);
 
-        RemoteSystemConnectionRequest connectionRequest = mRemoteSystemApplication.getRemoteSystemConnectionRequest();
+        RemoteSystemConnectionRequest connectionRequest = mRemoteSystemApp.getRemoteSystemConnectionRequest();
 
         /*Will asynchronously open the app service connection using the given connection request
         When this is done, we log the traffic in the UI for visibility to the user (for sample purposes)
