@@ -9,7 +9,7 @@
 
 @interface LaunchAndMessageViewController : UIViewController
 
-@property MCDRemoteSystemApplication* selectedApplication;
+@property MCDRemoteSystemApp* selectedApplication;
 @property(weak, nonatomic) IBOutlet UILabel* applicationNameLabel;
 @property(weak, nonatomic) IBOutlet UITextField* uriField;
 @property(weak, nonatomic) IBOutlet UILabel* appServiceStatusLabel;

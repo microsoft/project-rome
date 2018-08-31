@@ -8,25 +8,25 @@ import android.content.Context;
 
 import com.microsoft.connecteddevices.commanding.RemoteSystemConnectionRequest;
 import com.microsoft.connecteddevices.discovery.RemoteSystem;
-import com.microsoft.connecteddevices.discovery.RemoteSystemApplication;
+import com.microsoft.connecteddevices.discovery.RemoteSystemApp;
 
 /**
  * This class abstracts the type (either a Remote System or Application) and allows both objects to
  * be used as the same object.
  */
-public class RemoteSystemApplicationWrapper {
+public class RemoteSystemAppWrapper {
     // region Member Variables
     // These objects are mutually exclusive, the wrapper can only be constructed with 1 type
     private RemoteSystem mRemoteSystem = null;
-    private RemoteSystemApplication mRemoteSystemApplication = null;
+    private RemoteSystemApp mRemoteSystemApp = null;
     // endregion
 
     // region Constructor
-    public RemoteSystemApplicationWrapper(RemoteSystemApplication remoteSystemApplication) {
-        this.mRemoteSystemApplication = remoteSystemApplication;
+    public RemoteSystemAppWrapper(RemoteSystemApp remoteSystemApplication) {
+        this.mRemoteSystemApp = remoteSystemApplication;
     }
 
-    public RemoteSystemApplicationWrapper(RemoteSystem remoteSystem) {
+    public RemoteSystemAppWrapper(RemoteSystem remoteSystem) {
         this.mRemoteSystem = remoteSystem;
     }
     // endregion
@@ -39,7 +39,7 @@ public class RemoteSystemApplicationWrapper {
         if (mRemoteSystem != null) {
             return "[System] " + mRemoteSystem.getDisplayName();
         }
-        return "[App] " + mRemoteSystemApplication.getDisplayName();
+        return "[App] " + mRemoteSystemApp.getDisplayName();
     }
 
     // returns string that will show the whether or not the system or application is available
@@ -48,9 +48,9 @@ public class RemoteSystemApplicationWrapper {
             return "Status: " + mRemoteSystem.getStatus().toString();
         }
         String proximity =
-            context.getString((mRemoteSystemApplication.getIsAvailableByProximity()) ? R.string.available_text : R.string.unavailable_text);
+            context.getString((mRemoteSystemApp.getIsAvailableByProximity()) ? R.string.available_text : R.string.unavailable_text);
         String spatial = context.getString(
-            (mRemoteSystemApplication.getIsAvailableBySpatialProximity()) ? R.string.available_text : R.string.unavailable_text);
+            (mRemoteSystemApp.getIsAvailableBySpatialProximity()) ? R.string.available_text : R.string.unavailable_text);
         return String.format("Proximity: %s, Spatial: %s", proximity, spatial);
     }
 
@@ -62,6 +62,6 @@ public class RemoteSystemApplicationWrapper {
         if (mRemoteSystem != null) {
             return new RemoteSystemConnectionRequest(mRemoteSystem);
         }
-        return new RemoteSystemConnectionRequest(mRemoteSystemApplication);
+        return new RemoteSystemConnectionRequest(mRemoteSystemApp);
     }
 }

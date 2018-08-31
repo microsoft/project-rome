@@ -18,7 +18,7 @@
 @property(nonatomic, weak, nullable) id<RemoteSystemsDelegate> delegate;
 @property(readonly, strong, nullable) NSMutableArray<MCDRemoteSystem*>* discoveredSystems;
 @property MCDRemoteSystem* selectedSystem;
-@property MCDRemoteSystemApplication* selectedApplication;
+@property MCDRemoteSystemApp* selectedApplication;
 @property(weak, nonatomic) IBOutlet UIButton* discoverDevicesButton;
 
 - (void)startWatcherWithFilter:(nonnull NSMutableArray<NSObject<MCDRemoteSystemFilter>*>*)remoteSystemFilter;

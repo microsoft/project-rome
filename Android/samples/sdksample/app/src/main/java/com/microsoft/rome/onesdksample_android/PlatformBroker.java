@@ -10,14 +10,14 @@ import android.util.Log;
 
 import com.microsoft.connecteddevices.base.EventListener;
 import com.microsoft.connecteddevices.commanding.RegistrationStatus;
-import com.microsoft.connecteddevices.commanding.IRemoteSystemApplicationRegistration;
+import com.microsoft.connecteddevices.commanding.IRemoteSystemAppRegistration;
 import com.microsoft.connecteddevices.core.NotificationProvider;
 import com.microsoft.connecteddevices.core.Platform;
 import com.microsoft.connecteddevices.core.UserAccount;
 import com.microsoft.connecteddevices.core.UserAccountProvider;
 import com.microsoft.connecteddevices.hosting.AppServiceProvider;
 import com.microsoft.connecteddevices.hosting.LaunchUriProvider;
-import com.microsoft.connecteddevices.hosting.RemoteSystemApplicationRegistrationBuilder;
+import com.microsoft.connecteddevices.hosting.RemoteSystemAppRegistrationBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class PlatformBroker {
 
     public static void register(Context context, ArrayList<AppServiceProvider> appServiceProviders, LaunchUriProvider launchUriProvider, EventListener<UserAccount, RegistrationStatus> listener) {
         // Initialize the platform with all possible services
-        RemoteSystemApplicationRegistrationBuilder builder = new RemoteSystemApplicationRegistrationBuilder();
+        RemoteSystemAppRegistrationBuilder builder = new RemoteSystemAppRegistrationBuilder();
         builder.addAttribute(TIMESTAMP_KEY, getInitialRegistrationDateTime(context));
         builder.addAttribute(PACKAGE_KEY, PACKAGE_VALUE);
 
@@ -75,7 +75,7 @@ public class PlatformBroker {
             builder.setLaunchUriProvider(launchUriProvider);
         }
 
-        IRemoteSystemApplicationRegistration registration = builder.buildRegistration();
+        IRemoteSystemAppRegistration registration = builder.buildRegistration();
         // Add an EventListener to handle registration completion
         registration.addRegistrationStatusChangedListener(listener);
         registration.start();
@@ -84,7 +84,7 @@ public class PlatformBroker {
     /**
      * Grab the initial registration date-time if one is found, otherwise generate a new one.
      * @param context
-     * @return Datetime to insert into the RemoteSystemApplicationRegistrationBuilder
+     * @return Datetime to insert into the RemoteSystemAppRegistrationBuilder
      */
     private static String getInitialRegistrationDateTime(final Context context) {
         SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
@@ -100,7 +100,7 @@ public class PlatformBroker {
                 throw new RuntimeException("Failed to get TimeStamp after verifying it exists");
             }
         } else {
-            // Create the initial timestamp for RemoteSystemApplication registration and store it in SharedPreferences
+            // Create the initial timestamp for RemoteSystemApp registration and store it in SharedPreferences
             timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
             preferences.edit().putString(TIMESTAMP_KEY, timestamp).apply();
         }
