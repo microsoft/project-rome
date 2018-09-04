@@ -136,7 +136,7 @@
         UITableViewCell* sourceCell = (UITableViewCell*)sender;
         NSIndexPath* indexPath = [self.tableView indexPathForCell:sourceCell];
         MCDRemoteSystem* selectedSystem = [self.discoveredSystems objectAtIndex:indexPath.section];
-        MCDRemoteSystemApp* selectedApplication = [selectedSystem.applications objectAtIndex:indexPath.row];
+        MCDRemoteSystemApp* selectedApplication = [selectedSystem.apps objectAtIndex:indexPath.row];
         LaunchAndMessageViewController* destination = (LaunchAndMessageViewController*)segue.destinationViewController;
         destination.selectedApplication = selectedApplication;
     }
@@ -151,7 +151,7 @@
 
 - (NSInteger)tableView:(__unused UITableView*)tableView numberOfRowsInSection:(__unused NSInteger)section
 {
-    return [[self.discoveredSystems objectAtIndex:section] applications].count;
+    return [[self.discoveredSystems objectAtIndex:section] apps].count;
 }
 
 - (NSString*)tableView:(__unused UITableView*)tableView titleForHeaderInSection:(NSInteger)section
@@ -182,13 +182,13 @@
     // A RemoteSystem is mapped to the device
     // A RemoteApplication belongs to a RemoteSystem, simply, the app running on the device
     MCDRemoteSystem* system = [self.discoveredSystems objectAtIndex:indexPath.section];
-    MCDRemoteSystemApp* application = [system.applications objectAtIndex:indexPath.row];
+    MCDRemoteSystemApp* application = [system.apps objectAtIndex:indexPath.row];
 
     cell.textLabel.numberOfLines = 0;
     cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     cell.textLabel.text = [NSString stringWithFormat:@"%@\nproximal:%@\nspatial:%@\nid:%@", application.displayName,
                                     application.isAvailableByProximity ? @"YES" : @"NO",
-                                    application.isAvailableBySpatialProximity ? @"YES" : @"NO", application.applicationId];
+                                    application.isAvailableBySpatialProximity ? @"YES" : @"NO", application.identifier];
 
     return cell;
 }
@@ -199,7 +199,7 @@
     MCDRemoteSystem* selectedSystem = [self.discoveredSystems objectAtIndex:indexPath.section];
 
     self.selectedSystem = selectedSystem;
-    self.selectedApplication = [selectedSystem.applications objectAtIndex:indexPath.row];
+    self.selectedApplication = [selectedSystem.apps objectAtIndex:indexPath.row];
 }
 
 - (void)tableView:(__unused UITableView*)tableView didDeselectRowAtIndexPath:(__unused NSIndexPath*)indexPath
