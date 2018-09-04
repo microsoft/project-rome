@@ -54,19 +54,19 @@
     [builder addAttribute:@"ExampleAttribute" forName:@"ExampleName"];
     MCDRemoteSystemAppRegistration* registration = [builder buildRegistration];
     
-    [registration addRegistrationStatusChangedListener:^(MCDUserAccount * _Nonnull account, MCDRegistrationStatus status) {
+    [registration addRemoteSystemAppRegistrationStatusChangedListener:^(MCDUserAccount * _Nonnull account, MCDRemoteSystemAppRegistrationStatus status) {
         NSLog(@"Registration Status Changed listener");
         switch (status) {
-            case MCDRegistrationStatusFailed:
+            case MCDRemoteSystemAppRegistrationStatusFailed:
                 NSLog(@"Registration completed with status Failed");
                 break;
-            case MCDRegistrationStatusInProgress:
+            case MCDRemoteSystemAppRegistrationStatusInProgress:
                 NSLog(@"Registration in progress");
                 break;
-            case MCDRegistrationStatusNotStarted:
+            case MCDRemoteSystemAppRegistrationStatusNotStarted:
                 NSLog(@"Registration not started");
                 break;
-            case MCDRegistrationStatusSucceeded:
+            case MCDRemoteSystemAppRegistrationStatusSucceeded:
                 dispatch_async(dispatch_get_main_queue(), ^{
                     // The app has been registered.  It is safe to enable button.
                     [self.deviceRelayButton setEnabled:YES];
