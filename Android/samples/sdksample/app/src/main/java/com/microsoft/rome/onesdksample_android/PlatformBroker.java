@@ -78,7 +78,7 @@ public class PlatformBroker {
         IRemoteSystemAppRegistration registration = builder.buildRegistration();
         // Add an EventListener to handle registration completion
         registration.addRemoteSystemAppRegistrationStatusChangedListener(listener);
-        registration.start();
+        registration.save();
     }
 
     /**

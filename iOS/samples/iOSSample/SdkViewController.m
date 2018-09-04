@@ -76,7 +76,7 @@
         }
     }];
     
-    [registration start];
+    [registration save];
 }
 
 - (void)_signOutClicked:(id)sender
