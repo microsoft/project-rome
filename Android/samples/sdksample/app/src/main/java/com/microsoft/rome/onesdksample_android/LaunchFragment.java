@@ -235,10 +235,10 @@ public class LaunchFragment extends BaseFragment {
         SUCCESS(0),
         APP_NOT_INSTALLED(1),
         APP_UNAVAILABLE(2),
-        APPSERVICE_UNAVAILABLE(3),
+        APP_SERVICE_UNAVAILABLE(3),
         UNKNOWN(4),
         REMOTE_SYSTEM_UNAVAILABLE(5),
-        REMOTE_SYSTEM_NOT_SUPPORTEDBYAPP(6),
+        REMOTE_SYSTEM_NOT_SUPPORTED_BY_APP(6),
         NOT_AUTHORIZED(7)
         */
         connection.openRemoteAsync(connectionRequest)
