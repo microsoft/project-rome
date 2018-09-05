@@ -218,9 +218,8 @@ public class LaunchFragment extends BaseFragment {
 
     /**
      * Step #1:  Establish an app service connection
-     * Opens the given AppService connection using the connection request. Once the connection is
-     * opened, it adds the listeners for request received and close. Catches all exceptions and
-     * prints them to show behavior of API surface exceptions.
+     * Opens the given AppService connection using the connection request. Catches
+     * all exceptions and prints them to show behavior of API surface exceptions.
      */
     private void openAppServiceConnection() {
         String title = String.format("Outbound open connection request");
