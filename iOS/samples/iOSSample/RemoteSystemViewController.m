@@ -5,7 +5,6 @@
 #import "RemoteSystemViewController.h"
 #import "IdentityViewController.h"
 #import "LaunchAndMessageViewController.h"
-#import <ConnectedDevices/Commanding/MCDRemoteSystemAppRegistrationBuilder.h>
 #import <ConnectedDevices/Core/MCDPlatform.h>
 #import <ConnectedDevices/Discovery/MCDRemoteSystemApp.h>
 #import <ConnectedDevices/Discovery/MCDRemoteSystemAuthorizationKindFilter.h>
