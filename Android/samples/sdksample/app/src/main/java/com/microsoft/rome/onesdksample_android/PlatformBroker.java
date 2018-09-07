@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.commanding.IRemoteSystemAppRegistration;
 import com.microsoft.connecteddevices.commanding.RemoteSystemAppRegistrationStatus;
 import com.microsoft.connecteddevices.core.NotificationProvider;
 import com.microsoft.connecteddevices.core.Platform;
@@ -17,7 +16,7 @@ import com.microsoft.connecteddevices.core.UserAccount;
 import com.microsoft.connecteddevices.core.UserAccountProvider;
 import com.microsoft.connecteddevices.hosting.AppServiceProvider;
 import com.microsoft.connecteddevices.hosting.LaunchUriProvider;
-import com.microsoft.connecteddevices.hosting.RemoteSystemAppRegistrationBuilder;
+import com.microsoft.connecteddevices.hosting.RemoteSystemAppRegistration;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,21 +60,20 @@ public class PlatformBroker {
 
     public static void register(Context context, ArrayList<AppServiceProvider> appServiceProviders, LaunchUriProvider launchUriProvider, EventListener<UserAccount, RemoteSystemAppRegistrationStatus> listener) {
         // Initialize the platform with all possible services
-        RemoteSystemAppRegistrationBuilder builder = new RemoteSystemAppRegistrationBuilder();
-        builder.addAttribute(TIMESTAMP_KEY, getInitialRegistrationDateTime(context));
-        builder.addAttribute(PACKAGE_KEY, PACKAGE_VALUE);
+        RemoteSystemAppRegistration registration = new RemoteSystemAppRegistration();
+        registration.addAttribute(TIMESTAMP_KEY, getInitialRegistrationDateTime(context));
+        registration.addAttribute(PACKAGE_KEY, PACKAGE_VALUE);
 
-        // Add the given AppService and LaunchUri Providers to the registration builder
+        // Add the given AppService and LaunchUri Providers to the registration
         if (appServiceProviders != null) {
             for (AppServiceProvider provider : appServiceProviders) {
-                builder.addAppServiceProvider(provider);
+                registration.addAppServiceProvider(provider);
             }
         }
         if (launchUriProvider != null) {
-            builder.setLaunchUriProvider(launchUriProvider);
+            registration.setLaunchUriProvider(launchUriProvider);
         }
 
-        IRemoteSystemAppRegistration registration = builder.buildRegistration();
         // Add an EventListener to handle registration completion
         registration.addRemoteSystemAppRegistrationStatusChangedListener(listener);
         registration.save();
@@ -84,7 +82,7 @@ public class PlatformBroker {
     /**
      * Grab the initial registration date-time if one is found, otherwise generate a new one.
      * @param context
-     * @return Datetime to insert into the RemoteSystemAppRegistrationBuilder
+     * @return Datetime to insert into the RemoteSystemAppRegistration
      */
     private static String getInitialRegistrationDateTime(final Context context) {
         SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
