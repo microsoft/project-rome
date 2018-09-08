@@ -9,7 +9,7 @@
 #import "LaunchUriProvider.h"
 #import "NotificationProvider.h"
 #import <ConnectedDevices/Core/MCDPlatform.h>
-#import <ConnectedDevices/Hosting/MCDHostingRemoteSystemAppRegistrationBuilder.h>
+#import <ConnectedDevices/Hosting/MCDHostingRemoteSystemAppRegistration.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
@@ -48,11 +48,10 @@
     [AppDataSource sharedInstance].platform = [MCDPlatform platformWithAccountProvider:[AppDataSource sharedInstance].accountProvider notificationProvider:notificationProvider];
 
     // App is registered asynchronously.
-    MCDHostingRemoteSystemAppRegistrationBuilder* builder = [MCDHostingRemoteSystemAppRegistrationBuilder new];
-    [builder setLaunchUriProvider:[[LaunchUriProvider alloc] initWithDelegate:[AppDataSource sharedInstance].inboundRequestLogger]];
-    [builder addAppServiceProvider:[[AppServiceProvider alloc] initWithDelegate:[AppDataSource sharedInstance].inboundRequestLogger]];
-    [builder addAttribute:@"ExampleAttribute" forName:@"ExampleName"];
-    MCDRemoteSystemAppRegistration* registration = [builder buildRegistration];
+    MCDHostingRemoteSystemAppRegistration* registration = [MCDHostingRemoteSystemAppRegistration new];
+    [registration setLaunchUriProvider:[[LaunchUriProvider alloc] initWithDelegate:[AppDataSource sharedInstance].inboundRequestLogger]];
+    [registration addAppServiceProvider:[[AppServiceProvider alloc] initWithDelegate:[AppDataSource sharedInstance].inboundRequestLogger]];
+    [registration addAttribute:@"ExampleAttribute" forName:@"ExampleName"];
     
     [registration addRemoteSystemAppRegistrationStatusChangedListener:^(MCDUserAccount * _Nonnull account, MCDRemoteSystemAppRegistrationStatus status) {
         NSLog(@"Registration Status Changed listener");
