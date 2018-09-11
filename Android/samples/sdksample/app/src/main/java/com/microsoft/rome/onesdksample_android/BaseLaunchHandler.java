@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 
 import com.microsoft.connecteddevices.base.AsyncOperation;
 import com.microsoft.connecteddevices.hosting.LaunchUriProvider;
+import com.microsoft.connecteddevices.commanding.RemoteLauncherOptions;
 
 /**
  * Base class for launch uri handler.
@@ -19,7 +20,7 @@ public abstract class BaseLaunchHandler implements LaunchUriProvider {
     }
 
     @Override
-    public @NonNull AsyncOperation<Boolean> onLaunchUriAsync(@NonNull String uri, String fallbackUri, String[] preferredAppIds) {
+    public @NonNull AsyncOperation<Boolean> onLaunchUriAsync(@NonNull String uri, RemoteLauncherOptions options) {
         // State that the LaunchUri request has been successfully handled
         return AsyncOperation.completedFuture(true);
     }

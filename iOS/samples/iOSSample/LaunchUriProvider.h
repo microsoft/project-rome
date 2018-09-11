@@ -5,6 +5,7 @@
 #pragma once
 
 #import <ConnectedDevices/Hosting/Hosting.h>
+#import <ConnectedDevices/Commanding/Commanding.h>
 
 @class LaunchUriProvider;
 
@@ -17,8 +18,7 @@
 - (instancetype)initWithDelegate:(id<LaunchUriProviderDelegate>)delegate;
 
 - (void)onLaunchUriAsync:(nonnull NSString*)uri
-         withFallbackUri:(nullable NSString*)fallbackUri
-     preferredPackageIds:(nullable NSArray<NSString*>*)preferredPackageIds
+                 options:(nullable MCDRemoteLauncherOptions*)options
               completion:(nonnull void (^)(BOOL, NSError* _Nullable))completionBlock;
 @property(nonatomic, readonly, strong, nonnull) NSArray<NSString*>* supportedUriSchemes;
 

@@ -18,8 +18,7 @@
 }
 
 - (void)onLaunchUriAsync:(nonnull NSString*)uri
-         withFallbackUri:(nullable NSString*)fallbackUri
-     preferredPackageIds:(nullable NSArray<NSString*>*)preferredPackageIds
+                 options:(nullable MCDRemoteLauncherOptions*)options
               completion:(nonnull void (^)(BOOL, NSError* _Nullable))completionBlock
 {
     [_delegate launchUriProvider:self didReceiveRequestForUri:uri];
