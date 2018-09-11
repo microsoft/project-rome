@@ -7,6 +7,7 @@ package com.microsoft.rome.onesdksample_android;
 import android.support.annotation.NonNull;
 
 import com.microsoft.connecteddevices.base.AsyncOperation;
+import com.microsoft.connecteddevices.commanding.RemoteLauncherOptions;
 
 /**
  * Returns success for all incoming LaunchUri requests and logs the request to the Launch Page.
@@ -21,8 +22,8 @@ public class SimpleLaunchHandler extends BaseLaunchHandler {
      * The HostingFragment has the responsibility of logging the event in it's page specific log.
      */
     @Override
-    public @NonNull AsyncOperation<Boolean> onLaunchUriAsync(@NonNull String uri, String fallbackUri, String[] preferredAppIds) {
-        AsyncOperation<Boolean> result = super.onLaunchUriAsync(uri, fallbackUri, preferredAppIds);
+    public @NonNull AsyncOperation<Boolean> onLaunchUriAsync(@NonNull String uri, RemoteLauncherOptions options) {
+        AsyncOperation<Boolean> result = super.onLaunchUriAsync(uri, options);
 
         // Inform the hosting fragment that we received a URI
         mMainActivity.getHostingFragment().logTrafficMessage("SimpleLaunchHandler received uri: " + uri);
