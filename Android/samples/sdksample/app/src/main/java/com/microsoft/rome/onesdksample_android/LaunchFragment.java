@@ -22,7 +22,7 @@ import com.microsoft.connecteddevices.commanding.AppServiceResponseStatus;
 import com.microsoft.connecteddevices.commanding.RemoteLaunchUriStatus;
 import com.microsoft.connecteddevices.commanding.RemoteLauncher;
 import com.microsoft.connecteddevices.commanding.RemoteSystemConnectionRequest;
-import com.microsoft.connecteddevices.discovery.AppServiceDescription;
+import com.microsoft.connecteddevices.discovery.AppServiceInfo;
 import com.microsoft.connecteddevices.discovery.RemoteSystemApp;
 
 import java.text.DateFormat;
@@ -192,7 +192,7 @@ public class LaunchFragment extends BaseFragment {
      */
     private void onNewConnectionButtonClicked() {
         connection = new AppServiceConnection();
-        connection.setAppServiceDescription(new AppServiceDescription(mAppServiceName, mPackageIdentifier));
+        connection.setAppServiceInfo(new AppServiceInfo(mAppServiceName, mPackageIdentifier));
 
         if (mRemoteSystemApp == null) {
             return;
@@ -292,7 +292,7 @@ public class LaunchFragment extends BaseFragment {
             });
 
         // Construct the traffic log message and log it
-        String title = "Outbound message request to " + connection.getAppServiceDescription().getName();
+        String title = "Outbound message request to " + connection.getAppServiceInfo().getName();
         mLogList.logTraffic(title);
     }
 

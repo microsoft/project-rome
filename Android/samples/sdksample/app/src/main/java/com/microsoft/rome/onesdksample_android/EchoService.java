@@ -9,7 +9,7 @@ import android.util.Log;
 import com.microsoft.connecteddevices.commanding.AppServiceConnection;
 import com.microsoft.connecteddevices.commanding.AppServiceRequest;
 import com.microsoft.connecteddevices.commanding.AppServiceRequestReceivedEventArgs;
-import com.microsoft.connecteddevices.discovery.AppServiceDescription;
+import com.microsoft.connecteddevices.discovery.AppServiceInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class EchoService extends BaseService {
     // endregion
 
     public EchoService(MainActivity mainActivity) {
-        super(mainActivity, new AppServiceDescription(APP_SERVICE_NAME));
+        super(mainActivity, new AppServiceInfo(APP_SERVICE_NAME));
     }
 
     /**

@@ -10,7 +10,7 @@ import android.util.Log;
 import com.microsoft.connecteddevices.base.EventListener;
 import com.microsoft.connecteddevices.commanding.AppServiceConnection;
 import com.microsoft.connecteddevices.commanding.AppServiceRequestReceivedEventArgs;
-import com.microsoft.connecteddevices.discovery.AppServiceDescription;
+import com.microsoft.connecteddevices.discovery.AppServiceInfo;
 import com.microsoft.connecteddevices.hosting.AppServiceConnectionOpenedInfo;
 import com.microsoft.connecteddevices.hosting.AppServiceProvider;
 
@@ -24,15 +24,15 @@ public abstract class BaseService implements AppServiceProvider, EventListener<A
     private static final String TAG = BaseService.class.getName();
     protected MainActivity mMainActivity;
 
-    private AppServiceDescription mDescription;
+    private AppServiceInfo mInfo;
     // This must be kept alive to receive AppService request messages
     private AppServiceConnection mConnection;
     // endregion
 
     // region Constructor
-    public BaseService(MainActivity mainActivity, AppServiceDescription appServiceDescription) {
+    public BaseService(MainActivity mainActivity, AppServiceInfo appServiceInfo) {
         mMainActivity = mainActivity;
-        mDescription = appServiceDescription;
+        mInfo = appServiceInfo;
     }
     // endregion
 
@@ -43,8 +43,8 @@ public abstract class BaseService implements AppServiceProvider, EventListener<A
     @Override
     public void onConnectionOpened(final @NonNull AppServiceConnectionOpenedInfo args) {
         AppServiceConnection connection = args.getAppServiceConnection();
-        Log.i(TAG, "Opened incoming connection to app service " + connection.getAppServiceDescription().getPackageId() + "/" +
-                       connection.getAppServiceDescription().getName());
+        Log.i(TAG, "Opened incoming connection to app service " + connection.getAppServiceInfo().getPackageId() + "/" +
+                       connection.getAppServiceInfo().getName());
         connection.addRequestReceivedListener(this);
 
         // Capture the AppServiceConnection reference and hold on to it for a while to allow us to receive incoming requests
@@ -52,8 +52,8 @@ public abstract class BaseService implements AppServiceProvider, EventListener<A
     }
 
     @Override
-    public @NonNull AppServiceDescription getAppServiceDescription() {
-        return mDescription;
+    public @NonNull AppServiceInfo getAppServiceInfo() {
+        return mInfo;
     }
     // endregion
 }

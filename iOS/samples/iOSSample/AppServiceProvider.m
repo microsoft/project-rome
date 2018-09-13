@@ -12,7 +12,7 @@
     if (self = [super init])
     {
         _delegate = delegate;
-        _appServiceDescription = [MCDAppServiceDescription descriptionWithName:APP_SERVICE_NAME packageId:PACKAGE_ID];
+        _appServiceInfo = [MCDAppServiceInfo infoWithName:APP_SERVICE_NAME packageId:PACKAGE_ID];
     }
 
     return self;
@@ -25,7 +25,7 @@
 
 #pragma mark - MCDAppServiceProvider Protocol Requirements
 
-@synthesize appServiceDescription = _appServiceDescription;
+@synthesize appServiceInfo = _appServiceInfo;
 
 - (void)connectionDidOpen:(MCDAppServiceConnection*)connection
 {
