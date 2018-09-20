@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.microsoft.connecteddevices.discovery.RemoteSystem;
 import com.microsoft.connecteddevices.discovery.RemoteSystemApp;
 
+import java.util.List;
+
 /**
  * Adapter for displaying systems and their applications in an expandable list
  */
@@ -34,16 +36,12 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        int size = 0;
         RemoteSystem system = mSystems.valueAt(groupPosition);
-        if (system != null) {
-            RemoteSystemApp[] apps = system.getApps();
-            if (apps != null) {
-                size = apps.length;
-            }
+        if (system == null) {
+            return 0;
         }
 
-        return size;
+        return system.getApps().size();
     }
 
     @Override
@@ -53,16 +51,12 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        RemoteSystemApp app = null;
-
         RemoteSystem system = mSystems.get(groupPosition);
-        if (system != null) {
-            RemoteSystemApp[] apps = system.getApps();
-            if (apps != null) {
-                app = apps[childPosition];
-            }
+        if (system == null) {
+            return null;
         }
-        return app;
+
+        return system.getApps().get(childPosition);
     }
 
     @Override
@@ -149,6 +143,6 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
     // endregion
 
     public RemoteSystemApp getRemoteSystemApp(int groupPosition, int childPosition) {
-        return mSystems.valueAt(groupPosition).getApps()[childPosition];
+        return mSystems.valueAt(groupPosition).getApps().get(childPosition);
     }
 }

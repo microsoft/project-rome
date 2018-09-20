@@ -29,6 +29,8 @@ import com.microsoft.connecteddevices.userdata.UserDataFeedSyncStatus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.List;
+import java.util.Arrays;
 
 import static com.microsoft.rome.onesdksample_android.StaticContextApp.getStringValue;
 
@@ -75,14 +77,14 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
     private EditText mActivityIconUri;
     private ListView mListView;
     private UserActivityListAdapter mListAdapter;
-    private ArrayList<UserActivitySessionHistoryItem> mHistoryItems;
+    private List<UserActivitySessionHistoryItem> mHistoryItems;
     private UserActivity mActivity;
     private UserActivitySession mActivitySession;
     private UserActivityChannel mActivityChannel;
     private UserDataFeed mUserDataFeed;
     private String mStatusText;
 
-    private UserDataFeed getUserDataFeed(UserAccount account, UserDataFeedSyncScope[] scopes, EventListener<UserDataFeed, Void> listener) {
+    private UserDataFeed getUserDataFeed(UserAccount account, List<UserDataFeedSyncScope> scopes, EventListener<UserDataFeed, Void> listener) {
         UserDataFeed feed = UserDataFeed.getForAccount(account, PlatformBroker.getPlatform(), Secrets.APP_HOST_NAME);
         feed.addSyncStatusChangedListener(listener);
         feed.addSyncScopes(scopes);
@@ -104,7 +106,7 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
 
             // Step #1
             // get the UserDataFeed for the signed in account
-            UserDataFeedSyncScope[] scopes = { UserActivityChannel.getSyncScope() };
+            List<UserDataFeedSyncScope> scopes =  Arrays.asList(UserActivityChannel.getSyncScope());
             mUserDataFeed = getUserDataFeed(accounts[0], scopes, new EventListener<UserDataFeed, Void>() {
                 @Override
                 public void onEvent(UserDataFeed userDataFeed, Void aVoid) {
@@ -280,15 +282,15 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
             setStatus(R.string.status_activities_read_activity);
 
             // Async method to read activities. Last (most recent) 5 activities will be returned
-            AsyncOperation<UserActivitySessionHistoryItem[]> operation = mActivityChannel.getRecentUserActivitiesAsync(5);
-            operation.whenCompleteAsync(new AsyncOperation.ResultBiConsumer<UserActivitySessionHistoryItem[], Throwable>() {
+            AsyncOperation<List<UserActivitySessionHistoryItem>> operation = mActivityChannel.getRecentUserActivitiesAsync(5);
+            operation.whenCompleteAsync(new AsyncOperation.ResultBiConsumer<List<UserActivitySessionHistoryItem>, Throwable>() {
                 @Override
-                public void accept(UserActivitySessionHistoryItem[] result, Throwable throwable) throws Throwable {
+                public void accept(List<UserActivitySessionHistoryItem> result, Throwable throwable) throws Throwable {
                     if (throwable != null) {
                         setStatus(R.string.status_activities_read_activity_failed);
                         throwable.printStackTrace();
                     } else {
-                        Collections.addAll(mHistoryItems, result);
+                        mHistoryItems = new ArrayList<>(result);
 
                         getActivity().runOnUiThread(new Runnable() {
                             @Override

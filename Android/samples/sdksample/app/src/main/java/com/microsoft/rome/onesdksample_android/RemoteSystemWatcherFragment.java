@@ -98,13 +98,8 @@ public class RemoteSystemWatcherFragment extends BaseFragment {
             mWatcher.stop();
         }
 
-        if (filters.isEmpty()) {
-            mWatcher = new RemoteSystemWatcher();
-        } else {
-            mWatcher = new RemoteSystemWatcher(filters.toArray(new RemoteSystemFilter[filters.size()]));
-        }
-
         // Use these events to keep the list of Remote Systems up to date
+        mWatcher = new RemoteSystemWatcher(filters);
         mWatcher.addRemoteSystemAddedListener(new RemoteSystemAddedListener());
         mWatcher.addRemoteSystemUpdatedListener(new RemoteSystemUpdatedListener());
         mWatcher.addRemoteSystemRemovedListener(new RemoteSystemRemovedListener());
