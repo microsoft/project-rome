@@ -173,8 +173,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             filters.add(new RemoteSystemStatusTypeFilter(RemoteSystemStatusType.ANY));
             filters.add(new RemoteSystemAuthorizationKindFilter(RemoteSystemAuthorizationKind.ANONYMOUS));
 
-            mRemoteSystemWatcher = new RemoteSystemWatcher(filters.toArray(new RemoteSystemFilter[filters.size()]));
-
+            mRemoteSystemWatcher = new RemoteSystemWatcher(filters);
             mRemoteSystemWatcher.addRemoteSystemAddedListener(new RemoteSystemAddedListener());
             mRemoteSystemWatcher.addRemoteSystemUpdatedListener(new RemoteSystemUpdatedListener());
             mRemoteSystemWatcher.addRemoteSystemRemovedListener(new RemoteSystemRemovedListener());
