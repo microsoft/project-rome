@@ -10,12 +10,17 @@ See the [Cross-Device Experience docs](https://developer.microsoft.com/en-us/gra
 
 ## SDK
 
-Project Rome is currently implemented for the following platforms. Follow the links for samples and SDK downloads.
+Project Rome is currently implemented for the below platforms. Follow the links for samples and SDK downloads.
 
 [windows-sdk]:             https://developer.microsoft.com/en-us/windows/downloads
 [windows-sdk-badge]:       https://img.shields.io/badge/sdk-April%202018%20Update-brightgreen.svg
 [windows-sample]:          https://github.com/Microsoft/Windows-universal-samples/tree/master/Samples/RemoteSystems
 [windows-docs]:            https://docs.microsoft.com/en-us/windows/uwp/launch-resume/connected-apps-and-devices
+
+[winredist-sdk]:           https://www.nuget.org/packages/Microsoft.ConnectedDevices.UserNotifications
+[winredist-sdk-badge]:     https://img.shields.io/nuget/v/Microsoft.ConnectedDevices.UserNotifications.svg
+[winredist-sample]:        Windows/samples
+[winredist-docs]:          https://docs.microsoft.com/en-us/windows/uwp/launch-resume/connected-apps-and-devices
 
 [xamarin-sdk]:             https://www.nuget.org/packages/Microsoft.ConnectedDevices.Xamarin.Droid
 [xamarin-sdk-badge]:       https://img.shields.io/nuget/v/Microsoft.ConnectedDevices.Xamarin.Droid.svg
@@ -38,11 +43,12 @@ Project Rome is currently implemented for the following platforms. Follow the li
 
 |  Platform Samples                       |           SDK Package                           | 
 | --------------------------------------: | :---------------------------------------------: | 
-| **[Windows][windows-sample]**           |  [![SDK][windows-sdk-badge]][windows-sdk]       | 
+| **[Windows SDK][windows-sample]**       |  [![SDK][windows-sdk-badge]][windows-sdk]       | 
+| **[Windows][winredist-sample] (Notifications Preview)** |  [![Nuget][winredist-sdk-badge]][winredist-sdk]       | 
 | **[Android][android-sample] (Preview)** | [![Maven][android-sdk-badge]][android-sdk]      | 
 | **[iOS][ios-sample] (Preview)**         |     [![CocoaPod][ios-sdk-badge]][ios-sdk]       | 
 | **[Xamarin for Android][xamarin-sample] (Preview)** |[![Nuget][xamarin-sdk-badge]][xamarin-sdk]       | 
-| **MSGraph (Preview)**   |[![REST][graph-sdk-badge]][graph-sdk]            |
+| **MSGraph (Preview)**                   |[![REST][graph-sdk-badge]][graph-sdk]            |
 
 ## Project Rome blog posts
 * [Cross-device experiences with Project Rome](https://blogs.windows.com/buildingapps/2016/10/11/cross-device-experience-with-project-rome/#iQTseFlAMJRopU9k.97)
