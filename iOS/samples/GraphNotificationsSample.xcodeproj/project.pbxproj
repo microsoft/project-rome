@@ -1,0 +1,509 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0017A4902135B52800EB86D8 /* AADAccountProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A4892135B52700EB86D8 /* AADAccountProvider.m */; };
+		0017A4912135B52800EB86D8 /* MSATokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A48A2135B52700EB86D8 /* MSATokenRequest.m */; };
+		0017A4922135B52800EB86D8 /* AADMSAAccountProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A48C2135B52700EB86D8 /* AADMSAAccountProvider.m */; };
+		0017A4932135B52800EB86D8 /* MSATokenCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A48D2135B52700EB86D8 /* MSATokenCache.m */; };
+		0017A4942135B52800EB86D8 /* MSAAccountProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A48F2135B52800EB86D8 /* MSAAccountProvider.m */; };
+		0017A49D2135D10E00EB86D8 /* NotificationProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A49C2135D10E00EB86D8 /* NotificationProvider.m */; };
+		003421A921347622007FC970 /* NotificationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 003421A821347622007FC970 /* NotificationsManager.m */; };
+		00823361212F114B0055F6E4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823360212F114B0055F6E4 /* AppDelegate.m */; };
+		00823364212F114B0055F6E4 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823363212F114B0055F6E4 /* RootViewController.m */; };
+		00823367212F114B0055F6E4 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823366212F114B0055F6E4 /* LoginViewController.m */; };
+		0082336A212F114B0055F6E4 /* ModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823369212F114B0055F6E4 /* ModelController.m */; };
+		0082336D212F114B0055F6E4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0082336B212F114B0055F6E4 /* Main.storyboard */; };
+		0082336F212F114B0055F6E4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0082336E212F114B0055F6E4 /* Assets.xcassets */; };
+		00823372212F114B0055F6E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00823370212F114B0055F6E4 /* LaunchScreen.storyboard */; };
+		00823375212F114B0055F6E4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823374212F114B0055F6E4 /* main.m */; };
+		00D6D060213720E5008E5E33 /* NotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D6D05F213720E5008E5E33 /* NotificationsViewController.m */; };
+		00D6D06321384D00008E5E33 /* HistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D6D06221384D00008E5E33 /* HistoryViewController.m */; };
+		5D93128427C67BC7232939D5 /* libPods-GraphNotifications.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B6312F300B55978A0074729 /* libPods-GraphNotifications.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0017A4892135B52700EB86D8 /* AADAccountProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AADAccountProvider.m; sourceTree = "<group>"; };
+		0017A48A2135B52700EB86D8 /* MSATokenRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenRequest.m; sourceTree = "<group>"; };
+		0017A48B2135B52700EB86D8 /* MSATokenCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenCache.h; sourceTree = "<group>"; };
+		0017A48C2135B52700EB86D8 /* AADMSAAccountProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AADMSAAccountProvider.m; sourceTree = "<group>"; };
+		0017A48D2135B52700EB86D8 /* MSATokenCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenCache.m; sourceTree = "<group>"; };
+		0017A48E2135B52700EB86D8 /* MSATokenRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenRequest.h; sourceTree = "<group>"; };
+		0017A48F2135B52800EB86D8 /* MSAAccountProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAAccountProvider.m; sourceTree = "<group>"; };
+		0017A4952135B53C00EB86D8 /* SingleUserAccountProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingleUserAccountProvider.h; sourceTree = "<group>"; };
+		0017A4962135B53C00EB86D8 /* MSAAccountProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAAccountProvider.h; sourceTree = "<group>"; };
+		0017A4972135B53C00EB86D8 /* SampleAccountActionFailureReason.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleAccountActionFailureReason.h; sourceTree = "<group>"; };
+		0017A4982135B53C00EB86D8 /* AADAccountProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AADAccountProvider.h; sourceTree = "<group>"; };
+		0017A4992135B53C00EB86D8 /* AADMSAAccountProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AADMSAAccountProvider.h; sourceTree = "<group>"; };
+		0017A49B2135D10A00EB86D8 /* NotificationProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationProvider.h; sourceTree = "<group>"; };
+		0017A49C2135D10E00EB86D8 /* NotificationProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationProvider.m; sourceTree = "<group>"; };
+		003421A72130A887007FC970 /* NotificationsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationsManager.h; sourceTree = "<group>"; };
+		003421A821347622007FC970 /* NotificationsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationsManager.m; sourceTree = "<group>"; };
+		0082335C212F114B0055F6E4 /* GraphNotifications.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GraphNotifications.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0082335F212F114B0055F6E4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		00823360212F114B0055F6E4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		00823362212F114B0055F6E4 /* RootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		00823363212F114B0055F6E4 /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		00823365212F114B0055F6E4 /* LoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		00823366212F114B0055F6E4 /* LoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
+		00823368212F114B0055F6E4 /* ModelController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModelController.h; sourceTree = "<group>"; };
+		00823369212F114B0055F6E4 /* ModelController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModelController.m; sourceTree = "<group>"; };
+		0082336C212F114B0055F6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		0082336E212F114B0055F6E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		00823371212F114B0055F6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		00823373212F114B0055F6E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		00823374212F114B0055F6E4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		00D6D05E21372041008E5E33 /* NotificationsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationsViewController.h; sourceTree = "<group>"; };
+		00D6D05F213720E5008E5E33 /* NotificationsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationsViewController.m; sourceTree = "<group>"; };
+		00D6D06121384BA3008E5E33 /* HistoryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HistoryViewController.h; sourceTree = "<group>"; };
+		00D6D06221384D00008E5E33 /* HistoryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HistoryViewController.m; sourceTree = "<group>"; };
+		00D6D0642138519C008E5E33 /* GraphNotificationsSample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GraphNotificationsSample.entitlements; sourceTree = "<group>"; };
+		63E3FBAFA254E6B80A8DA76E /* Pods-GraphNotifications.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GraphNotifications.release.xcconfig"; path = "Pods/Target Support Files/Pods-GraphNotifications/Pods-GraphNotifications.release.xcconfig"; sourceTree = "<group>"; };
+		9B6312F300B55978A0074729 /* libPods-GraphNotifications.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GraphNotifications.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FFB1B176FF8985E5AD4B88D1 /* Pods-GraphNotifications.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GraphNotifications.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GraphNotifications/Pods-GraphNotifications.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		00823359212F114B0055F6E4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D93128427C67BC7232939D5 /* libPods-GraphNotifications.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0017A49A2135B55400EB86D8 /* SampleAccountProviders */ = {
+			isa = PBXGroup;
+			children = (
+				0017A4982135B53C00EB86D8 /* AADAccountProvider.h */,
+				0017A4992135B53C00EB86D8 /* AADMSAAccountProvider.h */,
+				0017A4962135B53C00EB86D8 /* MSAAccountProvider.h */,
+				0017A4972135B53C00EB86D8 /* SampleAccountActionFailureReason.h */,
+				0017A4952135B53C00EB86D8 /* SingleUserAccountProvider.h */,
+				0017A4892135B52700EB86D8 /* AADAccountProvider.m */,
+				0017A48C2135B52700EB86D8 /* AADMSAAccountProvider.m */,
+				0017A48F2135B52800EB86D8 /* MSAAccountProvider.m */,
+				0017A48B2135B52700EB86D8 /* MSATokenCache.h */,
+				0017A48D2135B52700EB86D8 /* MSATokenCache.m */,
+				0017A48E2135B52700EB86D8 /* MSATokenRequest.h */,
+				0017A48A2135B52700EB86D8 /* MSATokenRequest.m */,
+			);
+			path = SampleAccountProviders;
+			sourceTree = "<group>";
+		};
+		00823353212F114A0055F6E4 = {
+			isa = PBXGroup;
+			children = (
+				0017A49A2135B55400EB86D8 /* SampleAccountProviders */,
+				0082335E212F114B0055F6E4 /* GraphNotificationsSample */,
+				0082335D212F114B0055F6E4 /* Products */,
+				D9CF36B91E745B7CB13F10B3 /* Pods */,
+				31E53F56A7E5C56EF7B399C4 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		0082335D212F114B0055F6E4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0082335C212F114B0055F6E4 /* GraphNotifications.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0082335E212F114B0055F6E4 /* GraphNotificationsSample */ = {
+			isa = PBXGroup;
+			children = (
+				00D6D0642138519C008E5E33 /* GraphNotificationsSample.entitlements */,
+				0017A49B2135D10A00EB86D8 /* NotificationProvider.h */,
+				0017A49C2135D10E00EB86D8 /* NotificationProvider.m */,
+				0082335F212F114B0055F6E4 /* AppDelegate.h */,
+				00823360212F114B0055F6E4 /* AppDelegate.m */,
+				00823362212F114B0055F6E4 /* RootViewController.h */,
+				00823363212F114B0055F6E4 /* RootViewController.m */,
+				00823365212F114B0055F6E4 /* LoginViewController.h */,
+				00823366212F114B0055F6E4 /* LoginViewController.m */,
+				00823368212F114B0055F6E4 /* ModelController.h */,
+				00823369212F114B0055F6E4 /* ModelController.m */,
+				0082336B212F114B0055F6E4 /* Main.storyboard */,
+				0082336E212F114B0055F6E4 /* Assets.xcassets */,
+				00823370212F114B0055F6E4 /* LaunchScreen.storyboard */,
+				00823373212F114B0055F6E4 /* Info.plist */,
+				00823374212F114B0055F6E4 /* main.m */,
+				003421A72130A887007FC970 /* NotificationsManager.h */,
+				003421A821347622007FC970 /* NotificationsManager.m */,
+				00D6D05E21372041008E5E33 /* NotificationsViewController.h */,
+				00D6D05F213720E5008E5E33 /* NotificationsViewController.m */,
+				00D6D06121384BA3008E5E33 /* HistoryViewController.h */,
+				00D6D06221384D00008E5E33 /* HistoryViewController.m */,
+			);
+			path = GraphNotificationsSample;
+			sourceTree = "<group>";
+		};
+		31E53F56A7E5C56EF7B399C4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9B6312F300B55978A0074729 /* libPods-GraphNotifications.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D9CF36B91E745B7CB13F10B3 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				FFB1B176FF8985E5AD4B88D1 /* Pods-GraphNotifications.debug.xcconfig */,
+				63E3FBAFA254E6B80A8DA76E /* Pods-GraphNotifications.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0082335B212F114B0055F6E4 /* GraphNotificationsSample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00823378212F114B0055F6E4 /* Build configuration list for PBXNativeTarget "GraphNotificationsSample" */;
+			buildPhases = (
+				BBBC242D2C377CDA52234B8A /* [CP] Check Pods Manifest.lock */,
+				00823358212F114B0055F6E4 /* Sources */,
+				00823359212F114B0055F6E4 /* Frameworks */,
+				0082335A212F114B0055F6E4 /* Resources */,
+				534E2B6519087712F45067D1 /* [CP] Embed Pods Frameworks */,
+				DF877AD63B2A176428A85DFC /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GraphNotificationsSample;
+			productName = GraphNotificationsSample;
+			productReference = 0082335C212F114B0055F6E4 /* GraphNotifications.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		00823354212F114A0055F6E4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = Microsoft;
+				TargetAttributes = {
+					0082335B212F114B0055F6E4 = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
+					};
+				};
+			};
+			buildConfigurationList = 00823357212F114A0055F6E4 /* Build configuration list for PBXProject "GraphNotificationsSample" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 00823353212F114A0055F6E4;
+			productRefGroup = 0082335D212F114B0055F6E4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0082335B212F114B0055F6E4 /* GraphNotificationsSample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0082335A212F114B0055F6E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00823372212F114B0055F6E4 /* LaunchScreen.storyboard in Resources */,
+				0082336F212F114B0055F6E4 /* Assets.xcassets in Resources */,
+				0082336D212F114B0055F6E4 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		534E2B6519087712F45067D1 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GraphNotifications/Pods-GraphNotifications-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BBBC242D2C377CDA52234B8A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		DF877AD63B2A176428A85DFC /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GraphNotifications/Pods-GraphNotifications-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		00823358212F114B0055F6E4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0017A4922135B52800EB86D8 /* AADMSAAccountProvider.m in Sources */,
+				00823375212F114B0055F6E4 /* main.m in Sources */,
+				00823364212F114B0055F6E4 /* RootViewController.m in Sources */,
+				003421A921347622007FC970 /* NotificationsManager.m in Sources */,
+				0017A4942135B52800EB86D8 /* MSAAccountProvider.m in Sources */,
+				00D6D06321384D00008E5E33 /* HistoryViewController.m in Sources */,
+				0017A4932135B52800EB86D8 /* MSATokenCache.m in Sources */,
+				0082336A212F114B0055F6E4 /* ModelController.m in Sources */,
+				00D6D060213720E5008E5E33 /* NotificationsViewController.m in Sources */,
+				0017A49D2135D10E00EB86D8 /* NotificationProvider.m in Sources */,
+				0017A4902135B52800EB86D8 /* AADAccountProvider.m in Sources */,
+				00823367212F114B0055F6E4 /* LoginViewController.m in Sources */,
+				00823361212F114B0055F6E4 /* AppDelegate.m in Sources */,
+				0017A4912135B52800EB86D8 /* MSATokenRequest.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		0082336B212F114B0055F6E4 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0082336C212F114B0055F6E4 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		00823370212F114B0055F6E4 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				00823371212F114B0055F6E4 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		00823376212F114B0055F6E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		00823377212F114B0055F6E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		00823379212F114B0055F6E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FFB1B176FF8985E5AD4B88D1 /* Pods-GraphNotifications.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GraphNotificationsSample/GraphNotificationsSample.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = UBF8T346G9;
+				ENABLE_BITCODE = NO;
+				INFOPLIST_FILE = GraphNotificationsSample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GraphNotificationsSample/ConnectedDevices",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.connecteddevices.graphnotifications;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "ba3afbc5-30e6-4150-9eb9-d8967de4ce9b";
+				PROVISIONING_PROFILE_SPECIFIER = "Graph Notifications Development";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0082337A212F114B0055F6E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 63E3FBAFA254E6B80A8DA76E /* Pods-GraphNotifications.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GraphNotificationsSample/GraphNotificationsSample.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = UBF8T346G9;
+				ENABLE_BITCODE = NO;
+				INFOPLIST_FILE = GraphNotificationsSample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GraphNotificationsSample/ConnectedDevices",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.connecteddevices.graphnotifications;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "ba3afbc5-30e6-4150-9eb9-d8967de4ce9b";
+				PROVISIONING_PROFILE_SPECIFIER = "Graph Notifications Development";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		00823357212F114A0055F6E4 /* Build configuration list for PBXProject "GraphNotificationsSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00823376212F114B0055F6E4 /* Debug */,
+				00823377212F114B0055F6E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		00823378212F114B0055F6E4 /* Build configuration list for PBXNativeTarget "GraphNotificationsSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00823379212F114B0055F6E4 /* Debug */,
+				0082337A212F114B0055F6E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 00823354212F114A0055F6E4 /* Project object */;
+}

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "782586391244",
+    "firebase_url": "https://graphnotifications-a61a7.firebaseio.com",
+    "project_id": "graphnotifications-a61a7",
+    "storage_bucket": "graphnotifications-a61a7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782586391244:android:7bd1ae34fbb0ccaa",
+        "android_client_info": {
+          "package_name": "com.microsoft.connecteddevices.graphnotifications"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "782586391244-93dahs8garncusah95oene5gk1sj88uh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsYVrZK8DVYTTIP_YdT-5NCuRY5sIkmqM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,4 @@
+include ':app',
+        ':sampleaccountproviders'
+
+project(':sampleaccountproviders').projectDir = new File('sampleaccountproviders/android')
