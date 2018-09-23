@@ -6,6 +6,17 @@ Visit the [Project Rome landing page](https://developer.microsoft.com/en-us/wind
 
 See the [Project Rome docs](https://docs.microsoft.com/windows/project-rome/) for how-to guides and API reference docs that will help you get started integrating Project Rome features into your app.
 
+## What's New
+
+### Microsoft Graph Notifications
+Notifications are the most effective way to re-engage your users. They can catch your users' attention and bring the user back to your app. In a multi-device world, your users can access your apps and services from anywhere, across different platforms and devices where your apps have a presence. 
+
+Microsoft Graph Notifications and Project Rome SDKs enables your app to send notifications targeted at a user, across their multiple devices and platforms. It also enables syncing notification states across user's different endpoints, and more. Check out this new Notifications feature from the [Microsoft Graph documentation page here](https://developer.microsoft.com/en-us/graph/docs/concepts/notifications-concept-overview) and the [Project Rome SDK documentation page here](https://docs.microsoft.com/en-us/windows/project-rome/). 
+
+
+
+## SDKs
+
 Project Rome is currently implemented for the following platforms. Follow the links for samples and SDK downloads.
 
 [windows-sdk]:             https://developer.microsoft.com/en-us/windows/downloads
