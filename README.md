@@ -15,12 +15,10 @@ Project Rome is currently implemented for the below platforms. Follow the links 
 [windows-sdk]:             https://developer.microsoft.com/en-us/windows/downloads
 [windows-sdk-badge]:       https://img.shields.io/badge/sdk-April%202018%20Update-brightgreen.svg
 [windows-sample]:          https://github.com/Microsoft/Windows-universal-samples/tree/master/Samples/RemoteSystems
-[windows-docs]:            https://docs.microsoft.com/en-us/windows/uwp/launch-resume/connected-apps-and-devices
 
 [winredist-sdk]:           https://www.nuget.org/packages/Microsoft.ConnectedDevices.UserNotifications
 [winredist-sdk-badge]:     https://img.shields.io/nuget/v/Microsoft.ConnectedDevices.UserNotifications.svg
 [winredist-sample]:        Windows/samples
-[winredist-docs]:          https://docs.microsoft.com/en-us/windows/uwp/launch-resume/connected-apps-and-devices
 
 [xamarin-sdk]:             https://www.nuget.org/packages/Microsoft.ConnectedDevices.Xamarin.Droid
 [xamarin-sdk-badge]:       https://img.shields.io/nuget/v/Microsoft.ConnectedDevices.Xamarin.Droid.svg
@@ -29,26 +27,34 @@ Project Rome is currently implemented for the below platforms. Follow the links 
 [ios-sdk]:                 https://cocoapods.org/pods/ProjectRomeSdk
 [ios-sdk-badge]:           https://img.shields.io/cocoapods/v/ProjectRomeSdk.svg
 [ios-sample]:              iOS/samples 
-[ios-docs]:                https://docs.microsoft.com/windows/project-rome/ios
 
 [android-sdk]:             https://bintray.com/projectrome/maven/com.microsoft.connecteddevices:connecteddevices-sdk/_latestVersion
 [android-sdk-badge]:       https://api.bintray.com/packages/projectrome/maven/com.microsoft.connecteddevices%3Aconnecteddevices-sdk/images/download.svg
 [android-sample]:          Android/samples
-[android-docs]:            https://github.com/MicrosoftDocs/project-rome/tree/GH-docs/project-rome-docs/Android
 
-[graph-sdk]:               https://developer.microsoft.com/graph/docs/api-reference/beta/resources/project_rome_overview
-[graph-sdk-badge]:         https://img.shields.io/badge/REST-Beta-orange.svg
-[graph-sample]:            https://developer.microsoft.com/graph/docs/api-reference/beta/resources/project_rome_overview
-[graph-docs]:              MSGraph/
 
-|  Platform Samples                       |           SDK Package                           | 
-| --------------------------------------: | :---------------------------------------------: | 
-| **[Windows SDK][windows-sample]**       |  [![SDK][windows-sdk-badge]][windows-sdk]       | 
-| **[Windows][winredist-sample] (Notifications Preview)** |  [![Nuget][winredist-sdk-badge]][winredist-sdk]       | 
-| **[Android][android-sample] (Preview)** | [![Maven][android-sdk-badge]][android-sdk]      | 
-| **[iOS][ios-sample] (Preview)**         |     [![CocoaPod][ios-sdk-badge]][ios-sdk]       | 
-| **[Xamarin for Android][xamarin-sample] (Preview)** |[![Nuget][xamarin-sdk-badge]][xamarin-sdk]       | 
-| **MSGraph (Preview)**                   |[![REST][graph-sdk-badge]][graph-sdk]            |
+[graph-relay]:             https://developer.microsoft.com/graph/docs/api-reference/beta/resources/project_rome_overview
+[graph-activities]:        https://developer.microsoft.com/graph/docs/api-reference/v1.0/resources/activity-feed-api-overview
+[graph-notification]:      https://developer.microsoft.com/graph/docs/api-reference/beta/resources/notifications-api-overview
+
+[graph-relay-badge]:       https://img.shields.io/badge/Device_Relay-Beta-orange.svg
+[graph-activities-badge]:  https://img.shields.io/badge/Activities-1.0-brightgreen.svg
+[graph-notification-badge]:https://img.shields.io/badge/Graph_Notifications-Beta-orange.svg
+
+[graph-relay-sample]:        https://developer.microsoft.com/graph/docs/api-reference/beta/resources/project_rome_overview
+[graph-activities-sample]:   https://developer.microsoft.com/graph/docs/api-reference/v1.0/resources/activity-feed-api-overview
+[graph-notification-sample]: https://developer.microsoft.com/graph/docs/api-reference/beta/resources/notifications-api-overview
+
+
+
+|   Platform                        | Features                                                         |           SDK Package                          |   Samples                                       |
+| :-------------------------------- | :--------------------------------------------------------------- |:---------------------------------------------- | :---------------------------------------------- |
+| **Windows SDK**                   | Device Relay, Activities/Timeline                                | [![SDK][windows-sdk-badge]][windows-sdk]       | [Project Rome for Windows samples][windows-sample] (GitHub)
+| **Windows (Preview)**             |                                    Microsoft Graph Notifications | [![Nuget][winredist-sdk-badge]][winredist-sdk] | [Graph Notifications for Windows samples][winredist-sample] (GitHub)
+| **Android (Preview)**             | Device Relay, Activities/Timeline, Microsoft Graph Notifications | [![Maven][android-sdk-badge]][android-sdk]     | [Project Rome for Android samples][android-sample] (GitHub)
+| **iOS (Preview)**                 | Device Relay, Activities/Timeline, Microsoft Graph Notifications | [![CocoaPod][ios-sdk-badge]][ios-sdk]          | [Project Rome for iOS samples][ios-sample] (Preview)
+| **Xamarin for Android (Preview)** | Device Relay                                                     | [![Nuget][xamarin-sdk-badge]][xamarin-sdk]     | [Xamarin for Android samples][xamarin-sample] (Preview)
+| **MSGraph**                       | Device Relay, Activities/Timeline, Microsoft Graph Notifications | [![REST][graph-relay-badge]][graph-relay]<br> [![REST][graph-activities-badge]][graph-activities]<br>[![REST][graph-notification-badge]][graph-notification]          | [Device Relay][graph-relay-sample](Preview)<br>[Activities/Timeline][graph-activities-sample]<br>[Graph Notifications][graph-notification-sample](Preview)
 
 ## Project Rome blog posts
 * [Cross-device experiences with Project Rome](https://blogs.windows.com/buildingapps/2016/10/11/cross-device-experience-with-project-rome/#iQTseFlAMJRopU9k.97)
