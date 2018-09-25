@@ -1,0 +1,111 @@
+﻿<!--
+//*********************************************************
+//
+// Copyright (c) Microsoft. All rights reserved.
+// This code is licensed under the Microsoft Public License.
+// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+//
+//*********************************************************
+-->
+<Page
+    x:Class="SDKTemplate.NotificationsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SDKTemplate"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <local:BoolColorConverter x:Key="BoolColorConverter"/>
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="12,20,12,12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
+                <TextBlock Name="Description" Style="{StaticResource ScenarioDescriptionTextStyle}" TextWrapping="Wrap">
+                Please login with MSA or AAD account
+                </TextBlock>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10">
+                <Button Name="RefreshButton" Content="Retrieve Notifications History" Margin="10" BorderBrush="AntiqueWhite" Click="Button_Refresh"/>
+            </StackPanel>
+
+            <Grid Grid.Row="2">
+                <ScrollViewer VerticalScrollBarVisibility="Visible">
+                    <ListView x:Name="UnreadView" Margin="20,0,0,0" BorderBrush="DarkCyan" BorderThickness="1">
+                        <ListView.HeaderTemplate>
+                            <DataTemplate>
+                                <Grid Margin="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Width="150" BorderBrush="DarkCyan" BorderThickness="2">
+                                        <TextBlock Margin="10" Text="Click" FontSize="18" FontWeight="ExtraBold" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="1" Width="100" BorderBrush="DarkCyan" BorderThickness="2">
+                                        <TextBlock Margin="10" Text="Click" FontSize="18" FontWeight="ExtraBold" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="2" Width="200" BorderBrush="DarkCyan" BorderThickness="2">
+                                        <TextBlock Margin="10" Text="UserActionState" FontSize="18" FontWeight="ExtraBold" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="3" Width="400" BorderBrush="DarkCyan" BorderThickness="2">
+                                        <TextBlock Margin="10" Text="Content" FontSize="18" FontWeight="ExtraBold" HorizontalAlignment="Center" />
+                                    </Border>
+
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.HeaderTemplate>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Width="150" BorderBrush="DarkCyan" BorderThickness="1">
+                                        <Button Margin="10" Content="Mark Read" HorizontalAlignment="Center" IsEnabled="{Binding UnreadState}" Click="Button_MarkRead"/>
+                                    </Border>
+                                    <Border Grid.Column="1" Width="100" BorderBrush="DarkCyan" BorderThickness="1">
+                                        <Button Margin="10" Content="Delete" HorizontalAlignment="Center" Click="Button_Delete"/>
+                                    </Border>
+                                    <Border Grid.Column="2" Width="200" BorderBrush="DarkCyan" BorderThickness="1">
+                                        <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding UserActionState}" />
+                                    </Border>
+                                    <Border Grid.Column="3" Width="400" BorderBrush="DarkCyan" BorderThickness="1">
+                                        <StackPanel Orientation="Vertical" Margin="10" >
+                                            <TextBlock Text="{Binding Id}" FontWeight="Bold" TextWrapping="Wrap" Foreground="{Binding UnreadState, Converter={StaticResource BoolColorConverter}}"/>
+                                            <TextBlock Text="{Binding Content}" TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding Priority}" />
+                                            <TextBlock Text="{Binding ChangeTime}" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Status Block for providing messages to the user.  Use the
+             NotifyUser() method to populate the message -->
+            <TextBlock x:Name="StatusBlock" Grid.Row="3" Margin="12, 10, 12, 10" Visibility="Collapsed"/>
+        </Grid>
+    </Grid>
+</Page>
