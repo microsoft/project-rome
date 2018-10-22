@@ -28,15 +28,19 @@ import com.microsoft.connecteddevices.base.EventListener;
 import com.microsoft.connecteddevices.commanding.RemoteSystemConnectionRequest;
 import com.microsoft.connecteddevices.core.Platform;
 import com.microsoft.connecteddevices.discovery.RemoteSystem;
+import com.microsoft.connecteddevices.discovery.RemoteSystemAddedEventArgs;
 import com.microsoft.connecteddevices.discovery.RemoteSystemAuthorizationKind;
 import com.microsoft.connecteddevices.discovery.RemoteSystemAuthorizationKindFilter;
 import com.microsoft.connecteddevices.discovery.RemoteSystemDiscoveryType;
 import com.microsoft.connecteddevices.discovery.RemoteSystemDiscoveryTypeFilter;
 import com.microsoft.connecteddevices.discovery.RemoteSystemFilter;
+import com.microsoft.connecteddevices.discovery.RemoteSystemRemovedEventArgs;
 import com.microsoft.connecteddevices.discovery.RemoteSystemStatusType;
 import com.microsoft.connecteddevices.discovery.RemoteSystemStatusTypeFilter;
+import com.microsoft.connecteddevices.discovery.RemoteSystemUpdatedEventArgs;
 import com.microsoft.connecteddevices.discovery.RemoteSystemWatcher;
 import com.microsoft.connecteddevices.discovery.RemoteSystemWatcherError;
+import com.microsoft.connecteddevices.discovery.RemoteSystemWatcherErrorOccurredEventArgs;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -319,10 +323,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     // region HelperClasses
 
-    private class RemoteSystemAddedListener implements EventListener<RemoteSystemWatcher, RemoteSystem> {
+    private class RemoteSystemAddedListener implements EventListener<RemoteSystemWatcher, RemoteSystemAddedEventArgs> {
         @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystem remoteSystem) {
-            final RemoteSystem remoteSystemParam = remoteSystem;
+        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemAddedEventArgs args) {
+            final RemoteSystem remoteSystemParam = args.getRemoteSystem();
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -334,17 +338,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    private class RemoteSystemUpdatedListener implements EventListener<RemoteSystemWatcher, RemoteSystem> {
+    private class RemoteSystemUpdatedListener implements EventListener<RemoteSystemWatcher, RemoteSystemUpdatedEventArgs> {
         @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystem remoteSystem) {
-            LOG.log(Level.INFO, String.format("Updating system: %1$s", remoteSystem.getDisplayName()));
+        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemUpdatedEventArgs args) {
+            LOG.log(Level.INFO, String.format("Updating system: %1$s", args.getRemoteSystem().getDisplayName()));
         }
     }
 
-    private class RemoteSystemRemovedListener implements EventListener<RemoteSystemWatcher, RemoteSystem> {
+    private class RemoteSystemRemovedListener implements EventListener<RemoteSystemWatcher, RemoteSystemRemovedEventArgs> {
         @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystem remoteSystem) {
-            final RemoteSystem remoteSystemParam = remoteSystem;
+        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemRemovedEventArgs args) {
+            final RemoteSystem remoteSystemParam = args.getRemoteSystem();
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -356,10 +360,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    private class RemoteSystemErrorListener implements EventListener<RemoteSystemWatcher, RemoteSystemWatcherError> {
+    private class RemoteSystemErrorListener implements EventListener<RemoteSystemWatcher, RemoteSystemWatcherErrorOccurredEventArgs> {
         @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemWatcherError remoteSystemWatcherError) {
-            LOG.log(Level.INFO, String.format("Discovery error: %1$s", remoteSystemWatcherError.toString()));
+        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemWatcherErrorOccurredEventArgs args) {
+            LOG.log(Level.INFO, String.format("Discovery error: %1$s", args.getError().toString()));
         }
     }
     // region HelperClasses

@@ -9,14 +9,13 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.commanding.RemoteSystemAppRegistrationStatus;
+import com.microsoft.connecteddevices.commanding.RemoteSystemAppRegistrationStatusChangedEventArgs;
 import com.microsoft.connecteddevices.core.NotificationProvider;
 import com.microsoft.connecteddevices.core.Platform;
-import com.microsoft.connecteddevices.core.UserAccount;
 import com.microsoft.connecteddevices.core.UserAccountProvider;
 import com.microsoft.connecteddevices.hosting.AppServiceProvider;
 import com.microsoft.connecteddevices.hosting.LaunchUriProvider;
-import com.microsoft.connecteddevices.hosting.RemoteSystemAppRegistration;
+import com.microsoft.connecteddevices.hosting.RemoteSystemAppHostingRegistration;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,9 +57,9 @@ public class PlatformBroker {
         return platform;
     }
 
-    public static void register(Context context, ArrayList<AppServiceProvider> appServiceProviders, LaunchUriProvider launchUriProvider, EventListener<UserAccount, RemoteSystemAppRegistrationStatus> listener) {
+    public static void register(Context context, ArrayList<AppServiceProvider> appServiceProviders, LaunchUriProvider launchUriProvider, EventListener<RemoteSystemAppHostingRegistration, RemoteSystemAppRegistrationStatusChangedEventArgs> listener) {
         // Initialize the platform with all possible services
-        RemoteSystemAppRegistration registration = new RemoteSystemAppRegistration();
+        RemoteSystemAppHostingRegistration registration = new RemoteSystemAppHostingRegistration();
         registration.addAttribute(TIMESTAMP_KEY, getInitialRegistrationDateTime(context));
         registration.addAttribute(PACKAGE_KEY, PACKAGE_VALUE);
 
@@ -75,7 +74,7 @@ public class PlatformBroker {
         }
 
         // Add an EventListener to handle registration completion
-        registration.addRemoteSystemAppRegistrationStatusChangedListener(listener);
+        registration.addStatusChangedListener(listener);
         registration.save();
     }
 

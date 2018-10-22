@@ -25,6 +25,7 @@ import com.microsoft.connecteddevices.useractivities.UserActivitySessionHistoryI
 import com.microsoft.connecteddevices.userdata.UserDataFeed;
 import com.microsoft.connecteddevices.userdata.UserDataFeedSyncScope;
 import com.microsoft.connecteddevices.userdata.UserDataFeedSyncStatus;
+import com.microsoft.connecteddevices.userdata.UserDataFeedSyncStatusChangedEventArgs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,7 +85,7 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
     private UserDataFeed mUserDataFeed;
     private String mStatusText;
 
-    private UserDataFeed getUserDataFeed(UserAccount account, List<UserDataFeedSyncScope> scopes, EventListener<UserDataFeed, Void> listener) {
+    private UserDataFeed getUserDataFeed(UserAccount account, List<UserDataFeedSyncScope> scopes, EventListener<UserDataFeed, UserDataFeedSyncStatusChangedEventArgs> listener) {
         UserDataFeed feed = UserDataFeed.getForAccount(account, PlatformBroker.getPlatform(), Secrets.APP_HOST_NAME);
         feed.addSyncStatusChangedListener(listener);
         feed.addSyncScopes(scopes);
@@ -107,9 +108,9 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
             // Step #1
             // get the UserDataFeed for the signed in account
             List<UserDataFeedSyncScope> scopes =  Arrays.asList(UserActivityChannel.getSyncScope());
-            mUserDataFeed = getUserDataFeed(accounts[0], scopes, new EventListener<UserDataFeed, Void>() {
+            mUserDataFeed = getUserDataFeed(accounts[0], scopes, new EventListener<UserDataFeed, UserDataFeedSyncStatusChangedEventArgs>() {
                 @Override
-                public void onEvent(UserDataFeed userDataFeed, Void aVoid) {
+                public void onEvent(UserDataFeed userDataFeed, UserDataFeedSyncStatusChangedEventArgs args) {
                     if (userDataFeed.getSyncStatus() == UserDataFeedSyncStatus.SYNCHRONIZED) {
                         mStatusText = getStringValue(R.string.status_activities_initialize_complete);
                         Log.e(TAG, mStatusText);

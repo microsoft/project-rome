@@ -441,9 +441,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-                sReader.addDataChangedListener(new EventListener<UserNotificationReader, Void>() {
+                sReader.addDataChangedListener(new EventListener<UserNotificationReader, UserNotificationReaderDataChangedEventArgs>() {
                     @Override
-                    public void onEvent(UserNotificationReader userNotificationReader, Void aVoid) {
+                    public void onEvent(UserNotificationReader userNotificationReader, UserNotificationReaderDataChangedEventArgs args) {
                         userNotificationReader.readBatchAsync(Long.MAX_VALUE).thenAccept(new AsyncOperation.ResultConsumer<UserNotification[]>() {
                             @Override
                             public void accept(UserNotification[] userNotifications) throws Throwable {

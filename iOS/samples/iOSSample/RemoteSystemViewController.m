@@ -108,13 +108,13 @@
 
     RemoteSystemViewController* __weak weakSelf = self;
     [_watcher addRemoteSystemAddedListener:^(
-        __unused MCDRemoteSystemWatcher* watcher, MCDRemoteSystem* system) { [weakSelf _onRemoteSystemAdded:system]; }];
+        __unused MCDRemoteSystemWatcher* watcher, MCDRemoteSystemAddedEventArgs* args) { [weakSelf _onRemoteSystemAdded:args.remoteSystem]; }];
 
     [_watcher addRemoteSystemUpdatedListener:^(
-        __unused MCDRemoteSystemWatcher* watcher, MCDRemoteSystem* system) { [weakSelf _onRemoteSystemUpdated:system]; }];
+        __unused MCDRemoteSystemWatcher* watcher, MCDRemoteSystemUpdatedEventArgs* args) { [weakSelf _onRemoteSystemUpdated:args.remoteSystem]; }];
 
     [_watcher addRemoteSystemRemovedListener:^(
-        __unused MCDRemoteSystemWatcher* watcher, MCDRemoteSystem* system) { [weakSelf _onRemoteSystemRemoved:system]; }];
+        __unused MCDRemoteSystemWatcher* watcher, MCDRemoteSystemRemovedEventArgs* args) { [weakSelf _onRemoteSystemRemoved:args.remoteSystem]; }];
     [_watcher start];
 }
 

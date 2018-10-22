@@ -14,11 +14,15 @@ import android.widget.ExpandableListView;
 
 import com.microsoft.connecteddevices.base.EventListener;
 import com.microsoft.connecteddevices.discovery.RemoteSystem;
+import com.microsoft.connecteddevices.discovery.RemoteSystemAddedEventArgs;
 import com.microsoft.connecteddevices.discovery.RemoteSystemFilter;
 import com.microsoft.connecteddevices.discovery.RemoteSystemLocalVisibilityKind;
 import com.microsoft.connecteddevices.discovery.RemoteSystemLocalVisibilityKindFilter;
+import com.microsoft.connecteddevices.discovery.RemoteSystemRemovedEventArgs;
+import com.microsoft.connecteddevices.discovery.RemoteSystemUpdatedEventArgs;
 import com.microsoft.connecteddevices.discovery.RemoteSystemWatcher;
 import com.microsoft.connecteddevices.discovery.RemoteSystemWatcherError;
+import com.microsoft.connecteddevices.discovery.RemoteSystemWatcherErrorOccurredEventArgs;
 
 import java.util.ArrayList;
 
@@ -172,30 +176,30 @@ public class RemoteSystemWatcherFragment extends BaseFragment {
     }
 
     // region RemoteSystemWatcher Listeners
-    private class RemoteSystemAddedListener implements EventListener<RemoteSystemWatcher, RemoteSystem> {
+    private class RemoteSystemAddedListener implements EventListener<RemoteSystemWatcher, RemoteSystemAddedEventArgs> {
         @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystem remoteSystem) {
-            addOrUpdateSystem(remoteSystem);
+        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemAddedEventArgs args) {
+            addOrUpdateSystem(args.getRemoteSystem());
         }
     }
 
-    private class RemoteSystemUpdatedListener implements EventListener<RemoteSystemWatcher, RemoteSystem> {
+    private class RemoteSystemUpdatedListener implements EventListener<RemoteSystemWatcher, RemoteSystemUpdatedEventArgs> {
         @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystem remoteSystem) {
-            addOrUpdateSystem(remoteSystem);
+        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemUpdatedEventArgs args) {
+            addOrUpdateSystem(args.getRemoteSystem());
         }
     }
 
-    private class RemoteSystemRemovedListener implements EventListener<RemoteSystemWatcher, RemoteSystem> {
+    private class RemoteSystemRemovedListener implements EventListener<RemoteSystemWatcher, RemoteSystemRemovedEventArgs> {
         @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystem remoteSystem) {
-            removeSystem(remoteSystem.getId());
+        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemRemovedEventArgs args) {
+            removeSystem(args.getRemoteSystem().getId());
         }
     }
 
-    private class RemoteSystemWatcherErrorOccurredListener implements EventListener<RemoteSystemWatcher, RemoteSystemWatcherError> {
+    private class RemoteSystemWatcherErrorOccurredListener implements EventListener<RemoteSystemWatcher, RemoteSystemWatcherErrorOccurredEventArgs> {
         @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemWatcherError remoteSystemWatcherError) {
+        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemWatcherErrorOccurredEventArgs args) {
         }
     }
     // endregion
