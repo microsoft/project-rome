@@ -1,4 +1,4 @@
 include ':app',
-        ':sampleaccountproviders'
+        ':sampleAccountProviders'
 
-project(':sampleaccountproviders').projectDir = new File('sampleaccountproviders/android')
+project(':sampleAccountProviders').projectDir = new File('sampleaccountproviders/android')

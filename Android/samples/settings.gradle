@@ -1,8 +1,10 @@
 include ':sdksample',
         ':sampleAccountProviders',
-        ':nearsharestandalone'
+        ':nearsharestandalone',
+        ':graphnotificationssample'
 
 project(':sdksample').projectDir = new File('sdksample/app')
 project(':sampleAccountProviders').projectDir = new File('sdksample/sampleAccountProviders')
 project(':nearsharestandalone').projectDir = new File('nearsharestandalone/app')
+project(':graphnotificationssample').projectDir = new File('graphnotificationssample/app')
 

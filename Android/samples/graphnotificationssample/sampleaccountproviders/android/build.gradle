@@ -43,6 +43,5 @@ dependencies {
         exclude group: 'com.android.support'
     }
 
-    // Local version of SDK, since we don't have public maven (yet)
-    implementation(name:'connecteddevices-sdk', ext:'aar')
+    implementation 'com.microsoft.connecteddevices:connecteddevices-sdk:+'
 }

@@ -33,6 +33,7 @@ import com.microsoft.connecteddevices.usernotifications.UserNotification;
 import com.microsoft.connecteddevices.usernotifications.UserNotificationChannel;
 import com.microsoft.connecteddevices.usernotifications.UserNotificationReadState;
 import com.microsoft.connecteddevices.usernotifications.UserNotificationReader;
+import com.microsoft.connecteddevices.usernotifications.UserNotificationReaderDataChangedEventArgs;
 import com.microsoft.connecteddevices.usernotifications.UserNotificationReaderOptions;
 import com.microsoft.connecteddevices.usernotifications.UserNotificationStatus;
 import com.microsoft.connecteddevices.usernotifications.UserNotificationUserActionState;
@@ -418,15 +419,16 @@ public class MainActivity extends AppCompatActivity {
                 if (sAccountProvider.getUserAccounts().length == 0) {
                     return;
                 }
-
+                ArrayList<UserDataFeedSyncScope> scopes = new ArrayList<>();
+                scopes.add(UserNotificationChannel.getSyncScope());
                 UserDataFeed dataFeed = UserDataFeed.getForAccount(sAccountProvider.getUserAccounts()[0], sPlatform, Secrets.APP_HOST_NAME);
-                dataFeed.addSyncScopes(new UserDataFeedSyncScope[]{UserNotificationChannel.getSyncScope()});
+                dataFeed.addSyncScopes(scopes);
                 UserNotificationChannel channel = new UserNotificationChannel(dataFeed);
                 UserNotificationReaderOptions options = new UserNotificationReaderOptions();
                 sReader = channel.createReaderWithOptions(options);
-                sReader.readBatchAsync(Long.MAX_VALUE).thenAccept(new AsyncOperation.ResultConsumer<UserNotification[]>() {
+                sReader.readBatchAsync(Long.MAX_VALUE).thenAccept(new AsyncOperation.ResultConsumer<List<UserNotification>>() {
                     @Override
-                    public void accept(UserNotification[] userNotifications) throws Throwable {
+                    public void accept(List<UserNotification> userNotifications) throws Throwable {
                         synchronized (sHistoricalNotifications) {
                             for (UserNotification notification : userNotifications) {
                                 if (notification.getReadState() == UserNotificationReadState.UNREAD) {
@@ -444,9 +446,9 @@ public class MainActivity extends AppCompatActivity {
                 sReader.addDataChangedListener(new EventListener<UserNotificationReader, UserNotificationReaderDataChangedEventArgs>() {
                     @Override
                     public void onEvent(UserNotificationReader userNotificationReader, UserNotificationReaderDataChangedEventArgs args) {
-                        userNotificationReader.readBatchAsync(Long.MAX_VALUE).thenAccept(new AsyncOperation.ResultConsumer<UserNotification[]>() {
+                        userNotificationReader.readBatchAsync(Long.MAX_VALUE).thenAccept(new AsyncOperation.ResultConsumer<List<UserNotification>>() {
                             @Override
-                            public void accept(UserNotification[] userNotifications) throws Throwable {
+                            public void accept(List<UserNotification> userNotifications) throws Throwable {
                                 boolean updatedNew = false;
                                 boolean updatedHistorical = false;
                                 synchronized (sHistoricalNotifications) {

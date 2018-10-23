@@ -1,5 +1,5 @@
-
 #import "NotificationsManager.h"
+#import "Secrets.h"
 
 static NotificationsManager* s_manager;
 

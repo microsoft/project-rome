@@ -24,7 +24,7 @@
 + (void)updateNotificationRegistration:(MCDNotificationRegistration*)notificationRegistration
 {
     NSLog(@"Raise notification registration changed event\nType: %ld\nApplication: %@", (long)notificationRegistration.type,
-        notificationRegistration.applicationId);
+        notificationRegistration.identifier);
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
         ^{ [[NotificationProvider sharedInstance] _updateNotificationRegistration:notificationRegistration]; });
 }

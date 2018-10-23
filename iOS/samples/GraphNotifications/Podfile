@@ -1,0 +1,15 @@
+# Uncomment the next line to define a global platform for your project
+platform :ios, "10.0"
+workspace 'GraphNotificationsSample'
+
+target 'GraphNotificationsSample' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  # use_frameworks!
+
+    pod 'ProjectRomeSdk'
+    pod 'AdaptiveCards'
+    pod 'ADAL'
+
+  # Pods for GraphNotificationsSample
+
+end

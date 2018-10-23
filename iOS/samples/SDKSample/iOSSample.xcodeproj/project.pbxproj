@@ -28,6 +28,7 @@
 		8288D5992069A9AA00EAABAA /* MSAAccountProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8288D5932069A9A900EAABAA /* MSAAccountProvider.m */; };
 		8288D59F206AD47A00EAABAA /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8288D59E206AD47A00EAABAA /* Launch Screen.storyboard */; };
 		DE544A09209D69E700305AE0 /* LaunchUriProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = DE544A08209D69E700305AE0 /* LaunchUriProvider.m */; };
+		FA08AD9AF324F8DA487BAD8B /* libPods-iOSSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 871CA6245BA8A2DED6871921 /* libPods-iOSSample.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,7 +45,6 @@
 
 /* Begin PBXFileReference section */
 		514E3755209D0FC9000FFC17 /* iOSSample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOSSample.entitlements; sourceTree = "<group>"; };
-		514E3757209D1ABB000FFC17 /* Secrets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Secrets.h; sourceTree = "<group>"; };
 		514E375B209D7D5A000FFC17 /* AppServiceProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppServiceProvider.m; sourceTree = "<group>"; };
 		514E375C209D7D5A000FFC17 /* AppServiceProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppServiceProvider.h; sourceTree = "<group>"; };
 		514E3761209D9594000FFC17 /* InboundRequestLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InboundRequestLogger.h; sourceTree = "<group>"; };
@@ -88,6 +88,8 @@
 		8288D5932069A9A900EAABAA /* MSAAccountProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAAccountProvider.m; sourceTree = "<group>"; };
 		8288D5942069A9A900EAABAA /* MSATokenCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenCache.h; sourceTree = "<group>"; };
 		8288D59E206AD47A00EAABAA /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		871CA6245BA8A2DED6871921 /* libPods-iOSSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iOSSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		913EB4A8217E722000A78C79 /* Secrets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Secrets.h; sourceTree = "<group>"; };
 		CC70B68D1BC172939DC18E64 /* Pods-iOSSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOSSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-iOSSample/Pods-iOSSample.release.xcconfig"; sourceTree = "<group>"; };
 		DE544A07209D69E700305AE0 /* LaunchUriProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchUriProvider.h; sourceTree = "<group>"; };
 		DE544A08209D69E700305AE0 /* LaunchUriProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchUriProvider.m; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA08AD9AF324F8DA487BAD8B /* libPods-iOSSample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,6 +110,7 @@
 		2FA0F9B8E1A5FE221268DAEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				871CA6245BA8A2DED6871921 /* libPods-iOSSample.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -159,9 +163,9 @@
 				8288D5622069A6CF00EAABAA /* RemoteSystemViewController.m */,
 				8288D55F2069A6CE00EAABAA /* SdkViewController.h */,
 				8288D53C2069A6CD00EAABAA /* SdkViewController.m */,
-				514E3757209D1ABB000FFC17 /* Secrets.h */,
 				8288D55E2069A6CE00EAABAA /* UserActivityViewController.h */,
 				8288D5392069A6CD00EAABAA /* UserActivityViewController.m */,
+				913EB4A8217E722000A78C79 /* Secrets.h */,
 			);
 			path = iOSSample;
 			sourceTree = "<group>";

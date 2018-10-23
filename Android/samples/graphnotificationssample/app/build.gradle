@@ -37,11 +37,10 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    // Local version of SDK, since we don't have public maven (yet)
-    implementation(name: 'connecteddevices-sdk', ext: 'aar')
+    implementation 'com.microsoft.connecteddevices:connecteddevices-sdk:+'
 
     // For login
-    implementation project(path: ':sampleaccountproviders')
+    implementation project(path: ':sampleAccountProviders')
 }
 
 
