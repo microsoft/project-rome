@@ -18,12 +18,9 @@ buildscript {
 
 allprojects {
     repositories {
+        maven { url "${project.rootDir}/.packages" }
         google()
         jcenter()
-        mavenCentral()
-        flatDir {
-            dirs 'libs'
-        }
     }
 }
 

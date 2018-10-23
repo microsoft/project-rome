@@ -18,9 +18,9 @@ buildscript {
 
 allprojects {
     repositories {
+        maven { url "${project.rootDir}/.packages" }
         google()
         jcenter()
-        maven { url "${project.rootDir}/.packages" }
     }
 }
 
