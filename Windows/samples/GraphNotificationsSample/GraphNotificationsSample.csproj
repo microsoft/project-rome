@@ -163,8 +163,8 @@
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.ConnectedDevices.UserNotifications.Uwp">
-      <Version>0.13.6</Version>
+    <PackageReference Include="Microsoft.ConnectedDevices.UserNotifications">
+      <Version>*</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
       <Version>3.19.8</Version>
