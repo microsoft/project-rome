@@ -45,7 +45,7 @@ public abstract class BaseService implements AppServiceProvider, EventListener<A
         AppServiceConnection connection = args.getAppServiceConnection();
         Log.i(TAG, "Opened incoming connection to app service " + connection.getAppServiceInfo().getPackageId() + "/" +
                        connection.getAppServiceInfo().getName());
-        connection.addRequestReceivedListener(this);
+        connection.requestReceived().subscribe(this);
 
         // Capture the AppServiceConnection reference and hold on to it for a while to allow us to receive incoming requests
         mConnection = connection;

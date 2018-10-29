@@ -104,10 +104,10 @@ public class RemoteSystemWatcherFragment extends BaseFragment {
 
         // Use these events to keep the list of Remote Systems up to date
         mWatcher = new RemoteSystemWatcher(filters);
-        mWatcher.addRemoteSystemAddedListener(new RemoteSystemAddedListener());
-        mWatcher.addRemoteSystemUpdatedListener(new RemoteSystemUpdatedListener());
-        mWatcher.addRemoteSystemRemovedListener(new RemoteSystemRemovedListener());
-        mWatcher.addErrorOccurredListener(new RemoteSystemWatcherErrorOccurredListener());
+        mWatcher.remoteSystemAdded().subscribe(new RemoteSystemAddedListener());
+        mWatcher.remoteSystemUpdated().subscribe(new RemoteSystemUpdatedListener());
+        mWatcher.remoteSystemRemoved().subscribe(new RemoteSystemRemovedListener());
+        mWatcher.errorOccurred().subscribe(new RemoteSystemWatcherErrorOccurredListener());
 
         clearSystems();
 

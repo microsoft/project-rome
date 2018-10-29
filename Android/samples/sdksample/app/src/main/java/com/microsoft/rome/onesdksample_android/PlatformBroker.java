@@ -74,7 +74,7 @@ public class PlatformBroker {
         }
 
         // Add an EventListener to handle registration completion
-        registration.addStatusChangedListener(listener);
+        registration.statusChanged().subscribe(listener);
         registration.save();
     }
 

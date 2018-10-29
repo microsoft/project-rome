@@ -87,7 +87,7 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
 
     private UserDataFeed getUserDataFeed(UserAccount account, List<UserDataFeedSyncScope> scopes, EventListener<UserDataFeed, UserDataFeedSyncStatusChangedEventArgs> listener) {
         UserDataFeed feed = UserDataFeed.getForAccount(account, PlatformBroker.getPlatform(), Secrets.APP_HOST_NAME);
-        feed.addSyncStatusChangedListener(listener);
+        feed.syncStatusChanged().subscribe(listener);
         feed.addSyncScopes(scopes);
         feed.startSync();
         return feed;
