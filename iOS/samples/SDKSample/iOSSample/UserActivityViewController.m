@@ -29,12 +29,12 @@
         // Step #1: Get a UserActivity channel, getting the default channel        
         NSLog(@"Creating UserActivityChannel");
         NSArray<MCDUserAccount*>* accounts = [[AppDataSource sharedInstance].accountProvider getUserAccounts];
-        MCDUserDataFeed* userDataFeed = [MCDUserDataFeed userDataFeedForAccount:accounts[0]
+        MCDUserDataFeed* userDataFeed = [MCDUserDataFeed getForAccount:accounts[0]
                                                                        platform:[AppDataSource sharedInstance].platform
                                                              activitySourceHost:CROSS_PLATFORM_APP_ID];
-        NSArray<MCDUserDataFeedSyncScope*>* syncScopes = @[ [MCDUserActivityChannel syncScope] ];
+        NSArray<id<MCDUserDataFeedSyncScope>>* syncScopes = @[ [MCDUserActivityChannel syncScope] ];
         [userDataFeed addSyncScopes:syncScopes];
-        self.channel = [MCDUserActivityChannel userActivityChannelWithUserDataFeed:userDataFeed];
+        self.channel = [MCDUserActivityChannel channelWithUserDataFeed:userDataFeed];
     }
     else
     {

@@ -41,8 +41,8 @@ static NotificationsManager* s_manager;
 
 - (void)setupWithAccount:(MCDUserAccount*)account {
     @synchronized (self) {
-        MCDUserDataFeed* dataFeed = [MCDUserDataFeed userDataFeedForAccount:account platform:_platform activitySourceHost:APP_HOST_NAME];
-        self.channel = [MCDUserNotificationChannel userNotificationChannelWithUserDataFeed:dataFeed];
+        MCDUserDataFeed* dataFeed = [MCDUserDataFeed getForAccount:account platform:_platform activitySourceHost:APP_HOST_NAME];
+        self.channel = [MCDUserNotificationChannel channelWithUserDataFeed:dataFeed];
         self.reader = [self.channel createReader];
         
         __weak typeof(self) weakSelf;

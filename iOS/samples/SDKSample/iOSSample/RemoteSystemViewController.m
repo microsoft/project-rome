@@ -121,7 +121,7 @@
 - (void)startDiscovery
 {
     NSMutableArray<NSObject<MCDRemoteSystemFilter>*>* filters = [NSMutableArray new];
-    [filters addObject:[MCDRemoteSystemLocalVisibilityKindFilter filterWithLocalVisibilityKind:MCDRemoteSystemLocalVisibilityKindShowAll]];
+    [filters addObject:[MCDRemoteSystemLocalVisibilityKindFilter filterWithKind:MCDRemoteSystemLocalVisibilityKindShowAll]];
 
     [self startWatcherWithFilter:filters];
 }
