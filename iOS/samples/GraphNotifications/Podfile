@@ -8,7 +8,7 @@ target 'GraphNotificationsSample' do
 
     pod 'ProjectRomeSdk'
     pod 'AdaptiveCards'
-    pod 'ADAL'
+    pod 'ADAL', '2.7.3'
 
   # Pods for GraphNotificationsSample
 
