@@ -256,7 +256,7 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-GraphNotificationsSample/Pods-GraphNotificationsSample-frameworks.sh",
 				"${PODS_ROOT}/AdaptiveCards/AdaptiveCards.framework",
-				"${PODS_ROOT}/ProjectRomeSdk/ConnectedDevices.framework",
+				"${PODS_ROOT}/ProjectRomeSdk/full/ConnectedDevices.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
