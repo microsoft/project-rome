@@ -46,7 +46,7 @@ static NotificationsManager* s_manager;
         self.reader = [self.channel createReader];
         
         __weak typeof(self) weakSelf;
-        _readerRegistrationToken = [self.reader addDataChangedListener:^(__unused MCDUserNotificationReader* source, __unused MCDUserNotificationReaderDataChangedEventArgs* args) {
+        _readerRegistrationToken = [self.reader.dataChanged subscribe:^(__unused MCDUserNotificationReader* source, __unused MCDUserNotificationReaderDataChangedEventArgs* args) {
             [weakSelf forceRead];
         }];
     }

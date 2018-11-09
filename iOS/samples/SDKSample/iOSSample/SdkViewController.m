@@ -53,7 +53,7 @@
     [registration addAppServiceProvider:[[AppServiceProvider alloc] initWithDelegate:[AppDataSource sharedInstance].inboundRequestLogger]];
     [registration addAttribute:@"ExampleAttribute" forName:@"ExampleName"];
     
-    [registration addStatusChangedListener:^(__unused MCDRemoteSystemAppHostingRegistration* reg, MCDRemoteSystemAppRegistrationStatusChangedEventArgs* args) {
+    [registration.statusChanged subscribe:^(__unused MCDRemoteSystemAppHostingRegistration* reg, MCDRemoteSystemAppRegistrationStatusChangedEventArgs* args) {
         NSLog(@"Registration Status Changed listener");
         switch (args.status) {
             case MCDRemoteSystemAppRegistrationStatusFailed:

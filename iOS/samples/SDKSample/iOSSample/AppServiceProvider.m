@@ -32,7 +32,7 @@
     [_delegate appServiceProvider:self didOpenConnection:connection];
 
     id<AppServiceProviderDelegate> __weak weakDelegate = _delegate;
-    [connection addRequestReceivedListener:^(MCDAppServiceConnection* connection, MCDAppServiceRequestReceivedEventArgs* args) {
+    [connection.requestReceived subscribe:^(MCDAppServiceConnection* connection, MCDAppServiceRequestReceivedEventArgs* args) {
         [weakDelegate appServiceConnection:connection didReceiveRequest:args];
     }];
 }

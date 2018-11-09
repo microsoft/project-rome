@@ -85,7 +85,7 @@
         {
             connection = _appServiceConnection = [MCDAppServiceConnection new];
             connection.appServiceInfo = [MCDAppServiceInfo infoWithName:APP_SERVICE_NAME packageId:PACKAGE_ID];
-            _serviceClosedRegistration = [connection addServiceClosedListener:^(__unused MCDAppServiceConnection* connection,
+            _serviceClosedRegistration = [connection.serviceClosed subscribe:^(__unused MCDAppServiceConnection* connection,
                 MCDAppServiceClosedEventArgs* args) { [self appServiceConnection:connection closedWithStatus:args.status]; }];
         }
     }

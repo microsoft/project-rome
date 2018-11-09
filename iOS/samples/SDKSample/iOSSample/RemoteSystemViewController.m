@@ -107,13 +107,13 @@
         (remoteSystemFilter.count > 0) ? [[MCDRemoteSystemWatcher alloc] initWithFilters:remoteSystemFilter] : [MCDRemoteSystemWatcher new];
 
     RemoteSystemViewController* __weak weakSelf = self;
-    [_watcher addRemoteSystemAddedListener:^(
+    [_watcher.remoteSystemAdded subscribe:^(
         __unused MCDRemoteSystemWatcher* watcher, MCDRemoteSystemAddedEventArgs* args) { [weakSelf _onRemoteSystemAdded:args.remoteSystem]; }];
 
-    [_watcher addRemoteSystemUpdatedListener:^(
+    [_watcher.remoteSystemUpdated subscribe:^(
         __unused MCDRemoteSystemWatcher* watcher, MCDRemoteSystemUpdatedEventArgs* args) { [weakSelf _onRemoteSystemUpdated:args.remoteSystem]; }];
 
-    [_watcher addRemoteSystemRemovedListener:^(
+    [_watcher.remoteSystemRemoved subscribe:^(
         __unused MCDRemoteSystemWatcher* watcher, MCDRemoteSystemRemovedEventArgs* args) { [weakSelf _onRemoteSystemRemoved:args.remoteSystem]; }];
     [_watcher start];
 }
