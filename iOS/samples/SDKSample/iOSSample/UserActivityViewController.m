@@ -4,7 +4,7 @@
 
 #import "UserActivityViewController.h"
 #import "AppDataSource.h"
-#import <ConnectedDevices/UserActivities/UserActivities.h>
+#import <ConnectedDevices/UserData.UserActivities/UserData.UserActivities.h>
 #import <ConnectedDevices/UserData/MCDUserDataFeed.h>
 #import "Secrets.h"
 #import <UIKit/UIKit.h>

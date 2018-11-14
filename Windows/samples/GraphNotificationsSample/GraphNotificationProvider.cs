@@ -11,7 +11,7 @@
 
 using Microsoft.ConnectedDevices.Core;
 using Microsoft.ConnectedDevices.UserData;
-using Microsoft.ConnectedDevices.UserNotifications;
+using Microsoft.ConnectedDevices.UserData.UserNotifications;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;

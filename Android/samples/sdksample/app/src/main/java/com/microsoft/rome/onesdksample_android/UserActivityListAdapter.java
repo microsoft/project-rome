@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.microsoft.connecteddevices.useractivities.UserActivity;
-import com.microsoft.connecteddevices.useractivities.UserActivityAttribution;
-import com.microsoft.connecteddevices.useractivities.UserActivitySessionHistoryItem;
+import com.microsoft.connecteddevices.userdata.useractivities.UserActivity;
+import com.microsoft.connecteddevices.userdata.useractivities.UserActivityAttribution;
+import com.microsoft.connecteddevices.userdata.useractivities.UserActivitySessionHistoryItem;
 
 import java.util.Date;
 import java.util.List;

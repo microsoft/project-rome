@@ -61,7 +61,7 @@ static NSString* const MsaRequiredScopes =                               //
     @"dds.register+"                                                     // device discovery scope (allow discovering this device)
     @"wns.connect+"                                                      // push notification scope
     @"asimovrome.telemetry+"                                             // asimov token scope
-    @"https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp"; // default useractivities scope
+    @"https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp"; // default userdata.useractivities scope
 
 // OAuth URLs
 static NSString* const MsaRedirectUrl = @"https://login.live.com/oauth20_desktop.srf";

@@ -9,7 +9,7 @@
 //
 //*********************************************************
 
-using Microsoft.ConnectedDevices.UserNotifications;
+using Microsoft.ConnectedDevices.UserData.UserNotifications;
 using System;
 using System.Collections.ObjectModel;
 using Windows.UI;

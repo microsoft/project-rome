@@ -6,7 +6,7 @@
 
 #import "MSAAccountProvider.h"
 #import <ConnectedDevices/Core/Core.h>
-#import <ConnectedDevices/UserActivities/UserActivities.h>
+#import <ConnectedDevices/UserData.UserActivities/UserData.UserActivities.h>
 #import <UIKit/UIKit.h>
 
 @interface UserActivityViewController : UIViewController

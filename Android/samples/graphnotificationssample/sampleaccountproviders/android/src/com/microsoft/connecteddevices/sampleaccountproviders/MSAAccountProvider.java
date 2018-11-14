@@ -94,7 +94,7 @@ public final class MSAAccountProvider implements UserAccountProvider, MSATokenCa
         "wl.offline_access",                                                // read and update user info at any time
         "ccs.ReadWrite",                                                    // device commanding scope
         "wns.connect",                                                      // push notification scope
-        "https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp", // default useractivities scope
+        "https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp", // default userdata.useractivities scope
     };
 
     // OAuth URLs

@@ -4,7 +4,7 @@
 #import <Foundation/Foundation.h>
 #import <ConnectedDevices/Core/Core.h>
 #import <ConnectedDevices/UserData/UserData.h>
-#import <ConnectedDevices/UserNotifications/UserNotifications.h>
+#import <ConnectedDevices/UserData.UserNotifications/UserData.UserNotifications.h>
 #import "AADMSAAccountProvider.h"
 
 @interface NotificationsManager : NSObject
