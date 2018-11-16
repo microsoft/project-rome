@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.microsoft.connecteddevices.discovery.RemoteSystem;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystem;
 
 import java.util.ArrayList;
 import java.util.List;

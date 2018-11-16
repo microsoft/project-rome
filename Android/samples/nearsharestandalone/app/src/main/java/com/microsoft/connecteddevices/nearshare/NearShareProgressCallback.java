@@ -6,6 +6,8 @@ package com.microsoft.connecteddevices.nearshare;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.microsoft.connecteddevices.remotesystems.nearshare.NearShareProgress;
+import com.microsoft.connecteddevices.remotesystems.nearshare.ProgressCallback;
 
 public class NearShareProgressCallback extends ProgressCallback {
     private final static Logger LOG = Logger.getLogger(NearShareProgressCallback.class.getSimpleName());

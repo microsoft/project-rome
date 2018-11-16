@@ -6,13 +6,13 @@
 #import "IdentityViewController.h"
 #import "LaunchAndMessageViewController.h"
 #import <ConnectedDevices/Core/MCDPlatform.h>
-#import <ConnectedDevices/Discovery/MCDRemoteSystemApp.h>
-#import <ConnectedDevices/Discovery/MCDRemoteSystemAuthorizationKindFilter.h>
-#import <ConnectedDevices/Discovery/MCDRemoteSystemDiscoveryTypeFilter.h>
-#import <ConnectedDevices/Discovery/MCDRemoteSystemKindFilter.h>
-#import <ConnectedDevices/Discovery/MCDRemoteSystemKinds.h>
-#import <ConnectedDevices/Discovery/MCDRemoteSystemLocalVisibilityKindFilter.h>
-#import <ConnectedDevices/Discovery/MCDRemoteSystemStatusTypeFilter.h>
+#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemApp.h>
+#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemAuthorizationKindFilter.h>
+#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemDiscoveryTypeFilter.h>
+#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemKindFilter.h>
+#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemKinds.h>
+#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemLocalVisibilityKindFilter.h>
+#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemStatusTypeFilter.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 

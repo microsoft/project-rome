@@ -22,8 +22,8 @@ import com.microsoft.connecteddevices.commanding.AppServiceResponseStatus;
 import com.microsoft.connecteddevices.commanding.RemoteLaunchUriStatus;
 import com.microsoft.connecteddevices.commanding.RemoteLauncher;
 import com.microsoft.connecteddevices.commanding.RemoteSystemConnectionRequest;
-import com.microsoft.connecteddevices.discovery.AppServiceInfo;
-import com.microsoft.connecteddevices.discovery.RemoteSystemApp;
+import com.microsoft.connecteddevices.remotesystems.AppServiceInfo;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemApp;
 
 import java.text.DateFormat;
 import java.text.ParseException;

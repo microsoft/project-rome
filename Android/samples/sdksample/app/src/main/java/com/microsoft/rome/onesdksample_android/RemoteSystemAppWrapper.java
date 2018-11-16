@@ -7,8 +7,8 @@ package com.microsoft.rome.onesdksample_android;
 import android.content.Context;
 
 import com.microsoft.connecteddevices.commanding.RemoteSystemConnectionRequest;
-import com.microsoft.connecteddevices.discovery.RemoteSystem;
-import com.microsoft.connecteddevices.discovery.RemoteSystemApp;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystem;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemApp;
 
 /**
  * This class abstracts the type (either a Remote System or Application) and allows both objects to

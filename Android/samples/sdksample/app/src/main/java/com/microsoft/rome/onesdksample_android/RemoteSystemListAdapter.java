@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import com.microsoft.connecteddevices.discovery.RemoteSystem;
-import com.microsoft.connecteddevices.discovery.RemoteSystemApp;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystem;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemApp;
 
 import java.util.List;
 

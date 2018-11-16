@@ -9,7 +9,7 @@ import android.util.Log;
 import com.microsoft.connecteddevices.commanding.AppServiceConnection;
 import com.microsoft.connecteddevices.commanding.AppServiceRequest;
 import com.microsoft.connecteddevices.commanding.AppServiceRequestReceivedEventArgs;
-import com.microsoft.connecteddevices.discovery.AppServiceInfo;
+import com.microsoft.connecteddevices.remotesystems.AppServiceInfo;
 
 import java.util.HashMap;
 import java.util.Map;

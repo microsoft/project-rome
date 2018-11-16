@@ -4,7 +4,7 @@
 
 #pragma once
 
-#import <ConnectedDevices/Discovery/MCDRemoteSystem.h>
+#import <ConnectedDevices/RemoteSystems/MCDRemoteSystem.h>
 #import <UIKit/UIKit.h>
 
 @interface LaunchAndMessageViewController : UIViewController

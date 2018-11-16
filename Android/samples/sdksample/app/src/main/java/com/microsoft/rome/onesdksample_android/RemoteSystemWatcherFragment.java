@@ -13,16 +13,16 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 
 import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.discovery.RemoteSystem;
-import com.microsoft.connecteddevices.discovery.RemoteSystemAddedEventArgs;
-import com.microsoft.connecteddevices.discovery.RemoteSystemFilter;
-import com.microsoft.connecteddevices.discovery.RemoteSystemLocalVisibilityKind;
-import com.microsoft.connecteddevices.discovery.RemoteSystemLocalVisibilityKindFilter;
-import com.microsoft.connecteddevices.discovery.RemoteSystemRemovedEventArgs;
-import com.microsoft.connecteddevices.discovery.RemoteSystemUpdatedEventArgs;
-import com.microsoft.connecteddevices.discovery.RemoteSystemWatcher;
-import com.microsoft.connecteddevices.discovery.RemoteSystemWatcherError;
-import com.microsoft.connecteddevices.discovery.RemoteSystemWatcherErrorOccurredEventArgs;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystem;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemAddedEventArgs;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemFilter;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemLocalVisibilityKind;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemLocalVisibilityKindFilter;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemRemovedEventArgs;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemUpdatedEventArgs;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemWatcher;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemWatcherError;
+import com.microsoft.connecteddevices.remotesystems.RemoteSystemWatcherErrorOccurredEventArgs;
 
 import java.util.ArrayList;
 
