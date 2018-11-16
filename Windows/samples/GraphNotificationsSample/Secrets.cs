@@ -9,9 +9,9 @@ namespace SDKTemplate
         //                          AAD is supposed to use this Uri to call the app back after login (currently not true, external requirement)
         //                          And this app is supposed to be able to handle this Uri (currently not true)
         // APP_HOST_NAME            Cross-device domain of this app's registration
-        static readonly string MSA_CLIENT_ID = "<<MSA client ID goes here>>";
-        static readonly string AAD_CLIENT_ID = "<<AAD client ID goes here>>";
-        static readonly string AAD_REDIRECT_URI = "<<AAD redirect URI goes here>>";
-        static readonly string APP_HOST_NAME = "<<App cross-device domain goes here>>";
+        public static readonly string MSA_CLIENT_ID = "<<MSA client ID goes here>>";
+        public static readonly string AAD_CLIENT_ID = "<<AAD client ID goes here>>";
+        public static readonly string AAD_REDIRECT_URI = "<<AAD redirect URI goes here>>";
+        public static readonly string APP_HOST_NAME = "<<App cross-device domain goes here>>";
     }
 }

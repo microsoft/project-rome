@@ -238,7 +238,7 @@ namespace SDKTemplate
                 string authCode = queryParams["code"];
                 Dictionary<string, string> refreshTokenQuery = new Dictionary<string, string>
                 {
-                    { "client_id", ProdClientId },
+                    { "client_id", Secrets.MSA_CLIENT_ID },
                     { "redirect_uri", redirectUri.AbsoluteUri },
                     { "grant_type", "authorization_code" },
                     { "code", authCode },
@@ -260,7 +260,7 @@ namespace SDKTemplate
         {
             Dictionary<string, string> accessTokenQuery = new Dictionary<string, string>
             {
-                { "client_id", ProdClientId },
+                { "client_id", Secrets.MSA_CLIENT_ID },
                 { "redirect_uri", ProdRedirectUrl },
                 { "grant_type", "refresh_token" },
                 { "refresh_token", refreshToken },
