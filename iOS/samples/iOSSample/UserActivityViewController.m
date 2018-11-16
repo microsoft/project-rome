@@ -32,7 +32,7 @@
         MCDUserDataFeed* userDataFeed = [MCDUserDataFeed userDataFeedForAccount:accounts[0]
                                                                        platform:[AppDataSource sharedInstance].platform
                                                              activitySourceHost:CROSS_PLATFORM_APP_ID];
-        NSArray<MCDSyncScope*>* syncScopes = @[ [MCDUserActivityChannel syncScope] ];
+        NSArray<MCDUserDataFeedSyncScope*>* syncScopes = @[ [MCDUserActivityChannel syncScope] ];
         [userDataFeed addSyncScopes:syncScopes];
         self.channel = [MCDUserActivityChannel userActivityChannelWithUserDataFeed:userDataFeed];
     }
@@ -140,7 +140,7 @@
     else
     {
         // Stop the UserActivitysession
-        [self.session close];
+        [self.session stop];
         self.session = nil;
         dispatch_async(dispatch_get_main_queue(), ^{
             NSLog(@"UserActivitySession has stopped %@", self.session);

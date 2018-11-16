@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B50C590D981CE192C5681EE /* libPods-iOSSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 880A36E3D120962568E8D54D /* libPods-iOSSample.a */; };
 		514E375D209D7D5A000FFC17 /* AppServiceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 514E375B209D7D5A000FFC17 /* AppServiceProvider.m */; };
 		514E3763209D9594000FFC17 /* InboundRequestLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 514E3762209D9594000FFC17 /* InboundRequestLogger.m */; };
 		8200D3A82098E2CA00D43FA6 /* NotificationProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8200D3A72098E2CA00D43FA6 /* NotificationProvider.m */; };
@@ -88,6 +89,7 @@
 		8288D5932069A9A900EAABAA /* MSAAccountProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAAccountProvider.m; sourceTree = "<group>"; };
 		8288D5942069A9A900EAABAA /* MSATokenCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenCache.h; sourceTree = "<group>"; };
 		8288D59E206AD47A00EAABAA /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		880A36E3D120962568E8D54D /* libPods-iOSSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iOSSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC70B68D1BC172939DC18E64 /* Pods-iOSSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOSSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-iOSSample/Pods-iOSSample.release.xcconfig"; sourceTree = "<group>"; };
 		DE544A07209D69E700305AE0 /* LaunchUriProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchUriProvider.h; sourceTree = "<group>"; };
 		DE544A08209D69E700305AE0 /* LaunchUriProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchUriProvider.m; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B50C590D981CE192C5681EE /* libPods-iOSSample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,6 +110,7 @@
 		2FA0F9B8E1A5FE221268DAEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				880A36E3D120962568E8D54D /* libPods-iOSSample.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

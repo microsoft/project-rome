@@ -1,13 +1,20 @@
 # Uncomment the next line to define a global platform for your project
 platform :ios, "10.0"
-workspace 'iOSSample'
+
+workspace 'ProjectRomeSamples'
+
+target 'GraphNotificationsSample' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  # use_frameworks!
+  project 'GraphNotificationsSample.xcodeproj'
+  pod 'ProjectRomeSdk'
+  pod 'AdaptiveCards'
+  pod 'ADAL', '2.6.6'
+end
 
 target 'iOSSample' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
   # use_frameworks!
-
-	pod 'ProjectRomeSdk'
-
-  # Pods for iOSSample
-
+  project 'iOSSample.xcodeproj'
+  pod 'ProjectRomeSdk'
 end

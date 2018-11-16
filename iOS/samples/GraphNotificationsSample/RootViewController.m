@@ -11,6 +11,7 @@
 #import "LoginViewController.h"
 #import "NotificationsManager.h"
 #import "NotificationProvider.h"
+#import "Secrets.h"
 
 @interface RootViewController ()
 
