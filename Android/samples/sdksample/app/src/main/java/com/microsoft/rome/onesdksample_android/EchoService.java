@@ -6,9 +6,9 @@ package com.microsoft.rome.onesdksample_android;
 
 import android.util.Log;
 
-import com.microsoft.connecteddevices.commanding.AppServiceConnection;
-import com.microsoft.connecteddevices.commanding.AppServiceRequest;
-import com.microsoft.connecteddevices.commanding.AppServiceRequestReceivedEventArgs;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceConnection;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceRequest;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceRequestReceivedEventArgs;
 import com.microsoft.connecteddevices.remotesystems.AppServiceInfo;
 
 import java.util.HashMap;

@@ -15,13 +15,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.microsoft.connecteddevices.base.AsyncOperation;
-import com.microsoft.connecteddevices.commanding.AppServiceConnection;
-import com.microsoft.connecteddevices.commanding.AppServiceConnectionStatus;
-import com.microsoft.connecteddevices.commanding.AppServiceResponse;
-import com.microsoft.connecteddevices.commanding.AppServiceResponseStatus;
-import com.microsoft.connecteddevices.commanding.RemoteLaunchUriStatus;
-import com.microsoft.connecteddevices.commanding.RemoteLauncher;
-import com.microsoft.connecteddevices.commanding.RemoteSystemConnectionRequest;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceConnection;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceConnectionStatus;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceResponse;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceResponseStatus;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteLaunchUriStatus;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteLauncher;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemConnectionRequest;
 import com.microsoft.connecteddevices.remotesystems.AppServiceInfo;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemApp;
 

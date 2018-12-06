@@ -7,7 +7,7 @@ package com.microsoft.rome.onesdksample_android;
 import android.support.annotation.NonNull;
 
 import com.microsoft.connecteddevices.base.AsyncOperation;
-import com.microsoft.connecteddevices.commanding.RemoteLauncherOptions;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteLauncherOptions;
 
 /**
  * Returns success for all incoming LaunchUri requests and logs the request to the Launch Page.

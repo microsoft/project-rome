@@ -9,7 +9,7 @@
 #import "LaunchUriProvider.h"
 #import "NotificationProvider.h"
 #import <ConnectedDevices/Core/MCDPlatform.h>
-#import <ConnectedDevices/Hosting/MCDRemoteSystemAppHostingRegistration.h>
+#import <ConnectedDevices/RemoteSystems.Commanding/MCDRemoteSystemAppHostingRegistration.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 

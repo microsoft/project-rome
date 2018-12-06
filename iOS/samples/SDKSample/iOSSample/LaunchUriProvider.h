@@ -4,8 +4,7 @@
 
 #pragma once
 
-#import <ConnectedDevices/Hosting/Hosting.h>
-#import <ConnectedDevices/Commanding/Commanding.h>
+#import <ConnectedDevices/RemoteSystems.Commanding/RemoteSystems.Commanding.h>
 
 @class LaunchUriProvider;
 

@@ -4,8 +4,7 @@
 
 #pragma once
 
-#import <ConnectedDevices/Commanding/Commanding.h>
-#import <ConnectedDevices/Hosting/Hosting.h>
+#import <ConnectedDevices/RemoteSystems.Commanding/RemoteSystems.Commanding.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 

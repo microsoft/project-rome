@@ -19,12 +19,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.commanding.RemoteSystemAppRegistrationStatus;
-import com.microsoft.connecteddevices.commanding.RemoteSystemAppRegistrationStatusChangedEventArgs;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppRegistrationStatus;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppRegistrationStatusChangedEventArgs;
 import com.microsoft.connecteddevices.core.Platform;
 import com.microsoft.connecteddevices.core.UserAccount;
-import com.microsoft.connecteddevices.hosting.AppServiceProvider;
-import com.microsoft.connecteddevices.hosting.RemoteSystemAppHostingRegistration;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceProvider;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppHostingRegistration;
 import com.microsoft.connecteddevices.sampleaccountproviders.MSAAccountProvider;
 
 import java.util.ArrayList;

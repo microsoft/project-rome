@@ -4,7 +4,7 @@
 
 #import "AppDelegate.h"
 #import "AppDataSource.h"
-#import <ConnectedDevices/Commanding/Commanding.h>
+#import <ConnectedDevices/RemoteSystems.Commanding/RemoteSystems.Commanding.h>
 #import <ConnectedDevices/Core/MCDNotificationRegistration.h>
 #import <ConnectedDevices/Core/MCDPlatform.h>
 

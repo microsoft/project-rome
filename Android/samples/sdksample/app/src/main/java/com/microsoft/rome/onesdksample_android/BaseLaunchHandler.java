@@ -6,8 +6,8 @@ package com.microsoft.rome.onesdksample_android;
 import android.support.annotation.NonNull;
 
 import com.microsoft.connecteddevices.base.AsyncOperation;
-import com.microsoft.connecteddevices.hosting.LaunchUriProvider;
-import com.microsoft.connecteddevices.commanding.RemoteLauncherOptions;
+import com.microsoft.connecteddevices.remotesystems.commanding.LaunchUriProvider;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteLauncherOptions;
 
 /**
  * Base class for launch uri handler.

@@ -9,13 +9,13 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.commanding.RemoteSystemAppRegistrationStatusChangedEventArgs;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppRegistrationStatusChangedEventArgs;
 import com.microsoft.connecteddevices.core.NotificationProvider;
 import com.microsoft.connecteddevices.core.Platform;
 import com.microsoft.connecteddevices.core.UserAccountProvider;
-import com.microsoft.connecteddevices.hosting.AppServiceProvider;
-import com.microsoft.connecteddevices.hosting.LaunchUriProvider;
-import com.microsoft.connecteddevices.hosting.RemoteSystemAppHostingRegistration;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceProvider;
+import com.microsoft.connecteddevices.remotesystems.commanding.LaunchUriProvider;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppHostingRegistration;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

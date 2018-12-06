@@ -8,11 +8,11 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.commanding.AppServiceConnection;
-import com.microsoft.connecteddevices.commanding.AppServiceRequestReceivedEventArgs;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceConnection;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceRequestReceivedEventArgs;
 import com.microsoft.connecteddevices.remotesystems.AppServiceInfo;
-import com.microsoft.connecteddevices.hosting.AppServiceConnectionOpenedInfo;
-import com.microsoft.connecteddevices.hosting.AppServiceProvider;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceConnectionOpenedInfo;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceProvider;
 
 /**
  * Base class for app services.

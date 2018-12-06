@@ -25,7 +25,7 @@ import android.widget.ListView;
 import com.microsoft.connecteddevices.base.AsyncOperation;
 import com.microsoft.connecteddevices.base.CancellationToken;
 import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.commanding.RemoteSystemConnectionRequest;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemConnectionRequest;
 import com.microsoft.connecteddevices.core.Platform;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystem;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemAddedEventArgs;

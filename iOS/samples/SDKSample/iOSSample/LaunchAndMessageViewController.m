@@ -4,7 +4,7 @@
 
 #import "LaunchAndMessageViewController.h"
 #import "Secrets.h"
-#import <ConnectedDevices/Commanding/Commanding.h>
+#import <ConnectedDevices/RemoteSystems.Commanding/RemoteSystems.Commanding.h>
 #import <ConnectedDevices/RemoteSystems/MCDRemoteSystemApp.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>

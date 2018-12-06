@@ -6,7 +6,7 @@ package com.microsoft.rome.onesdksample_android;
 
 import android.content.Context;
 
-import com.microsoft.connecteddevices.commanding.RemoteSystemConnectionRequest;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemConnectionRequest;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystem;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemApp;
 
