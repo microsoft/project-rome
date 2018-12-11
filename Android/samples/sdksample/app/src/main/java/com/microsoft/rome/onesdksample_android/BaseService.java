@@ -7,7 +7,7 @@ package com.microsoft.rome.onesdksample_android;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.microsoft.connecteddevices.base.EventListener;
+import com.microsoft.connecteddevices.EventListener;
 import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceConnection;
 import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceRequestReceivedEventArgs;
 import com.microsoft.connecteddevices.remotesystems.AppServiceInfo;

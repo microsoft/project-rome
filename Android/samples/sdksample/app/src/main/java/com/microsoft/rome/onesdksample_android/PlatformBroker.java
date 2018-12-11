@@ -8,58 +8,184 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppRegistrationStatusChangedEventArgs;
-import com.microsoft.connecteddevices.core.NotificationProvider;
-import com.microsoft.connecteddevices.core.Platform;
-import com.microsoft.connecteddevices.core.UserAccountProvider;
+import com.microsoft.connecteddevices.ConnectedDevicesAccessTokenRequest;
+import com.microsoft.connecteddevices.ConnectedDevicesAccount;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationManager;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationState;
+import com.microsoft.connecteddevices.ConnectedDevicesPlatform;
 import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceProvider;
 import com.microsoft.connecteddevices.remotesystems.commanding.LaunchUriProvider;
-import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppHostingRegistration;
+import com.microsoft.connecteddevices.signinhelpers.MSASigninHelperAccount;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppRegistration;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-/**
- * Most importantly in MainActivity is the platform initialization, happening in init()
- */
 public class PlatformBroker {
     // region Member Variables
-    private static final String TAG = PlatformBroker.class.getName();
+    private final String TAG = PlatformBroker.class.getName();
 
-    public static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
-    public static final String TIMESTAMP_KEY = "TIMESTAMP_KEY";
-    public static final String PACKAGE_KEY = "PACKAGE_KEY";
-    public static final String GUID_KEY = "GUID_KEY";
-    public static final String PACKAGE_VALUE = "com.microsoft.oneRomanApp";
+    public final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
+    public final String TIMESTAMP_KEY = "TIMESTAMP_KEY";
+    public final String PACKAGE_KEY = "PACKAGE_KEY";
+    public final String GUID_KEY = "GUID_KEY";
+    public final String PACKAGE_VALUE = "com.microsoft.oneRomanApp";
 
-    private static Platform sPlatform;
+    private ConnectedDevicesPlatform sPlatform;
+    private GcmNotificationReceiver gcmNotificationReceiver;
+    private static PlatformBroker platformBroker;
 
     private PlatformBroker() { }
 
-    public static synchronized Platform getPlatform() {
+    public synchronized ConnectedDevicesPlatform getPlatform() {
         return sPlatform;
     }
 
-    public static synchronized Platform createPlatform(Context context, UserAccountProvider accountProvider, NotificationProvider notificationProvider) {
-        sPlatform = new Platform(context, accountProvider, notificationProvider);
-        return sPlatform;
+    public static synchronized PlatformBroker getPlatformBroker() {
+        if(platformBroker == null) {
+            platformBroker = new PlatformBroker();
+        }
+        return platformBroker;
     }
 
-    public static synchronized Platform getOrCreatePlatform(Context context, UserAccountProvider accountProvider, NotificationProvider notificationProvider) {
-        Platform platform = getPlatform();
+    private synchronized void initializePlatform(Context context) {
+        // Create Platform
+        sPlatform = new ConnectedDevicesPlatform(context);
 
-        if (platform == null) {
-            platform = createPlatform(context, accountProvider, notificationProvider);
+        // Note: Very important to subscribe to these events before starting the platform.
+        // Subscribe to AccessTokenRequested event
+        sPlatform.getAccountManager().accessTokenRequested().subscribe((accountManager, args) -> {
+            ConnectedDevicesAccessTokenRequest request = args.getRequest();
+            List<String> scopes = request.getScopes();
+
+            MSASigninHelperAccount signinHelperAccount = AccountBroker.getSignInHelper();
+            if (signinHelperAccount == null) {
+                Log.w(TAG,"Failed to find a SigninHelperAccount matching the given account for the token request");
+                request.completeWithErrorMessage("No account was found to get the token");
+                return;
+            }
+
+            // Complete the request with a token
+            signinHelperAccount.getAccessTokenAsync(scopes)
+                    .whenComplete((token, throwable) -> {
+                        request.completeWithAccessToken(token);
+                    }).exceptionally(throwable -> {
+                        request.completeWithErrorMessage("The Account could not return a token with those scopes");
+                        return null;
+                    });
+        });
+
+        // Subscribe to AccessTokenInvalidated event
+        sPlatform.getAccountManager().accessTokenInvalidated().subscribe((accountManager, args) -> {
+            // If access token in invalidated, refresh token and renew access token.
+            AccountBroker.getSignInHelper().requestNewAccessTokenAsync(args.getScopes());
+        });
+
+        // Subscribe to NotificationRegistrationStateChanged event
+        sPlatform.getNotificationRegistrationManager().stateChanged().subscribe((notificationRegistrationManager, args) -> {
+            // If notification registration state is expiring or expired, re-register for account again.
+            ConnectedDevicesNotificationRegistrationState state = args.getState();
+            if (state == ConnectedDevicesNotificationRegistrationState.EXPIRING || state == ConnectedDevicesNotificationRegistrationState.EXPIRED) {
+                registerNotificationsForAccount(args.getAccount());
+            }
+        });
+    }
+
+    public synchronized ConnectedDevicesPlatform getOrInitializePlatform(Context context) {
+        if (sPlatform == null) {
+            initializePlatform(context);
         }
 
-        return platform;
+        return sPlatform;
     }
 
-    public static void register(Context context, ArrayList<AppServiceProvider> appServiceProviders, LaunchUriProvider launchUriProvider, EventListener<RemoteSystemAppHostingRegistration, RemoteSystemAppRegistrationStatusChangedEventArgs> listener) {
+    public synchronized void startPlatform() {
+        if (sPlatform == null) {
+            Log.e(TAG,"Cannot start platform before initializing it");
+        } else {
+            sPlatform.start();
+        }
+    }
+
+    public synchronized void createNotificationReceiver(Context context) {
+        gcmNotificationReceiver = new GcmNotificationReceiver(context);
+    }
+
+    public synchronized void addAccountToAccountManager(ConnectedDevicesAccount account) {
+        if (sPlatform == null)
+        {
+            Log.e(TAG,"Cannot add account before initializing the platform");
+            return;
+        }
+
+        sPlatform.getAccountManager().addAccountAsync(account).whenCompleteAsync((connectedDevicesAddAccountResult, throwable) -> {
+            // Note: If add account fails, retry again at a later time. Any operations that require
+            // the account cannot be performed until the account has been added successfully.
+            if (throwable != null){
+                Log.e(TAG,"AccountManager addAccountAsync returned a throwable: " + throwable);
+            } else {
+                Log.i(TAG,"AccountManager addAccountAsync returned " + connectedDevicesAddAccountResult.getStatus().toString());
+            }
+        });
+    }
+
+    public synchronized ConnectedDevicesAccount getAccount(String id) {
+        if(sPlatform == null) {
+            Log.e(TAG,"Platform needs to be initialized before getting an account");
+            return null;
+        }
+
+        List<ConnectedDevicesAccount> allAccounts = sPlatform.getAccountManager().getAllAccounts();
+        if(allAccounts.isEmpty()) {
+            Log.e(TAG,"No accounts found in the account manager.");
+            return null;
+        }
+
+        for(ConnectedDevicesAccount acc : allAccounts) {
+            if(acc.getId().equals(id)) {
+                return acc;
+            }
+        }
+
+        // No matching account was found
+        Log.e(TAG,"No account with the given Id found in the account manager");
+        return null;
+    }
+
+    public synchronized void registerNotificationsForAccount(ConnectedDevicesAccount account) {
+        if (sPlatform == null) {
+            Log.w(TAG, "Cannot register for notifications without platform being initialized");
+            return;
+        }
+
+        // Get notification registration manager
+        ConnectedDevicesNotificationRegistrationManager registrationManager = sPlatform.getNotificationRegistrationManager();
+
+        gcmNotificationReceiver.getNotificationRegistrationAsync().whenCompleteAsync((connectedDevicesNotificationRegistration, throwable) -> {
+                    String accountId = account.getId();
+
+                    Log.v(TAG, "Registering for notifications for account: " + accountId);
+
+                    registrationManager.registerForAccountAsync(account, connectedDevicesNotificationRegistration).whenCompleteAsync((result, throwable1) -> {
+                                if (throwable1 != null) {
+                                    Log.e(TAG, "RegistrationManager exception encountered " + throwable1);
+                                } else if (result) {
+                                    Log.i(TAG, "Successfully performed notification registration for given account");
+                                } else {
+                                    // If registration fails, it should be retried again when network is available.
+                                    Log.e(TAG, "Failed to perform notification registration for given account." + throwable1);
+                                }
+                            }
+                    );
+                }
+        );
+    }
+
+    public void register(Context context, ConnectedDevicesAccount account, ArrayList<AppServiceProvider> appServiceProviders, LaunchUriProvider launchUriProvider) {
         // Initialize the platform with all possible services
-        RemoteSystemAppHostingRegistration registration = new RemoteSystemAppHostingRegistration();
+        RemoteSystemAppRegistration registration = new RemoteSystemAppRegistration(account);
         registration.addAttribute(TIMESTAMP_KEY, getInitialRegistrationDateTime(context));
         registration.addAttribute(PACKAGE_KEY, PACKAGE_VALUE);
 
@@ -73,9 +199,15 @@ public class PlatformBroker {
             registration.setLaunchUriProvider(launchUriProvider);
         }
 
-        // Add an EventListener to handle registration completion
-        registration.statusChanged().subscribe(listener);
-        registration.save();
+        // Perform the registration by saving the object
+        registration.saveAsync().thenAcceptAsync(
+                // When app is successfully registered, other applications can discover it and begin sending commands to it.
+                // If app registration fails to save, retry again when internet becomes available.
+                success -> Log.d(TAG,"RemoteSystemAppRegistration was saved with success: " + success)
+        ).exceptionally(throwable -> {
+            Log.e(TAG,"RemoteSystemAppRegistration.saveAsync: " + throwable);
+            return null;
+        });
     }
 
     /**
@@ -83,7 +215,7 @@ public class PlatformBroker {
      * @param context
      * @return Datetime to insert into the RemoteSystemAppRegistration
      */
-    private static String getInitialRegistrationDateTime(final Context context) {
+    private String getInitialRegistrationDateTime(final Context context) {
         SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
 
         String timestamp;

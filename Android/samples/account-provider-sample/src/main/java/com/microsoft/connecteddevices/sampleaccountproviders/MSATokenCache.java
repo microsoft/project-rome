@@ -2,23 +2,20 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //
 
-package com.microsoft.connecteddevices.sampleaccountproviders;
+package com.microsoft.connecteddevices.signinhelpers;
 
 import android.content.Context;
 import android.support.annotation.Keep;
 import android.util.ArrayMap;
 import android.util.Log;
+import android.content.SharedPreferences;
 
-import com.microsoft.connecteddevices.base.AsyncOperation;
+import com.microsoft.connecteddevices.AsyncOperation;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -58,6 +55,7 @@ final class MSATokenCache {
     private static final int MSA_ACCESS_TOKEN_CLOSE_TO_EXPIRY_SECONDS = 5 * 60;            // 5 minutes
 
     private static final String MSA_OFFLINE_ACCESS_SCOPE = "wl.offline_access";
+    private static final String GUID_ID_KEY = "GUID_ID_KEY";
 
     private static final ScheduledExecutorService sRetryExecutor = Executors.newSingleThreadScheduledExecutor();
 
@@ -144,46 +142,35 @@ final class MSATokenCache {
             }
 
             getRefreshTokenAsync()
-                .thenComposeAsync(new AsyncOperation.ResultFunction<String, AsyncOperation<MSATokenRequest.Result>>() {
-                    @Override
-                    public AsyncOperation<MSATokenRequest.Result> apply(String refreshToken) {
-                        return mRefreshRequest.requestAsync(refreshToken);
-                    }
-                })
-                .thenAcceptAsync(new AsyncOperation.ResultConsumer<MSATokenRequest.Result>() {
-                    @Override
-                    public void accept(MSATokenRequest.Result result) {
+                    .thenComposeAsync((AsyncOperation.ResultFunction<String, AsyncOperation<MSATokenRequest.Result>>) refreshToken -> mRefreshRequest.requestAsync(refreshToken))
+                    .thenAcceptAsync((AsyncOperation.ResultConsumer<MSATokenRequest.Result>) result -> {
                         switch (result.getStatus()) {
-                        case SUCCESS:
-                            onSuccessfulRefresh(result);
-                            operation.complete(mToken);
-                            break;
+                            case SUCCESS:
+                                onSuccessfulRefresh(result);
+                                operation.complete(mToken);
+                                break;
 
-                        case TRANSIENT_FAILURE:
-                            // Recursively retry the refresh, if there are still remaining retries
-                            if (remainingRetries <= 0) {
-                                Log.e(TAG, "Reached max number of retries for refreshing token.");
-                                operation.complete(null);
+                            case TRANSIENT_FAILURE:
+                                // Recursively retry the refresh, if there are still remaining retries
+                                if (remainingRetries <= 0) {
+                                    Log.e(TAG, "Reached max number of retries for refreshing token.");
+                                    operation.complete(null);
 
-                            } else {
-                                Log.i(TAG, "Transient error while refreshing token, retrying in " + getRetrySeconds() + "seconds...");
-                                sRetryExecutor.schedule(new Runnable() {
-                                    @Override
-                                    public void run() {
+                                } else {
+                                    Log.i(TAG, "Transient error while refreshing token, retrying in " + getRetrySeconds() + "seconds...");
+                                    sRetryExecutor.schedule(() -> {
                                         _getTokenAsyncInternal(operation, remainingRetries - 1);
-                                    }
-                                }, getRetrySeconds(), TimeUnit.SECONDS);
-                            }
-                            break;
+                                    }, getRetrySeconds(), TimeUnit.SECONDS);
+                                }
+                                break;
 
-                        default: // PERMANENT_FAILURE
-                            Log.e(TAG, "Permanent error occurred while refreshing token.");
-                            MSATokenCache.this.onPermanentFailure();
-                            operation.complete(null);
-                            break;
+                            default: // PERMANENT_FAILURE
+                                Log.e(TAG, "Permanent error occurred while refreshing token.");
+                                MSATokenCache.this.onPermanentFailure();
+                                operation.complete(null);
+                                break;
                         }
-                    }
-                });
+                    });
 
             return operation;
         }
@@ -249,7 +236,7 @@ final class MSATokenCache {
             Log.i(TAG, "Successfully refreshed refresh token.");
             mToken = result.getRefreshToken();
             mCloseToExpirationDate =
-                getDateSecondsAfterNow(MSA_REFRESH_TOKEN_EXPIRATION_SECONDS - MSA_REFRESH_TOKEN_CLOSE_TO_EXPIRY_SECONDS);
+                    getDateSecondsAfterNow(MSA_REFRESH_TOKEN_EXPIRATION_SECONDS - MSA_REFRESH_TOKEN_CLOSE_TO_EXPIRY_SECONDS);
             MSATokenCache.this.markAccessTokensExpired();
             MSATokenCache.this.trySaveRefreshToken();
         }
@@ -429,6 +416,27 @@ final class MSATokenCache {
         } else {
             return AsyncOperation.completedFuture(null);
         }
+    }
+
+    public void saveAccountId(String id) {
+        // Get the shared preferences
+        SharedPreferences preferences = mContext.getSharedPreferences(mContext.getPackageName(), Context.MODE_PRIVATE);
+
+        // Save the given ID to the shared preferences
+        preferences.edit().putString(GUID_ID_KEY, id).apply();
+    }
+
+    public String readSavedAccountId() {
+        // Get the shared preferences
+        SharedPreferences preferences = mContext.getSharedPreferences(mContext.getPackageName(), Context.MODE_PRIVATE);
+
+        // Grab the value of the key with a default value of empty string
+        String id = preferences.getString(GUID_ID_KEY, "");
+        // Check that we found a value and not the default value
+        if (id.isEmpty()) {
+            Log.e(TAG, "readSavedAccountId failed to get the ID");
+        }
+        return id;
     }
 
     public synchronized void addListener(Listener listener) {

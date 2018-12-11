@@ -9,20 +9,13 @@ import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ExpandableListView;
 
-import com.microsoft.connecteddevices.base.EventListener;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystem;
-import com.microsoft.connecteddevices.remotesystems.RemoteSystemAddedEventArgs;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemFilter;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemLocalVisibilityKind;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemLocalVisibilityKindFilter;
-import com.microsoft.connecteddevices.remotesystems.RemoteSystemRemovedEventArgs;
-import com.microsoft.connecteddevices.remotesystems.RemoteSystemUpdatedEventArgs;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemWatcher;
-import com.microsoft.connecteddevices.remotesystems.RemoteSystemWatcherError;
-import com.microsoft.connecteddevices.remotesystems.RemoteSystemWatcherErrorOccurredEventArgs;
 
 import java.util.ArrayList;
 
@@ -73,11 +66,7 @@ public class RemoteSystemWatcherFragment extends BaseFragment {
         mSystemListView.setAdapter(mSystemListAdapter);
 
         // Create Start/Stop watcher buttons
-        rootView.findViewById(R.id.discovery_start).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                onStartWatcherClicked();
-            }
-        });
+        rootView.findViewById(R.id.discovery_start).setOnClickListener(v -> onStartWatcherClicked());
 
         return rootView;
     }
@@ -104,10 +93,17 @@ public class RemoteSystemWatcherFragment extends BaseFragment {
 
         // Use these events to keep the list of Remote Systems up to date
         mWatcher = new RemoteSystemWatcher(filters);
-        mWatcher.remoteSystemAdded().subscribe(new RemoteSystemAddedListener());
-        mWatcher.remoteSystemUpdated().subscribe(new RemoteSystemUpdatedListener());
-        mWatcher.remoteSystemRemoved().subscribe(new RemoteSystemRemovedListener());
-        mWatcher.errorOccurred().subscribe(new RemoteSystemWatcherErrorOccurredListener());
+        mWatcher.remoteSystemAdded().subscribe((remoteSystemWatcher, remoteSystemAddedEventArgs) -> {
+            addOrUpdateSystem(remoteSystemAddedEventArgs.getRemoteSystem());
+        });
+        mWatcher.remoteSystemUpdated().subscribe((remoteSystemWatcher, remoteSystemUpdatedEventArgs) -> {
+            addOrUpdateSystem(remoteSystemUpdatedEventArgs.getRemoteSystem());
+        });
+        mWatcher.remoteSystemRemoved().subscribe((remoteSystemWatcher, remoteSystemRemovedEventArgs) -> {
+            removeSystem(remoteSystemRemovedEventArgs.getRemoteSystem().getId());
+        });
+        mWatcher.errorOccurred().subscribe((remoteSystemWatcher, remoteSystemWatcherErrorOccurredEventArgs) -> {
+        });
 
         clearSystems();
 
@@ -125,12 +121,9 @@ public class RemoteSystemWatcherFragment extends BaseFragment {
      * set changed notification.
      */
     private void addOrUpdateSystem(final RemoteSystem remoteSystem) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mSystems.put(remoteSystem.getId(), remoteSystem);
-                mSystemListAdapter.notifyDataSetChanged();
-            }
+        getActivity().runOnUiThread(() -> {
+            mSystems.put(remoteSystem.getId(), remoteSystem);
+            mSystemListAdapter.notifyDataSetChanged();
         });
     }
 
@@ -143,12 +136,9 @@ public class RemoteSystemWatcherFragment extends BaseFragment {
      * set changed notification.
      */
     private void removeSystem(final String systemId) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mSystems.remove(systemId);
-                mSystemListAdapter.notifyDataSetChanged();
-            }
+        getActivity().runOnUiThread(() -> {
+            mSystems.remove(systemId);
+            mSystemListAdapter.notifyDataSetChanged();
         });
     }
 
@@ -161,12 +151,9 @@ public class RemoteSystemWatcherFragment extends BaseFragment {
      * set changed notification.
      */
     private void clearSystems() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mSystems.clear();
-                mSystemListAdapter.notifyDataSetChanged();
-            }
+        getActivity().runOnUiThread(() -> {
+            mSystems.clear();
+            mSystemListAdapter.notifyDataSetChanged();
         });
     }
 
@@ -174,33 +161,4 @@ public class RemoteSystemWatcherFragment extends BaseFragment {
     String getLogTag() {
         return TAG;
     }
-
-    // region RemoteSystemWatcher Listeners
-    private class RemoteSystemAddedListener implements EventListener<RemoteSystemWatcher, RemoteSystemAddedEventArgs> {
-        @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemAddedEventArgs args) {
-            addOrUpdateSystem(args.getRemoteSystem());
-        }
-    }
-
-    private class RemoteSystemUpdatedListener implements EventListener<RemoteSystemWatcher, RemoteSystemUpdatedEventArgs> {
-        @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemUpdatedEventArgs args) {
-            addOrUpdateSystem(args.getRemoteSystem());
-        }
-    }
-
-    private class RemoteSystemRemovedListener implements EventListener<RemoteSystemWatcher, RemoteSystemRemovedEventArgs> {
-        @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemRemovedEventArgs args) {
-            removeSystem(args.getRemoteSystem().getId());
-        }
-    }
-
-    private class RemoteSystemWatcherErrorOccurredListener implements EventListener<RemoteSystemWatcher, RemoteSystemWatcherErrorOccurredEventArgs> {
-        @Override
-        public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemWatcherErrorOccurredEventArgs args) {
-        }
-    }
-    // endregion
 }

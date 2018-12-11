@@ -8,9 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-
-import com.microsoft.connecteddevices.base.AsyncOperation;
 
 /**
  * LoginActivity uses the sampleAccountProviders library to trigger auth flow
@@ -20,7 +17,7 @@ public class LoginActivity extends AppCompatActivity {
     // region Member Variables
     private static final String TAG = LoginActivity.class.getName();
 
-    private AccountProviderBroker accountProviderBroker;
+    private AccountBroker accountBroker;
     // endregion
 
     // region Overrides
@@ -30,41 +27,32 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-        accountProviderBroker = new AccountProviderBroker(getBaseContext());
+        PlatformBroker.getPlatformBroker().getOrInitializePlatform(this);
+        accountBroker = new AccountBroker(getBaseContext());
 
-        // Initialize buttons incase the user clicks out of the webview
+        // Initialize buttons in case the user clicks out of the webview
         findViewById(R.id.sign_in_button)
-            .setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    signIn();
-                }
-            });
+            .setOnClickListener(v -> signIn());
 
-        if (!accountProviderBroker.isSignedIn()) {
-            signIn();
-        } else {
-            launchMainActivity();
-        }
+        signIn();
     }
     // endregion
 
     private void signIn() {
-        accountProviderBroker.signIn(this, new SignInCompletionHandler());
-    }
+        accountBroker.signIn(this, (account, throwable) -> {
+            Log.d(TAG, "Sign in completed");
 
-    /**
-     * Implementation of callback for signIn operations
-     * On sign in success, change view to ModuleSelectFragment (where user can choose between device relay & activities)
-     */
-    private class SignInCompletionHandler implements AsyncOperation.ResultBiConsumer<Boolean, Throwable> {
-        @Override
-        public void accept(final Boolean signInSuccess, final Throwable e) throws Throwable {
-            Log.d(TAG, "Sign in complete " + Boolean.toString(signInSuccess));
+            if (accountBroker.isSignedIn())
+            {
+                // Adding account to Account Manager
+                PlatformBroker.getPlatformBroker().addAccountToAccountManager(account);
 
-            if (signInSuccess) {
+                // Saving Id to Account Broker, so it can be used in other places
+                AccountBroker.setCurrentAccountId(account.getId());
+
                 launchMainActivity();
             }
-        }
+        });
     }
 
     private void launchMainActivity() {

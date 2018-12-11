@@ -2,23 +2,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //
 
-package com.microsoft.connecteddevices.sampleaccountproviders;
+package com.microsoft.connecteddevices.signinhelpers;
 
 import android.support.annotation.Keep;
 import android.util.Log;
 import android.util.Pair;
 
-import com.microsoft.connecteddevices.base.AsyncOperation;
+import com.microsoft.connecteddevices.AsyncOperation;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedList;
@@ -128,68 +121,65 @@ final class MSATokenRequest {
      * @param token - authCode for GrantType.CODE, or refresh token for GrantType.REFRESH
      */
     public static AsyncOperation<MSATokenRequest.Result> requestAsync(
-        final String clientId, final String grantType, final String scope, final String redirectUri, final String token) {
+            final String clientId, final String grantType, final String scope, final String redirectUri, final String token) {
         if (token == null || token.length() <= 0) {
             Log.e(TAG, "Refresh token or auth code for MSATokenRequest was unexpectedly empty - treating as permanent failure.");
             return AsyncOperation.completedFuture(new MSATokenRequest.Result(Result.Status.PERMANENT_FAILURE, null));
         }
 
-        return AsyncOperation.supplyAsync(new AsyncOperation.Supplier<MSATokenRequest.Result>() {
-            @Override
-            public MSATokenRequest.Result get() {
-                HttpsURLConnection connection = null;
-                MSATokenRequest.Result.Status status = Result.Status.TRANSIENT_FAILURE;
-                JSONObject responseJson = null;
+        return AsyncOperation.supplyAsync(() -> {
+            HttpsURLConnection connection = null;
+            Result.Status status = Result.Status.TRANSIENT_FAILURE;
+            JSONObject responseJson = null;
 
-                try {
-                    // Build the query string
-                    List<Pair<String, String>> params = new LinkedList<>();
-                    params.add(new Pair<>("client_id", clientId));
-                    params.add(new Pair<>("grant_type", grantType));
+            try {
+                // Build the query string
+                List<Pair<String, String>> params = new LinkedList<>();
+                params.add(new Pair<>("client_id", clientId));
+                params.add(new Pair<>("grant_type", grantType));
 
-                    if (grantType.equals(GrantType.CODE)) {
-                        params.add(new Pair<>("redirect_uri", redirectUri));
-                        params.add(new Pair<>("code", token));
-                    } else if (grantType.equals(GrantType.REFRESH)) {
-                        params.add(new Pair<>("scope", scope));
-                        params.add(new Pair<>(grantType, token));
-                    }
-
-                    String queryString = getQueryString(params);
-
-                    // Write the query string
-                    URL url = new URL("https://login.live.com/oauth20_token.srf");
-                    connection = (HttpsURLConnection)url.openConnection();
-                    connection.setDoOutput(true);
-                    connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                    IOUtil.writeUTF8Stream(connection.getOutputStream(), queryString);
-
-                    // Parse the response
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode >= 500) {
-                        status = Result.Status.TRANSIENT_FAILURE;
-                    } else if (responseCode >= 400) {
-                        status = Result.Status.PERMANENT_FAILURE;
-                    } else if ((responseCode >= 200 && responseCode < 300) || responseCode == 304) {
-                        status = Result.Status.SUCCESS;
-                    } else {
-                        status = Result.Status.TRANSIENT_FAILURE;
-                    }
-
-                    if (status == Result.Status.SUCCESS) {
-                        responseJson = new JSONObject(IOUtil.readUTF8Stream(connection.getInputStream()));
-                    } else {
-                        Log.e(TAG, "Failed to get token with HTTP code: " + responseCode);
-                    }
-
-                } catch (IOException | JSONException e) {
-                    Log.e(TAG, "Failed to get token: \"" + e.getLocalizedMessage() + "\"");
-                } finally {
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                    return new MSATokenRequest.Result(status, responseJson);
+                if (grantType.equals(GrantType.CODE)) {
+                    params.add(new Pair<>("redirect_uri", redirectUri));
+                    params.add(new Pair<>("code", token));
+                } else if (grantType.equals(GrantType.REFRESH)) {
+                    params.add(new Pair<>("scope", scope));
+                    params.add(new Pair<>(grantType, token));
                 }
+
+                String queryString = getQueryString(params);
+
+                // Write the query string
+                URL url = new URL("https://login.live.com/oauth20_token.srf");
+                connection = (HttpsURLConnection)url.openConnection();
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                IOUtil.writeUTF8Stream(connection.getOutputStream(), queryString);
+
+                // Parse the response
+                int responseCode = connection.getResponseCode();
+                if (responseCode >= 500) {
+                    status = Result.Status.TRANSIENT_FAILURE;
+                } else if (responseCode >= 400) {
+                    status = Result.Status.PERMANENT_FAILURE;
+                } else if ((responseCode >= 200 && responseCode < 300) || responseCode == 304) {
+                    status = Result.Status.SUCCESS;
+                } else {
+                    status = Result.Status.TRANSIENT_FAILURE;
+                }
+
+                if (status == Result.Status.SUCCESS) {
+                    responseJson = new JSONObject(IOUtil.readUTF8Stream(connection.getInputStream()));
+                } else {
+                    Log.e(TAG, "Failed to get token with HTTP code: " + responseCode);
+                }
+
+            } catch (IOException | JSONException e) {
+                Log.e(TAG, "Failed to get token: \"" + e.getLocalizedMessage() + "\"");
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                return new Result(status, responseJson);
             }
         });
     }

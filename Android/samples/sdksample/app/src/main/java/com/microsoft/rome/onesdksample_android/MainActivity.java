@@ -18,14 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppRegistrationStatus;
-import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppRegistrationStatusChangedEventArgs;
-import com.microsoft.connecteddevices.core.Platform;
-import com.microsoft.connecteddevices.core.UserAccount;
 import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceProvider;
-import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppHostingRegistration;
-import com.microsoft.connecteddevices.sampleaccountproviders.MSAAccountProvider;
 
 import java.util.ArrayList;
 
@@ -59,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     private ModuleSelectFragment mModuleSelectFragment;
     private UserActivityFragment mUserActivityFragment;
     private HostingFragment mHostingFragment;
-    private Platform mPlatform;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,17 +121,11 @@ public class MainActivity extends AppCompatActivity {
             };
         mNavigationDrawer.addDrawerListener(actionBarDrawerToggle);
 
-        // Initialize the Rome platform
-        initializePlatform();
+        // Start platform and complete registrations
+        startPlatform();
 
         // Initialize the UserActivity Feed
-        // Execute in background thread to avoid a known sdk issue
-        new Thread(new Runnable() {
-            @Override
-            public void run () {
-                getUserActivityFragment().initializeUserActivityFeed();
-            }
-        }).start();
+        getUserActivityFragment().initializeUserActivityFeed();
     }
 
     @Override
@@ -152,46 +138,17 @@ public class MainActivity extends AppCompatActivity {
     }
     // endregion
 
-    public void initializePlatform() {
-        raiseToast("Initializing the Rome platform");
-
-        // Instantiate Platform using the UserAccountProvider the sign in helper provides
-        MSAAccountProvider signInHelper = AccountProviderBroker.getSignInHelper();
-        GcmNotificationProvider gcmNotificationProvider = new GcmNotificationProvider(this);
-        mPlatform = PlatformBroker.createPlatform(this, signInHelper, gcmNotificationProvider);
-
-        raiseToast("Completed Rome initialization, starting registration...");
+    public void startPlatform() {
+        PlatformBroker platformBroker = PlatformBroker.getPlatformBroker();
+        platformBroker.startPlatform();
+        platformBroker.createNotificationReceiver(this);
+        platformBroker.registerNotificationsForAccount(platformBroker.getAccount(AccountBroker.getCurrentAccountId()));
 
         ArrayList<AppServiceProvider> appServiceProviders = new ArrayList<>();
         appServiceProviders.add(new PingPongService(this));
         appServiceProviders.add(new EchoService(this));
 
-        PlatformBroker.register(this, appServiceProviders, new SimpleLaunchHandler(this), new EventListener<RemoteSystemAppHostingRegistration, RemoteSystemAppRegistrationStatusChangedEventArgs>() {
-            @Override
-            public void onEvent(RemoteSystemAppHostingRegistration registration, RemoteSystemAppRegistrationStatusChangedEventArgs args) {
-                switch (args.getStatus()) {
-                    case NOT_STARTED:
-                        Log.d(TAG, "Registration has not started.");
-                        break;
-                    case IN_PROGRESS:
-                        Log.d(TAG, "Registration in progress...");
-                        break;
-                    case SUCCEEDED:
-                        raiseToast("Completed Rome registration");
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                navigateToPage(SDK_SELECT);
-                            }
-                        });
-                        break;
-                    case FAILED:
-                        raiseToast("Rome registration failed!");
-                        break;
-                }
-            }
-        });
+        platformBroker.register(this, platformBroker.getAccount(AccountBroker.getCurrentAccountId()), appServiceProviders, new SimpleLaunchHandler(this));
     }
 
     /**
@@ -287,12 +244,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void raiseToast(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show());
     }
 
     /**

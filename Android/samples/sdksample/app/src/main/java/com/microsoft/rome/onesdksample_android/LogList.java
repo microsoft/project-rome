@@ -30,11 +30,6 @@ public class LogList {
     // endregion
 
     public void logTraffic(final String message) {
-        mFragment.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mLogListAdapter.add(message);
-            }
-        });
+        mFragment.getActivity().runOnUiThread(() -> mLogListAdapter.add(message));
     }
 }
