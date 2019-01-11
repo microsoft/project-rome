@@ -7,6 +7,7 @@ package com.microsoft.connecteddevices.graphnotifications;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.ArrayMap;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -15,7 +16,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.microsoft.connecteddevices.core.NotificationReceiver;
+import com.microsoft.connecteddevices.ConnectedDevicesPlatform;
 
 import java.util.Map;
 
@@ -32,14 +33,12 @@ public class FCMListenerService extends FirebaseMessagingService {
 
     @Override
     public void onCreate() {
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-            @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                if (task.isSuccessful()) {
-                    String token = task.getResult().getToken();
-                    if (!token.isEmpty()) {
-                        FCMListenerService.this.onNewToken(token);
-                    }
+        PlatformManager.getInstance().createNotificationReceiver(this);
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                String token = task.getResult().getToken();
+                if (!token.isEmpty()) {
+                    FCMListenerService.this.onNewToken(token);
                 }
             }
         });
@@ -55,9 +54,8 @@ public class FCMListenerService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage message) {
         Log.d(TAG, "From: " + message.getFrom());
         Map data = message.getData();
-        if (!NotificationReceiver.Receive(data)) {
-            Log.d(TAG, "FCM client received a message that was not a Rome notification");
-        }
+        ConnectedDevicesPlatform platform =  ensurePlatformInitialized();
+        platform.processNotification(data);
     }
 
     @Override
@@ -68,6 +66,17 @@ public class FCMListenerService extends FirebaseMessagingService {
             registrationComplete.putExtra(TOKEN, token);
             LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
         }
+    }
+
+    synchronized ConnectedDevicesPlatform ensurePlatformInitialized() {
+        // First see if we have an existing platform
+        ConnectedDevicesPlatform platform = PlatformManager.getInstance().getPlatform();
+        if (platform != null) {
+            return platform;
+        }
+
+        // No existing platform, so we have to create our own
+        return PlatformManager.getInstance().createPlatform(getApplicationContext());
     }
 
 }

@@ -7,24 +7,24 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.microsoft.connecteddevices.base.AsyncOperation;
-import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.core.NotificationProvider;
-import com.microsoft.connecteddevices.core.NotificationRegistration;
-import com.microsoft.connecteddevices.core.NotificationType;
+import com.microsoft.connecteddevices.AsyncOperation;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistration;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationType;
+import com.microsoft.connecteddevices.EventListener;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class RomeNotificationProvider extends BroadcastReceiver implements NotificationProvider {
-    private Map<Long, EventListener<NotificationProvider, NotificationRegistration>> mListenerMap;
+public class RomeNotificationReceiver extends BroadcastReceiver {
+    private static final String TAG = RomeNotificationReceiver.class.getName();
+    private Map<Long, EventListener<RomeNotificationReceiver, ConnectedDevicesNotificationRegistration>> mListenerMap;
     private Long mNextListenerId = 0L;
-    private NotificationRegistration mNotificationRegistration;
-    private AsyncOperation<NotificationRegistration> mAsync;
+    private ConnectedDevicesNotificationRegistration mNotificationRegistration;
+    private AsyncOperation<ConnectedDevicesNotificationRegistration> mAsync;
     private Context mContext;
     private static final String RegistrationComplete = "registrationComplete";
 
-    RomeNotificationProvider(Context context) {
+    RomeNotificationReceiver(Context context) {
         mListenerMap = new HashMap<>();
         mContext = context;
 
@@ -35,8 +35,7 @@ public class RomeNotificationProvider extends BroadcastReceiver implements Notif
      * This function returns Notification Registration after it completes async operation.
      * @return Notification Registration.
      */
-    @Override
-    public synchronized AsyncOperation<NotificationRegistration> getNotificationRegistrationAsync() {
+    public synchronized AsyncOperation<ConnectedDevicesNotificationRegistration> getNotificationRegistrationAsync() {
         if (mAsync == null) {
             mAsync = new AsyncOperation<>();
         }
@@ -51,9 +50,8 @@ public class RomeNotificationProvider extends BroadcastReceiver implements Notif
      * @param  listener  the EventListener.
      * @return id        next event listener id.
      */
-    @Override
     public synchronized long addNotificationProviderChangedListener(
-        EventListener<NotificationProvider, NotificationRegistration> listener) {
+        EventListener<RomeNotificationReceiver, ConnectedDevicesNotificationRegistration> listener) {
         mListenerMap.put(mNextListenerId, listener);
         return mNextListenerId++;
     }
@@ -62,7 +60,6 @@ public class RomeNotificationProvider extends BroadcastReceiver implements Notif
      * This function removes the event listener.
      * @param  id  the id corresponds to the event listener that would be removed.
      */
-    @Override
     public synchronized void removeNotificationProviderChangedListener(long id) {
         mListenerMap.remove(id);
     }
@@ -89,7 +86,11 @@ public class RomeNotificationProvider extends BroadcastReceiver implements Notif
         }
 
         synchronized (this) {
-            mNotificationRegistration = new NotificationRegistration(NotificationType.FCM, token, Secrets.FCM_SENDER_ID, "GraphNotifications");
+            mNotificationRegistration = new ConnectedDevicesNotificationRegistration();
+            mNotificationRegistration.setType(ConnectedDevicesNotificationType.FCM);
+            mNotificationRegistration.setToken(token);
+            mNotificationRegistration.setAppId(Secrets.FCM_SENDER_ID);
+            mNotificationRegistration.setAppDisplayName("OneRomanApp");
 
             if (mAsync == null) {
                 mAsync = new AsyncOperation<>();
@@ -97,9 +98,11 @@ public class RomeNotificationProvider extends BroadcastReceiver implements Notif
             mAsync.complete(mNotificationRegistration);
             mAsync = new AsyncOperation<>();
 
-            for (EventListener<NotificationProvider, NotificationRegistration> event : mListenerMap.values()) {
+            for (EventListener<RomeNotificationReceiver, ConnectedDevicesNotificationRegistration> event : mListenerMap.values()) {
                 event.onEvent(this, mNotificationRegistration);
             }
+
+            Log.e(TAG, "Successfully completed FCM registration");
         }
     }
     /**
@@ -107,6 +110,7 @@ public class RomeNotificationProvider extends BroadcastReceiver implements Notif
         * Start FCMRegistrationIntentService to register with FCM.
         */
     private void startService() {
+        Log.e(TAG, "Starting FCMListenerService");
         Intent registrationIntentService = new Intent(mContext, FCMListenerService.class);
         mContext.startService(registrationIntentService);
     }

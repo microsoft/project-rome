@@ -32,5 +32,5 @@ dependencies {
         exclude group: 'com.android.support'
     }
 
-    implementation 'com.microsoft.connecteddevices:connecteddevices-sdk:+'
+    implementation "com.microsoft.connecteddevices:connecteddevices-sdk:+"
 }

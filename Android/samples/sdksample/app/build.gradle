@@ -45,8 +45,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-analytics:11.4.2'
     implementation 'com.google.android.gms:play-services-auth:11.4.2'
 
-    implementation 'com.microsoft.connecteddevices:connecteddevices-sdk:+'
-    implementation project(path: ':sampleAccountProviders')
+    implementation "com.microsoft.connecteddevices:connecteddevices-sdk:+"
+    implementation project(path: ':signinhelpers')
 }
 
 apply plugin: 'com.google.gms.google-services'

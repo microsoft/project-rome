@@ -5,7 +5,7 @@
 package com.microsoft.connecteddevices.graphnotifications;
 
 class Secrets {
-// These come from the converged app registration portal at apps.dev.microsoft.com
+    // These come from the converged app registration portal at apps.dev.microsoft.com
     // MSA_CLIENT_ID:           Id of this app's registration in the MSA portal
     // AAD_CLIENT_ID:           Id of this app's registration in the Azure portal
     // AAD_REDIRECT_URI:        A Uri that this app is registered with in the Azure portal.

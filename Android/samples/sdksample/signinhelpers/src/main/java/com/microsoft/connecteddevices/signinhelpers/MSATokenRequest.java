@@ -2,13 +2,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //
 
-package com.microsoft.connecteddevices.sampleaccountproviders;
+package com.microsoft.connecteddevices.signinhelpers;
 
 import android.support.annotation.Keep;
 import android.util.Log;
 import android.util.Pair;
 
-import com.microsoft.connecteddevices.base.AsyncOperation;
+import com.microsoft.connecteddevices.AsyncOperation;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,7 +23,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -180,9 +179,7 @@ final class MSATokenRequest {
                     if (status == Result.Status.SUCCESS) {
                         responseJson = new JSONObject(IOUtil.readUTF8Stream(connection.getInputStream()));
                     } else {
-                        Map<String, List<String>> heads = connection.getHeaderFields();
-                        String error = IOUtil.readUTF8Stream(connection.getErrorStream());
-                        Log.e(TAG, "Failed to get token with HTTP code: " + responseCode + heads + error);
+                        Log.e(TAG, "Failed to get token with HTTP code: " + responseCode);
                     }
 
                 } catch (IOException | JSONException e) {

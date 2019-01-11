@@ -21,6 +21,9 @@ allprojects {
         maven { url "${project.rootDir}/.packages" }
         google()
         jcenter()
+        flatDir {
+            dirs 'libs'
+        }
     }
 }
 

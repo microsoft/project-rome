@@ -1,10 +1,10 @@
-include ':sdksample',
-        ':sampleAccountProviders',
-        ':nearsharestandalone',
-        ':graphnotificationssample'
+include ':signinhelpers',
+        ':graphnotificationssample',
+        ':sdksample',
+        ':nearsharestandalone'
 
 project(':sdksample').projectDir = new File('sdksample/app')
-project(':sampleAccountProviders').projectDir = new File('sdksample/sampleAccountProviders')
+project(':signinhelpers').projectDir = new File('sdksample/signinhelpers')
 project(':nearsharestandalone').projectDir = new File('nearsharestandalone/app')
 project(':graphnotificationssample').projectDir = new File('graphnotificationssample/app')
 

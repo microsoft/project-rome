@@ -30,5 +30,5 @@ dependencies {
     implementation 'com.android.support:support-v4:27.1.0'
     implementation 'com.android.support:recyclerview-v7:27.1.0'
 
-    implementation 'com.microsoft.connecteddevices:connecteddevices-sdk:+'
+    implementation "com.microsoft.connecteddevices:connecteddevices-sdk:+"
 }

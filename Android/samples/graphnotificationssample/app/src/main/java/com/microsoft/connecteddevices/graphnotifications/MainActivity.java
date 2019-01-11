@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.ArrayMap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,17 +24,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.microsoft.connecteddevices.base.AsyncOperation;
-import com.microsoft.connecteddevices.base.EventListener;
-import com.microsoft.connecteddevices.core.Platform;
-import com.microsoft.connecteddevices.sampleaccountproviders.AADMSAAccountProvider;
+import com.microsoft.connecteddevices.AsyncOperation;
+import com.microsoft.connecteddevices.ConnectedDevicesAccount;
+import com.microsoft.connecteddevices.ConnectedDevicesAccountType;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistration;
+import com.microsoft.connecteddevices.signinhelpers.AADSigninHelperAccount;
+import com.microsoft.connecteddevices.signinhelpers.MSASigninHelperAccount;
+import com.microsoft.connecteddevices.signinhelpers.SigninHelperAccount;
 import com.microsoft.connecteddevices.userdata.UserDataFeed;
 import com.microsoft.connecteddevices.userdata.UserDataFeedSyncScope;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotification;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationChannel;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationReadState;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationReader;
-import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationReaderDataChangedEventArgs;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationReaderOptions;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationStatus;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationUserActionState;
@@ -43,6 +46,8 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -59,11 +64,37 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    private static Platform sPlatform;
-    private static AADMSAAccountProvider sAccountProvider;
+    private static SigninHelperAccount sMSAHelperAccount;
+    private static SigninHelperAccount sAADHelperAccount;
+    private static ConnectedDevicesAccount sLoggedInAccount;
+    private static ConnectedDevicesNotificationRegistration sNotificationRegistration;
+
     private static UserNotificationReader sReader;
     private static ArrayList<UserNotification> sNewNotifications = new ArrayList<>();
     private static final ArrayList<UserNotification> sHistoricalNotifications = new ArrayList<>();
+
+    private enum LoginState {
+        LOGGED_IN_MSA,
+        LOGGED_IN_AAD,
+        LOGGED_OUT
+    }
+
+    private static LoginState sState = LoginState.LOGGED_OUT;
+
+    private static synchronized LoginState getAndUpdateLoginState()
+    {
+        if (sMSAHelperAccount == null || sAADHelperAccount == null || sLoggedInAccount == null) {
+            sState = LoginState.LOGGED_OUT;
+        } else if (sMSAHelperAccount.isSignedIn() && (sLoggedInAccount.getType() == ConnectedDevicesAccountType.MSA)) {
+            sState = LoginState.LOGGED_IN_MSA;
+        } else if (sAADHelperAccount.isSignedIn() && (sLoggedInAccount.getType() == ConnectedDevicesAccountType.AAD)) {
+            sState = LoginState.LOGGED_IN_AAD;
+        } else {
+            sState = LoginState.LOGGED_OUT;
+        }
+
+        return sState;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +116,44 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-        ensurePlatformInitialized(this);
+        if (sMSAHelperAccount == null) {
+            final Map<String, String[]> msaScopeOverrides = new ArrayMap<>();
+            msaScopeOverrides.put("https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp",
+                    new String[] { "https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp",
+                            "https://activity.windows.com/Notifications.ReadWrite.CreatedByApp"});
+            sMSAHelperAccount = new MSASigninHelperAccount(Secrets.MSA_CLIENT_ID, msaScopeOverrides, getApplicationContext());
+        }
+
+        if (sAADHelperAccount == null) {
+            sAADHelperAccount = new AADSigninHelperAccount(Secrets.AAD_CLIENT_ID, Secrets.AAD_REDIRECT_URI, getApplicationContext());
+        }
+
+        if (PlatformManager.getInstance().getPlatform() == null) {
+            PlatformManager.getInstance().createPlatform(getApplicationContext());
+        }
+
+        PlatformManager.getInstance().getPlatform().getNotificationRegistrationManager().notificationRegistrationStateChanged().subscribe((connectedDevicesNotificationRegistrationManager, connectedDevicesNotificationRegistrationStateChangedEventArgs) -> {
+            Log.i(TAG, "NotificationRegistrationState changed to " + connectedDevicesNotificationRegistrationStateChangedEventArgs.getState().toString());
+        });
+
+        tryGetNotificationRegistration();
+    }
+
+    static void tryGetNotificationRegistration() {
+        if (sNotificationRegistration != null) {
+            Log.i(TAG, "Already have notification registration");
+            return;
+        }
+
+        RomeNotificationReceiver receiver = PlatformManager.getInstance().getNotificationReceiver();
+        if (receiver != null) {
+            receiver.getNotificationRegistrationAsync().whenComplete((connectedDevicesNotificationRegistration, throwable) -> {
+                Log.i(TAG, "Got new notification registration");
+                sNotificationRegistration = connectedDevicesNotificationRegistration;
+            });
+        } else {
+            Log.i(TAG, "No notification receiver!");
+        }
     }
 
 
@@ -150,8 +218,9 @@ public class MainActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             mAadButton = rootView.findViewById(R.id.login_aad_button);
             mMsaButton = rootView.findViewById(R.id.login_msa_button);
-            setState(sAccountProvider.getSignInState());
-            if (firstCreate && sAccountProvider.getSignInState() != AADMSAAccountProvider.State.SignedOut) {
+            LoginState loginState = getAndUpdateLoginState();
+            setState(loginState);
+            if (firstCreate && (loginState != LoginState.LOGGED_OUT)) {
                 firstCreate = false;
                 MainActivity.setupChannel(getActivity());
             }
@@ -159,66 +228,84 @@ public class MainActivity extends AppCompatActivity {
             return rootView;
         }
 
-        void setState(AADMSAAccountProvider.State loginState) {
+        void setState(LoginState loginState) {
             switch (loginState) {
-                case SignedOut:
+                case LOGGED_OUT:
                     mAadButton.setEnabled(true);
                     mAadButton.setText(R.string.login_aad);
-                    mAadButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            sAccountProvider.signInAAD().whenComplete(new AsyncOperation.ResultBiConsumer<Boolean, Throwable>() {
-                                @Override
-                                public void accept(Boolean success, Throwable throwable) throws Throwable {
-                                    if (throwable == null && success) {
-                                        setState(sAccountProvider.getSignInState());
-                                        MainActivity.setupChannel(getActivity());
-                                    }
-                                }
+                    mAadButton.setOnClickListener(view -> sAADHelperAccount.signIn(getActivity()).whenCompleteAsync((connectedDevicesAccount, throwable) -> {
+                        if ((throwable == null) && (connectedDevicesAccount != null)) {
+                            sLoggedInAccount = connectedDevicesAccount;
+                            PlatformManager.getInstance().getPlatform().getAccountManager().accessTokenRequested().subscribe((accountManager, args)->
+                            {
+                                sAADHelperAccount.getAccessTokenAsync(args.getRequest().getScopes()).whenCompleteAsync((token, t) -> args.getRequest().completeWithAccessToken(token));
                             });
+
+                            PlatformManager.getInstance().getPlatform().getAccountManager().accessTokenInvalidated().subscribe((connectedDevicesAccountManager, args) -> {
+                                // Don't need to do anything here for now
+                            });
+
+                            PlatformManager.getInstance().getPlatform().start();
+
+                            tryGetNotificationRegistration();
+
+                            PlatformManager.getInstance().getPlatform().getAccountManager().addAccountAsync(sLoggedInAccount).whenCompleteAsync((connectedDevicesAddAccountResult, throwable12) -> PlatformManager.getInstance().getPlatform().getNotificationRegistrationManager().registerForAccountAsync(sLoggedInAccount, sNotificationRegistration).whenCompleteAsync((aBoolean, throwable1) -> {
+                                getActivity().runOnUiThread(()-> setState(getAndUpdateLoginState()));
+                                MainActivity.setupChannel(getActivity());
+                            }));
+
                         }
-                    });
+                    }));
 
                     mMsaButton.setEnabled(true);
                     mMsaButton.setText(R.string.login_msa);
-                    mMsaButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            sAccountProvider.signInMSA(getActivity()).whenComplete(new AsyncOperation.ResultBiConsumer<Boolean, Throwable>() {
-                                @Override
-                                public void accept(Boolean success, Throwable throwable) throws Throwable {
-                                    if (throwable == null && success) {
-                                        setState(sAccountProvider.getSignInState());
-                                        MainActivity.setupChannel(getActivity());
-                                    }
-                                }
+                    mMsaButton.setOnClickListener(view -> sMSAHelperAccount.signIn(getActivity()).whenCompleteAsync((connectedDevicesAccount, throwable) -> {
+                        if (throwable == null && connectedDevicesAccount != null) {
+                            sLoggedInAccount = connectedDevicesAccount;
+                            PlatformManager.getInstance().getPlatform().getAccountManager().accessTokenRequested().subscribe((accountManager, args)-> {
+                                sMSAHelperAccount.getAccessTokenAsync(args.getRequest().getScopes()).whenCompleteAsync((token, t) -> {
+                                    args.getRequest().completeWithAccessToken(token);
+                                });
+                            });
+
+                            PlatformManager.getInstance().getPlatform().getAccountManager().accessTokenInvalidated().subscribe((connectedDevicesAccountManager, args) -> {
+                                // Don't need to do anything here for now
+                            });
+
+                            PlatformManager.getInstance().getPlatform().start();
+
+                            tryGetNotificationRegistration();
+
+                            PlatformManager.getInstance().getPlatform().getAccountManager().addAccountAsync(sLoggedInAccount).whenCompleteAsync((connectedDevicesAddAccountResult, throwable12) -> {
+                                PlatformManager.getInstance().getPlatform().getNotificationRegistrationManager().registerForAccountAsync(sLoggedInAccount, sNotificationRegistration).whenCompleteAsync((aBoolean, throwable1) -> {
+                                    getActivity().runOnUiThread(()-> setState(getAndUpdateLoginState()));
+                                    MainActivity.setupChannel(getActivity());
+                                });
                             });
                         }
-                    });
+                    }));
                     break;
 
-                case SignedInAAD:
+                case LOGGED_IN_AAD:
                     mAadButton.setText(R.string.logout);
-                    mAadButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            sAccountProvider.signOutAAD();
-                            setState(sAccountProvider.getSignInState());
-                        }
-                    });
+                    mAadButton.setOnClickListener(view -> PlatformManager.getInstance().getPlatform().getAccountManager().removeAccountAsync(sLoggedInAccount).whenCompleteAsync((connectedDevicesRemoveAccountResult, throwable) -> {
+                        sAADHelperAccount.signOut(getActivity()).whenCompleteAsync((connectedDevicesAccount, throwable13) -> {
+                            sLoggedInAccount = null;
+                            getActivity().runOnUiThread(()-> setState(getAndUpdateLoginState()));
+                        });
+                    }));
                     mMsaButton.setEnabled(false);
                     break;
 
-                case SignedInMSA:
+                case LOGGED_IN_MSA:
                     mAadButton.setEnabled(false);
                     mMsaButton.setText(R.string.logout);
-                    mMsaButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            sAccountProvider.signOutMSA(getActivity());
-                            setState(sAccountProvider.getSignInState());
-                        }
-                    });
+                    mMsaButton.setOnClickListener(view -> PlatformManager.getInstance().getPlatform().getAccountManager().removeAccountAsync(sLoggedInAccount).whenCompleteAsync((connectedDevicesRemoveAccountResult, throwable) -> {
+                        sMSAHelperAccount.signOut(getActivity()).whenCompleteAsync((connectedDevicesAccount, throwable14) -> {
+                            sLoggedInAccount = null;
+                            getActivity().runOnUiThread(()-> setState(getAndUpdateLoginState()));
+                        });
+                    }));
                     break;
             }
         }
@@ -244,12 +331,9 @@ public class MainActivity extends AppCompatActivity {
             String content = notification.getContent();
             textView.setText(content);
 
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    notification.setUserActionState(UserNotificationUserActionState.DISMISSED);
-                    notification.saveAsync();
-                }
+            convertView.setOnClickListener(view -> {
+                notification.setUserActionState(UserNotificationUserActionState.DISMISSED);
+                notification.saveAsync();
             });
 
             return convertView;
@@ -273,12 +357,9 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             mNotificationArrayAdapter = new NotificationArrayAdapter(getContext(), sNewNotifications);
-            RunnableManager.setNewNotificationsUpdated(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getContext(), "Got a new notification!", Toast.LENGTH_SHORT).show();
-                    mNotificationArrayAdapter.notifyDataSetChanged();
-                }
+            RunnableManager.setNewNotificationsUpdated(() -> {
+                Toast.makeText(getContext(), "Got a new notification!", Toast.LENGTH_SHORT).show();
+                mNotificationArrayAdapter.notifyDataSetChanged();
             });
             View rootView = inflater.inflate(R.layout.fragment_notifications, container, false);
             ListView listView = rootView.findViewById(R.id.notificationListView);
@@ -306,12 +387,9 @@ public class MainActivity extends AppCompatActivity {
             TextView textView = convertView.findViewById(R.id.notification_text);
             textView.setText(notification.getContent());
 
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    notification.setReadState(UserNotificationReadState.READ);
-                    notification.saveAsync();
-                }
+            convertView.setOnClickListener(view -> {
+                notification.setReadState(UserNotificationReadState.READ);
+                notification.saveAsync();
             });
 
             return convertView;
@@ -336,12 +414,7 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_history, container, false);
             mHistoryArrayAdapter = new HistoryArrayAdapter(getContext(), sHistoricalNotifications);
-            RunnableManager.setHistoryUpdated(new Runnable() {
-                @Override
-                public void run() {
-                    mHistoryArrayAdapter.notifyDataSetChanged();
-                }
-            });
+            RunnableManager.setHistoryUpdated(() -> mHistoryArrayAdapter.notifyDataSetChanged());
             ListView listView = rootView.findViewById(R.id.historyListView);
             listView.setAdapter(mHistoryArrayAdapter);
             return rootView;
@@ -395,126 +468,101 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static synchronized Platform ensurePlatformInitialized(Context context) {
-        // First see if we have an existing platform
-        if (sPlatform != null) {
-            return sPlatform;
-        }
-
-        // No existing platform, so we have to create our own
-        RomeNotificationProvider notificationProvider = new RomeNotificationProvider(context);
-        final Map<String, String[]> msaScopeOverrides = new ArrayMap<>();
-        msaScopeOverrides.put("https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp",
-                new String[] { "https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp",
-                        "https://activity.windows.com/Notifications.ReadWrite.CreatedByApp"});
-        sAccountProvider = new AADMSAAccountProvider(Secrets.MSA_CLIENT_ID, msaScopeOverrides, Secrets.AAD_CLIENT_ID, Secrets.AAD_REDIRECT_URI, context);
-        sPlatform = new Platform(context, sAccountProvider, notificationProvider);
-        return sPlatform;
-    }
-
     static void setupChannel(final Activity activity) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (sAccountProvider.getUserAccounts().length == 0) {
-                    return;
-                }
-                ArrayList<UserDataFeedSyncScope> scopes = new ArrayList<>();
-                scopes.add(UserNotificationChannel.getSyncScope());
-                UserDataFeed dataFeed = UserDataFeed.getForAccount(sAccountProvider.getUserAccounts()[0], sPlatform, Secrets.APP_HOST_NAME);
-                dataFeed.addSyncScopes(scopes);
-                UserNotificationChannel channel = new UserNotificationChannel(dataFeed);
-                UserNotificationReaderOptions options = new UserNotificationReaderOptions();
-                sReader = channel.createReaderWithOptions(options);
-                sReader.readBatchAsync(Long.MAX_VALUE).thenAccept(new AsyncOperation.ResultConsumer<List<UserNotification>>() {
-                    @Override
-                    public void accept(List<UserNotification> userNotifications) throws Throwable {
-                        synchronized (sHistoricalNotifications) {
-                            for (UserNotification notification : userNotifications) {
-                                if (notification.getReadState() == UserNotificationReadState.UNREAD) {
-                                    sHistoricalNotifications.add(notification);
-                                }
-                            }
-                        }
+        new Thread(() -> {
+            if (getAndUpdateLoginState() == LoginState.LOGGED_OUT){
+                return;
+            }
 
-                        if (RunnableManager.getHistoryUpdated() != null) {
-                            activity.runOnUiThread(RunnableManager.getHistoryUpdated());
+            ConnectedDevicesAccount account = sLoggedInAccount;
+            ArrayList<UserDataFeedSyncScope> scopes = new ArrayList<>();
+            scopes.add(UserNotificationChannel.getSyncScope());
+            UserDataFeed dataFeed = UserDataFeed.getForAccount(account, PlatformManager.getInstance().getPlatform(), Secrets.APP_HOST_NAME);
+            dataFeed.subscribeToSyncScopesAsync(scopes);
+            UserNotificationChannel channel = new UserNotificationChannel(dataFeed);
+            UserNotificationReaderOptions options = new UserNotificationReaderOptions();
+            sReader = channel.createReaderWithOptions(options);
+            sReader.readBatchAsync(Long.MAX_VALUE).thenAccept(userNotifications -> {
+                synchronized (sHistoricalNotifications) {
+                    for (UserNotification notification : userNotifications) {
+                        if (notification.getReadState() == UserNotificationReadState.UNREAD) {
+                            sHistoricalNotifications.add(notification);
                         }
                     }
-                });
+                }
 
-                sReader.dataChanged().subscribe(new EventListener<UserNotificationReader, UserNotificationReaderDataChangedEventArgs>() {
-                    @Override
-                    public void onEvent(UserNotificationReader userNotificationReader, UserNotificationReaderDataChangedEventArgs args) {
-                        userNotificationReader.readBatchAsync(Long.MAX_VALUE).thenAccept(new AsyncOperation.ResultConsumer<List<UserNotification>>() {
-                            @Override
-                            public void accept(List<UserNotification> userNotifications) throws Throwable {
-                                boolean updatedNew = false;
-                                boolean updatedHistorical = false;
-                                synchronized (sHistoricalNotifications) {
-                                    for (final UserNotification notification : userNotifications) {
-                                        if (notification.getStatus() == UserNotificationStatus.ACTIVE && notification.getReadState() == UserNotificationReadState.UNREAD) {
-                                            switch (notification.getUserActionState()) {
-                                                case NO_INTERACTION:
-                                                    // Brand new notification
-                                                    for (int i = 0; i < sNewNotifications.size(); i++) {
-                                                        if (sNewNotifications.get(i).getId().equals(notification.getId())) {
-                                                            sNewNotifications.remove(i);
-                                                            break;
-                                                        }
-                                                    }
+                if (RunnableManager.getHistoryUpdated() != null) {
+                    activity.runOnUiThread(RunnableManager.getHistoryUpdated());
+                }
+            });
 
-                                                    sNewNotifications.add(notification);
-                                                    updatedNew = true;
-                                                    break;
-                                                case DISMISSED:
-                                                    // Existing notification we dismissed, move from new -> history
-                                                    for (int i = 0; i < sNewNotifications.size(); i++) {
-                                                        if (sNewNotifications.get(i).getId().equals(notification.getId())) {
-                                                            sNewNotifications.remove(i);
-                                                            updatedNew = true;
-                                                            break;
-                                                        }
-                                                    }
-
-                                                    for (int i = 0; i < sHistoricalNotifications.size(); i++) {
-                                                        if (sHistoricalNotifications.get(i).getId().equals(notification.getId())) {
-                                                            sHistoricalNotifications.remove(i);
-                                                            break;
-                                                        }
-                                                    }
-
-                                                    sHistoricalNotifications.add(notification);
-                                                    updatedHistorical = true;
-                                                    break;
-                                                default:
-                                                    // Something unexpected happened, just ignore for future flexibility
-                                            }
-                                        } else {
-                                            // historical item has been updated, should only happen if marked as read
-                                            for (int i = 0; i < sHistoricalNotifications.size(); i++) {
-                                                if (sHistoricalNotifications.get(i).getId().equals(notification.getId())) {
-                                                    sHistoricalNotifications.remove(i);
-                                                    updatedHistorical = true;
-                                                    break;
-                                                }
+            sReader.dataChanged().subscribe((userNotificationReader, args) -> userNotificationReader.readBatchAsync(Long.MAX_VALUE).thenAccept(new AsyncOperation.ResultConsumer<List<UserNotification>>() {
+                @Override
+                public void accept(List<UserNotification> userNotifications) throws Throwable {
+                    boolean updatedNew = false;
+                    boolean updatedHistorical = false;
+                    synchronized (sHistoricalNotifications) {
+                        for (final UserNotification notification : userNotifications) {
+                            if ((notification.getStatus() == UserNotificationStatus.ACTIVE) && (notification.getReadState() == UserNotificationReadState.UNREAD)) {
+                                switch (notification.getUserActionState()) {
+                                    case NO_INTERACTION:
+                                        // Brand new notification
+                                        for (int i = 0; i < sNewNotifications.size(); i++) {
+                                            if (sNewNotifications.get(i).getId().equals(notification.getId())) {
+                                                sNewNotifications.remove(i);
+                                                break;
                                             }
                                         }
+
+                                        sNewNotifications.add(notification);
+                                        updatedNew = true;
+                                        break;
+                                    case DISMISSED:
+                                        // Existing notification we dismissed, move from new -> history
+                                        for (int i = 0; i < sNewNotifications.size(); i++) {
+                                            if (sNewNotifications.get(i).getId().equals(notification.getId())) {
+                                                sNewNotifications.remove(i);
+                                                updatedNew = true;
+                                                break;
+                                            }
+                                        }
+
+                                        for (int i = 0; i < sHistoricalNotifications.size(); i++) {
+                                            if (sHistoricalNotifications.get(i).getId().equals(notification.getId())) {
+                                                sHistoricalNotifications.remove(i);
+                                                break;
+                                            }
+                                        }
+
+                                        sHistoricalNotifications.add(notification);
+                                        updatedHistorical = true;
+                                        break;
+                                    default:
+                                        Log.e(TAG, "Somehow got a notification with user action state " + notification.getUserActionState());
+                                        // Something unexpected happened, just ignore for future flexibility
+                                }
+                            } else {
+                                // historical item has been updated, should only happen if marked as read
+                                for (int i = 0; i < sHistoricalNotifications.size(); i++) {
+                                    if (sHistoricalNotifications.get(i).getId().equals(notification.getId())) {
+                                        sHistoricalNotifications.remove(i);
+                                        updatedHistorical = true;
+                                        break;
                                     }
                                 }
-
-                                if (updatedNew && RunnableManager.getNewNotificationsUpdated() != null) {
-                                    activity.runOnUiThread(RunnableManager.getNewNotificationsUpdated());
-                                }
-
-                                if (updatedHistorical && RunnableManager.getHistoryUpdated() != null) {
-                                    activity.runOnUiThread(RunnableManager.getHistoryUpdated());
-                                }
                             }
-                        });
+                        }
                     }
-                });
-            }
+
+                    if (updatedNew && (RunnableManager.getNewNotificationsUpdated() != null)) {
+                        activity.runOnUiThread(RunnableManager.getNewNotificationsUpdated());
+                    }
+
+                    if (updatedHistorical && (RunnableManager.getHistoryUpdated() != null)) {
+                        activity.runOnUiThread(RunnableManager.getHistoryUpdated());
+                    }
+                }
+            }));
         }).start();
     }
 }

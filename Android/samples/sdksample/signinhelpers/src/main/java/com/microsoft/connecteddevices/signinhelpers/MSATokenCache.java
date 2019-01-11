@@ -2,14 +2,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //
 
-package com.microsoft.connecteddevices.sampleaccountproviders;
+package com.microsoft.connecteddevices.signinhelpers;
 
 import android.content.Context;
 import android.support.annotation.Keep;
 import android.util.ArrayMap;
 import android.util.Log;
+import android.content.SharedPreferences;
 
-import com.microsoft.connecteddevices.base.AsyncOperation;
+import com.microsoft.connecteddevices.AsyncOperation;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -58,6 +59,7 @@ final class MSATokenCache {
     private static final int MSA_ACCESS_TOKEN_CLOSE_TO_EXPIRY_SECONDS = 5 * 60;            // 5 minutes
 
     private static final String MSA_OFFLINE_ACCESS_SCOPE = "wl.offline_access";
+    private static final String GUID_ID_KEY = "GUID_ID_KEY";
 
     private static final ScheduledExecutorService sRetryExecutor = Executors.newSingleThreadScheduledExecutor();
 
@@ -429,6 +431,27 @@ final class MSATokenCache {
         } else {
             return AsyncOperation.completedFuture(null);
         }
+    }
+
+    public void saveAccountId(String id) {
+        // Get the shared preferences
+        SharedPreferences preferences = mContext.getSharedPreferences(mContext.getPackageName(), Context.MODE_PRIVATE);
+
+        // Save the given ID to the shared preferences
+        preferences.edit().putString(GUID_ID_KEY, id).apply();
+    }
+
+    public String readSavedAccountId() {
+        // Get the shared preferences
+        SharedPreferences preferences = mContext.getSharedPreferences(mContext.getPackageName(), Context.MODE_PRIVATE);
+
+        // Grab the value of the key with a default value of empty string
+        String id = preferences.getString(GUID_ID_KEY, "");
+        // Check that we found a value and not the default value
+        if (id.isEmpty()) {
+            Log.e(TAG, "readSavedAccountId failed to get the ID");
+        }
+        return id;
     }
 
     public synchronized void addListener(Listener listener) {
