@@ -33,7 +33,6 @@
                 </TextBlock>
                 <Button x:Name="AadButton" Content="Login with AAD" Margin="0,10,0,0" Click="Button_LoginAAD"/>
                 <Button x:Name="MsaButton" Content="Login with MSA" Margin="0,10,0,0" Click="Button_LoginMSA"/>
-                <Button x:Name="LogoutButton" Content="Logout"  Margin="0,10,0,0"  Click="Button_Logout"/>
             </StackPanel>
 
             <!-- Status Block for providing messages to the user.  Use the

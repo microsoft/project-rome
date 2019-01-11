@@ -12,6 +12,7 @@
 using Microsoft.ConnectedDevices.UserData.UserNotifications;
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -49,40 +50,59 @@ namespace SDKTemplate
     public partial class NotificationsPage : Page
     {
         private MainPage rootPage;
-        private ObservableCollection<NotificationListItem> activeNotifications = new ObservableCollection<NotificationListItem>();
-        private GraphNotificationProvider notificationCache;
+        private ObservableCollection<NotificationListItem> m_activeNotifications = new ObservableCollection<NotificationListItem>();
+        private Account m_account;
+        private UserNotificationsManager m_userNotificationManager;
 
         public NotificationsPage()
         {
             InitializeComponent();
-
-            UnreadView.ItemsSource = activeNotifications;
+            UnreadView.ItemsSource = m_activeNotifications;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             rootPage = MainPage.Current;
-            var accountProvider = ((App)Application.Current).AccountProvider;
-            RefreshButton.IsEnabled = (accountProvider.SignedInAccount != null);
-            if (accountProvider.SignedInAccount != null)
-            {
-                Description.Text = $"{accountProvider.SignedInAccount.Type} user ";
-                if (accountProvider.AadUser != null)
-                {
-                    Description.Text += accountProvider.AadUser.DisplayableId;
-                }
+            await RefreshAsync();
+        }
 
-                notificationCache = ((App)Application.Current).NotificationProvider;
-                notificationCache.CacheUpdated += Cache_CacheUpdated;
-                notificationCache.Refresh();
+        private async Task RefreshAsync()
+        {
+            m_account = null;
+            m_userNotificationManager = null;
+            m_activeNotifications.Clear();
+
+            // The ConnectedDevices SDK does not support multi-user currently. When this support becomes available 
+            // the user would be sent via NavigationEventArgs. For now, just grab the first one if it exists.
+            var connectedDevicesManager = ((App)Application.Current).ConnectedDevicesManager;
+            if ((connectedDevicesManager.Accounts.Count > 0))
+            {
+                m_account = connectedDevicesManager.Accounts[0];
+                if (m_account.UserNotifications != null)
+                {
+                    m_userNotificationManager = connectedDevicesManager.Accounts[0].UserNotifications;
+                }
+            }
+
+            RefreshButton.IsEnabled = (m_userNotificationManager != null);
+            LogoutButton.IsEnabled = (m_account != null);
+            if (m_account != null)
+            {
+                Description.Text = $"{m_account.Type} user ";
+            }
+
+            if (m_userNotificationManager != null)
+            {
+                m_userNotificationManager.CacheUpdated += Cache_CacheUpdated;
+                await m_userNotificationManager.RefreshAsync();
             }
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            if (notificationCache != null)
+            if (m_userNotificationManager != null)
             {
-                notificationCache.CacheUpdated -= Cache_CacheUpdated;
+                m_userNotificationManager.CacheUpdated -= Cache_CacheUpdated;
             }
         }
 
@@ -90,48 +110,61 @@ namespace SDKTemplate
         {
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                activeNotifications.Clear();
-                foreach (UserNotification notification in notificationCache.HistoricalNotifications)
-                {
-                    activeNotifications.Add(new NotificationListItem()
-                    {
-                        Id = notification.Id,
-                        Content = $"  Content:{notification.Content}",
-                        UnreadState = notification.ReadState == UserNotificationReadState.Unread,
-                        UserActionState = notification.UserActionState.ToString(),
-                        Priority = $"  Priority: {notification.Priority.ToString()}",
-                        ExpirationTime = $"  Expiry: {notification.ExpirationTime.ToLocalTime().ToString()}",
-                        ChangeTime = $"  Last Updated: {notification.ChangeTime.ToLocalTime().ToString()}",
-                    });
-                }
-
-                if (notificationCache.NewNotifications)
-                {
-                    rootPage.NotifyUser("History is up-to-date. New notifications available", NotifyType.StatusMessage);
-                }
-                else
-                {
-                    rootPage.NotifyUser("History is up-to-date", NotifyType.StatusMessage);
-                }
+                RefreshNotifications();
             });
         }
 
-        private void Button_Refresh(object sender, RoutedEventArgs e)
+        private void RefreshNotifications()
+        {
+            m_activeNotifications.Clear();
+
+            foreach (UserNotification notification in m_userNotificationManager.HistoricalNotifications)
+            {
+                m_activeNotifications.Add(new NotificationListItem()
+                {
+                    Id = notification.Id,
+                    Content = $"  Content:{notification.Content}",
+                    UnreadState = notification.ReadState == UserNotificationReadState.Unread,
+                    UserActionState = notification.UserActionState.ToString(),
+                    Priority = $"  Priority: {notification.Priority.ToString()}",
+                    ExpirationTime = $"  Expiry: {notification.ExpirationTime.ToLocalTime().ToString()}",
+                    ChangeTime = $"  Last Updated: {notification.ChangeTime.ToLocalTime().ToString()}",
+                });
+            }
+
+            if (m_userNotificationManager.NewNotifications)
+            {
+                rootPage.NotifyUser("History is up-to-date. New notifications available", NotifyType.StatusMessage);
+            }
+            else
+            {
+                rootPage.NotifyUser("History is up-to-date", NotifyType.StatusMessage);
+            }
+        }
+
+        private async void Button_Refresh(object sender, RoutedEventArgs e)
         {
             rootPage.NotifyUser("Updating history", NotifyType.StatusMessage);
-            notificationCache.Refresh();
+            await m_userNotificationManager.RefreshAsync();
         }
 
-        private void Button_MarkRead(object sender, RoutedEventArgs e)
+        private async void Button_Logout(object sender, RoutedEventArgs e)
         {
-            var item = ((Grid)((Border)((Button)sender).Parent).Parent).DataContext as NotificationListItem;
-            notificationCache.MarkRead(item.Id);
+            rootPage.NotifyUser("Logged out", NotifyType.ErrorMessage);
+            await ((App)Application.Current).ConnectedDevicesManager.LogoutAsync(m_account);
+            await RefreshAsync();
         }
 
-        private void Button_Delete(object sender, RoutedEventArgs e)
+        private async void Button_MarkRead(object sender, RoutedEventArgs e)
         {
             var item = ((Grid)((Border)((Button)sender).Parent).Parent).DataContext as NotificationListItem;
-            notificationCache.Delete(item.Id);
+            await m_userNotificationManager.MarkReadAsync(item.Id);
+        }
+
+        private async void Button_Delete(object sender, RoutedEventArgs e)
+        {
+            var item = ((Grid)((Border)((Button)sender).Parent).Parent).DataContext as NotificationListItem;
+            await m_userNotificationManager.DeleteAsync(item.Id);
         }
     }
 }

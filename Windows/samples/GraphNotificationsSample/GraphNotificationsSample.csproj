@@ -101,7 +101,7 @@
     <Compile Include="LogsPage.xaml.cs">
       <DependentUpon>LogsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GraphNotificationProvider.cs" />
+    <Compile Include="ConnectedDevicesManager.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="NotificationsPage.xaml.cs">
       <DependentUpon>NotificationsPage.xaml</DependentUpon>
@@ -116,7 +116,8 @@
     <Compile Include="AccountsPage.xaml.cs">
       <DependentUpon>AccountsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MicrosoftAccountProvider.cs" />
+    <Compile Include="Account.cs" />
+    <Compile Include="Secrets.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -167,19 +168,19 @@
       <Version>*</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
-      <Version>3.19.8</Version>
+      <Version>4.4.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.0-Preview1-26502-02</Version>
+      <Version>6.2.3</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>11.0.2</Version>
+      <Version>12.0.1</Version>
     </PackageReference>
     <PackageReference Include="System.Security.Cryptography.Algorithms">
       <Version>4.3.1</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Auth">
-      <Version>1.6.0.2</Version>
+      <Version>1.6.0.4</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

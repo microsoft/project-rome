@@ -18,7 +18,7 @@ namespace SDKTemplate
     public sealed partial class AccountsPage : Page
     {
         private MainPage rootPage;
-        private MicrosoftAccountProvider accountProvider;
+        private ConnectedDevicesManager connectedDevicesManager;
 
         public AccountsPage()
         {
@@ -28,78 +28,51 @@ namespace SDKTemplate
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             rootPage = MainPage.Current;
-            accountProvider = ((App)Application.Current).AccountProvider;
+            connectedDevicesManager = ((App)Application.Current).ConnectedDevicesManager;
+            connectedDevicesManager.AccountsChanged += ConnectedDevicesManager_AccountsChanged;
+            UpdateUI();
+        }
+
+        private void ConnectedDevicesManager_AccountsChanged(object sender, System.EventArgs e)
+        {
             UpdateUI();
         }
 
         private void UpdateUI()
         {
-            MsaButton.IsEnabled = (accountProvider.SignedInAccount == null);
-            AadButton.IsEnabled = (accountProvider.SignedInAccount == null);
-            LogoutButton.IsEnabled = (accountProvider.SignedInAccount != null);
-            LogoutButton.Content = "Logout";
-
-            if (accountProvider.SignedInAccount != null)
-            {
-                Description.Text = $"{accountProvider.SignedInAccount.Type} user ";
-                if (accountProvider.AadUser != null)
-                {
-                    Description.Text += accountProvider.AadUser.DisplayableId;
-                }
-
-                LogoutButton.Content = $"Logout - {accountProvider.SignedInAccount.Type}";
-            }
+            // The ConnectedDevices SDK does not support multi-user currently. When this support becomes available 
+            // these buttons would always be enabled.
+            bool hasAccount = connectedDevicesManager.Accounts.Count > 0;
+            MsaButton.IsEnabled = !hasAccount;
+            AadButton.IsEnabled = !hasAccount;
         }
 
         private async void Button_LoginMSA(object sender, RoutedEventArgs e)
         {
-            if (accountProvider.SignedInAccount == null)
+            bool success = await connectedDevicesManager.SignInMsaAsync();
+            if (!success)
             {
-                ((Button)sender).IsEnabled = false;
-
-                bool success = await accountProvider.SignInMsa();
-                if (!success)
-                {
-                    rootPage.NotifyUser("MSA login failed!", NotifyType.ErrorMessage);
-                }
-                else
-                {
-                    rootPage.NotifyUser("MSA login successful", NotifyType.StatusMessage);
-                }
-
-                UpdateUI();
+                rootPage.NotifyUser("MSA login failed!", NotifyType.ErrorMessage);
+            }
+            else
+            {
+                rootPage.NotifyUser("MSA login successful", NotifyType.StatusMessage);
             }
         }
 
         private async void Button_LoginAAD(object sender, RoutedEventArgs e)
         {
-            if (accountProvider.SignedInAccount == null)
-            {
-                ((Button)sender).IsEnabled = false;
-
-                bool success = await accountProvider.SignInAad();
-                if (!success)
-                {
-                    rootPage.NotifyUser("AAD login failed!", NotifyType.ErrorMessage);
-                }
-                else
-                {
-                    rootPage.NotifyUser("AAD login successful", NotifyType.StatusMessage);
-                }
-
-                UpdateUI();
-            }
-        }
-
-        private async void Button_Logout(object sender, RoutedEventArgs e)
-        {
             ((Button)sender).IsEnabled = false;
 
-            accountProvider.SignOut();
-
-            rootPage.NotifyUser("Logout successful", NotifyType.ErrorMessage);
-
-            UpdateUI();
+            bool success = await connectedDevicesManager.SignInAadAsync();
+            if (!success)
+            {
+                rootPage.NotifyUser("AAD login failed!", NotifyType.ErrorMessage);
+            }
+            else
+            {
+                rootPage.NotifyUser("AAD login successful", NotifyType.StatusMessage);
+            }
         }
     }
 }

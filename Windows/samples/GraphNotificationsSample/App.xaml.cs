@@ -11,6 +11,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Background;
@@ -29,14 +30,23 @@ namespace SDKTemplate
         public string notificationId { get; set; }
     }
 
+    public class Activity
+    {
+        public string id { get; set; }
+    }
+
+    public class RawNotificationPayload
+    {
+        public List<Activity> activities { get; set; }
+    }
+
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
     sealed partial class App : Application
     {
         public PushNotificationChannel PushChannel { get; set; }
-        public MicrosoftAccountProvider AccountProvider { get; set; }
-        public GraphNotificationProvider NotificationProvider { get; set; }
+        public ConnectedDevicesManager ConnectedDevicesManager { get; set; }
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -54,7 +64,6 @@ namespace SDKTemplate
         /// <param name="e">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
@@ -70,11 +79,10 @@ namespace SDKTemplate
                 PushChannel.PushNotificationReceived += PushNotificationReceived;
             }
 
-            if (NotificationProvider == null)
+            if (ConnectedDevicesManager == null)
             {
                 Logger.Instance.LogMessage($"Setup AccountsProvider and NotificationsProvider");
-                AccountProvider = new MicrosoftAccountProvider();
-                NotificationProvider = new GraphNotificationProvider(AccountProvider, PushChannel.Uri);
+                ConnectedDevicesManager = new ConnectedDevicesManager();
             }
 
             Frame rootFrame = Window.Current.Content as Frame;
@@ -109,12 +117,11 @@ namespace SDKTemplate
                 rootFrame.Navigate(typeof(MainPage), e.Arguments);
             }
 
-
             if (!string.IsNullOrEmpty(e.Arguments))
             {
                 var result = JsonConvert.DeserializeObject<AppLauchArgs>(e.Arguments);
-                NotificationProvider?.Refresh();
-                NotificationProvider?.Activate(result.notificationId, false);
+                await ConnectedDevicesManager.RefreshAsync();
+                await ConnectedDevicesManager.ActivateAsync(result.notificationId, false);
             }
 
             // Ensure the current window is active
@@ -131,13 +138,13 @@ namespace SDKTemplate
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
 
-        private void PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs e)
+        private async void PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs e)
         {
             Logger.Instance.LogMessage($"Push received type:{e.NotificationType}");
             if (e.NotificationType == PushNotificationType.Raw)
             {
                 e.Cancel = true;
-                NotificationProvider?.ReceiveNotification(e.RawNotification.Content);
+                await ConnectedDevicesManager?.ReceiveNotificationAsync(e.RawNotification.Content);
             }
         }
 
@@ -151,26 +158,25 @@ namespace SDKTemplate
                 Logger.Instance.LogMessage($"Task canceled for {r}");
                 m_deferral.Complete();
             };
-            Logger.Instance.LogMessage($"{args.TaskInstance.Task.Name} activated in background");
+
+            Logger.Instance.LogMessage($"{args.TaskInstance.Task.Name} activated in background with {args.TaskInstance.TriggerDetails.GetType().ToString()}");
 
             if (args.TaskInstance.TriggerDetails is RawNotification)
             {
-                var notification = args.TaskInstance.TriggerDetails as RawNotification;
-                Logger.Instance.LogMessage($"RawNotification received {notification.Content}");
+                var rawNotification = args.TaskInstance.TriggerDetails as RawNotification;
+                Logger.Instance.LogMessage($"RawNotification received {rawNotification.Content}");
+                await ConnectedDevicesManager.ReceiveNotificationAsync(rawNotification.Content);
 
-                await Task.Run(() =>
-                {
-                    if (NotificationProvider != null)
-                    {
-                        AccountProvider = new MicrosoftAccountProvider();
-                        NotificationProvider = new GraphNotificationProvider(AccountProvider, "");
-                    }
+                // HACK: Crack the push body to extract the notificationId
+                // var result = JsonConvert.DeserializeObject<RawNotificationPayload>(rawNotification.Content);
+                // var notificationId = result.activities != null && result.activities.Count > 0 ? result.activities[0].id : "Graph Notifications";
+                // var toast = ConnectedDevicesManager.BuildToastNotification(notificationId, "New notification");
+                // var toastNotifier = Windows.UI.Notifications.ToastNotificationManager.CreateToastNotifier();
+                // toastNotifier.Show(toast);
 
-                    NotificationProvider.ReceiveNotification(notification.Content);
-                });
+                await Task.Delay(TimeSpan.FromSeconds(15));
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(30));
             Logger.Instance.LogMessage($"Task completed");
         }
     }

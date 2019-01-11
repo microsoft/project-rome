@@ -30,14 +30,11 @@ namespace SDKTemplate
         {
             rootPage = MainPage.Current;
 
-            var accountProvider = ((App)Application.Current).AccountProvider;
-            if (accountProvider.SignedInAccount != null)
+            var connectedDevicesManager = ((App)Application.Current).ConnectedDevicesManager;
+            if (connectedDevicesManager.Accounts.Count > 0)
             {
-                Description.Text = $"{accountProvider.SignedInAccount.Type} user ";
-                if (accountProvider.AadUser != null)
-                {
-                    Description.Text += accountProvider.AadUser.DisplayableId;
-                }
+                var account = connectedDevicesManager.Accounts[0];
+                Description.Text = $"{account.Type} user ";
             }
 
             LogView.Text = Logger.Instance.AppLogs;
