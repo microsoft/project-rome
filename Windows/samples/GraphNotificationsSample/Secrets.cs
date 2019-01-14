@@ -1,6 +1,6 @@
 ﻿namespace SDKTemplate
 {
-    class Secrets
+    public class Secrets
     {
         // Get the following from Application Registration Portal (apps.dev.microsoft.com)
         // MSA_CLIENT_ID:           Application Id for MSA
