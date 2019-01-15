@@ -21,7 +21,7 @@
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>6336618D2C536AC725A3F90BB3335D273DE29003</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>3FD265E4FC786A7A28192B070A81132FF51AA0CE</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>GraphNotificationsSample_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
@@ -160,11 +160,12 @@
     <Content Include="Assets\storelogo-sdk.png" />
     <Content Include="Assets\tile-sdk.png" />
     <Content Include="Assets\windows-sdk.png" />
+    <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ConnectedDevices.UserNotifications">
-      <Version>*</Version>
+      <Version>0.13.8-master.666</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory">
       <Version>4.4.2</Version>
