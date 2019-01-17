@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
         android:text="" />
 
     <TextView
@@ -18,6 +19,26 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/notification_id"
+        android:layout_marginTop="10dp"
         android:text="" />
+
+    <TextView
+        android:id="@+id/notification_useractionstate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/notification_text"
+        android:layout_marginTop="10dp"
+        android:text="" />
+
+    <Button
+        android:id="@+id/notification_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@id/notification_useractionstate"
+        android:layout_alignTop="@+id/notification_useractionstate"
+        android:layout_marginStart="10dp"
+        android:text="@string/read" />
 
 </RelativeLayout>
