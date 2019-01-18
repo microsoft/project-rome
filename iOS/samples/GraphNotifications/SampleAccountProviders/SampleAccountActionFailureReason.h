@@ -10,6 +10,7 @@
 typedef NS_ENUM(NSInteger, SampleAccountActionFailureReason)
 {
     SampleAccountActionNoFailure,
+    SampleAccountActionFailureReasonGeneric,
     SampleAccountActionFailureReasonAlreadySignedIn,
     SampleAccountActionFailureReasonAlreadySignedOut,
     SampleAccountActionFailureReasonUserCancelled,
@@ -17,7 +18,8 @@ typedef NS_ENUM(NSInteger, SampleAccountActionFailureReason)
     SampleAccountActionFailureReasonFailToRetrieveRefreshToken,
     SampleAccountActionFailureReasonSigninSignOutInProgress,
     SampleAccountActionFailureReasonUnknown,
+    SampleAccountActionFailureReasonInvalidAccountId,
+    SampleAccountActionFailureReasonAccessTokenTemporaryError,
+    SampleAccountActionFailureReasonAccessTokenPermanentError,
     SampleAccountActionFailureReasonADAL,
 };
-
-typedef void (^SampleAccountProviderCompletionBlock)(BOOL successful, SampleAccountActionFailureReason reason);

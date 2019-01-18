@@ -7,41 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0017A4902135B52800EB86D8 /* AADAccountProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A4892135B52700EB86D8 /* AADAccountProvider.m */; };
-		0017A4912135B52800EB86D8 /* MSATokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A48A2135B52700EB86D8 /* MSATokenRequest.m */; };
-		0017A4922135B52800EB86D8 /* AADMSAAccountProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A48C2135B52700EB86D8 /* AADMSAAccountProvider.m */; };
-		0017A4932135B52800EB86D8 /* MSATokenCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A48D2135B52700EB86D8 /* MSATokenCache.m */; };
-		0017A4942135B52800EB86D8 /* MSAAccountProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A48F2135B52800EB86D8 /* MSAAccountProvider.m */; };
-		0017A49D2135D10E00EB86D8 /* NotificationProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017A49C2135D10E00EB86D8 /* NotificationProvider.m */; };
+		0017D23921E55C6300FFE2A5 /* MSAAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017D22E21E55C6200FFE2A5 /* MSAAccount.m */; };
+		0017D23A21E55C6300FFE2A5 /* AADAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017D23221E55C6200FFE2A5 /* AADAccount.m */; };
+		0017D23B21E55C6300FFE2A5 /* MSATokenCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017D23321E55C6200FFE2A5 /* MSATokenCache.m */; };
+		0017D23C21E55C6300FFE2A5 /* MSATokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017D23521E55C6300FFE2A5 /* MSATokenRequest.m */; };
 		003421A921347622007FC970 /* NotificationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 003421A821347622007FC970 /* NotificationsManager.m */; };
 		00823361212F114B0055F6E4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823360212F114B0055F6E4 /* AppDelegate.m */; };
 		00823364212F114B0055F6E4 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823363212F114B0055F6E4 /* RootViewController.m */; };
 		00823367212F114B0055F6E4 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823366212F114B0055F6E4 /* LoginViewController.m */; };
-		0082336A212F114B0055F6E4 /* ModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823369212F114B0055F6E4 /* ModelController.m */; };
 		0082336D212F114B0055F6E4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0082336B212F114B0055F6E4 /* Main.storyboard */; };
 		0082336F212F114B0055F6E4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0082336E212F114B0055F6E4 /* Assets.xcassets */; };
 		00823372212F114B0055F6E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00823370212F114B0055F6E4 /* LaunchScreen.storyboard */; };
 		00823375212F114B0055F6E4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823374212F114B0055F6E4 /* main.m */; };
 		00D6D060213720E5008E5E33 /* NotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D6D05F213720E5008E5E33 /* NotificationsViewController.m */; };
-		00D6D06321384D00008E5E33 /* HistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D6D06221384D00008E5E33 /* HistoryViewController.m */; };
 		86E3681E27114147F58BE403 /* libPods-GraphNotificationsSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06928972061C754C239718DC /* libPods-GraphNotificationsSample.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0017A4892135B52700EB86D8 /* AADAccountProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AADAccountProvider.m; sourceTree = "<group>"; };
-		0017A48A2135B52700EB86D8 /* MSATokenRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenRequest.m; sourceTree = "<group>"; };
-		0017A48B2135B52700EB86D8 /* MSATokenCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenCache.h; sourceTree = "<group>"; };
-		0017A48C2135B52700EB86D8 /* AADMSAAccountProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AADMSAAccountProvider.m; sourceTree = "<group>"; };
-		0017A48D2135B52700EB86D8 /* MSATokenCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenCache.m; sourceTree = "<group>"; };
-		0017A48E2135B52700EB86D8 /* MSATokenRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenRequest.h; sourceTree = "<group>"; };
-		0017A48F2135B52800EB86D8 /* MSAAccountProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAAccountProvider.m; sourceTree = "<group>"; };
-		0017A4952135B53C00EB86D8 /* SingleUserAccountProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingleUserAccountProvider.h; sourceTree = "<group>"; };
-		0017A4962135B53C00EB86D8 /* MSAAccountProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAAccountProvider.h; sourceTree = "<group>"; };
-		0017A4972135B53C00EB86D8 /* SampleAccountActionFailureReason.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleAccountActionFailureReason.h; sourceTree = "<group>"; };
-		0017A4982135B53C00EB86D8 /* AADAccountProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AADAccountProvider.h; sourceTree = "<group>"; };
-		0017A4992135B53C00EB86D8 /* AADMSAAccountProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AADMSAAccountProvider.h; sourceTree = "<group>"; };
-		0017A49B2135D10A00EB86D8 /* NotificationProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationProvider.h; sourceTree = "<group>"; };
-		0017A49C2135D10E00EB86D8 /* NotificationProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationProvider.m; sourceTree = "<group>"; };
+		0017D22E21E55C6200FFE2A5 /* MSAAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAAccount.m; sourceTree = "<group>"; };
+		0017D22F21E55C6200FFE2A5 /* MSATokenCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenCache.h; sourceTree = "<group>"; };
+		0017D23021E55C6200FFE2A5 /* SampleAccountActionFailureReason.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleAccountActionFailureReason.h; sourceTree = "<group>"; };
+		0017D23121E55C6200FFE2A5 /* SingleUserAccountProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingleUserAccountProvider.h; sourceTree = "<group>"; };
+		0017D23221E55C6200FFE2A5 /* AADAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AADAccount.m; sourceTree = "<group>"; };
+		0017D23321E55C6200FFE2A5 /* MSATokenCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenCache.m; sourceTree = "<group>"; };
+		0017D23421E55C6300FFE2A5 /* MSAAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAAccount.h; sourceTree = "<group>"; };
+		0017D23521E55C6300FFE2A5 /* MSATokenRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenRequest.m; sourceTree = "<group>"; };
+		0017D23621E55C6300FFE2A5 /* MSATokenRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenRequest.h; sourceTree = "<group>"; };
+		0017D23721E55C6300FFE2A5 /* AADAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AADAccount.h; sourceTree = "<group>"; };
+		0017D23821E55C6300FFE2A5 /* SignInAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignInAccount.h; sourceTree = "<group>"; };
 		003421A72130A887007FC970 /* NotificationsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationsManager.h; sourceTree = "<group>"; };
 		003421A821347622007FC970 /* NotificationsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationsManager.m; sourceTree = "<group>"; };
 		0082335C212F114B0055F6E4 /* GraphNotificationsSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GraphNotificationsSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -51,8 +44,6 @@
 		00823363212F114B0055F6E4 /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		00823365212F114B0055F6E4 /* LoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		00823366212F114B0055F6E4 /* LoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
-		00823368212F114B0055F6E4 /* ModelController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModelController.h; sourceTree = "<group>"; };
-		00823369212F114B0055F6E4 /* ModelController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModelController.m; sourceTree = "<group>"; };
 		0082336C212F114B0055F6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0082336E212F114B0055F6E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		00823371212F114B0055F6E4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -60,8 +51,6 @@
 		00823374212F114B0055F6E4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		00D6D05E21372041008E5E33 /* NotificationsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationsViewController.h; sourceTree = "<group>"; };
 		00D6D05F213720E5008E5E33 /* NotificationsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationsViewController.m; sourceTree = "<group>"; };
-		00D6D06121384BA3008E5E33 /* HistoryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HistoryViewController.h; sourceTree = "<group>"; };
-		00D6D06221384D00008E5E33 /* HistoryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HistoryViewController.m; sourceTree = "<group>"; };
 		00D6D0642138519C008E5E33 /* GraphNotificationsSample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GraphNotificationsSample.entitlements; sourceTree = "<group>"; };
 		06928972061C754C239718DC /* libPods-GraphNotificationsSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GraphNotificationsSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		63E3FBAFA254E6B80A8DA76E /* Pods-GraphNotifications.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GraphNotifications.release.xcconfig"; path = "Pods/Target Support Files/Pods-GraphNotifications/Pods-GraphNotifications.release.xcconfig"; sourceTree = "<group>"; };
@@ -87,18 +76,17 @@
 		0017A49A2135B55400EB86D8 /* SampleAccountProviders */ = {
 			isa = PBXGroup;
 			children = (
-				0017A4982135B53C00EB86D8 /* AADAccountProvider.h */,
-				0017A4992135B53C00EB86D8 /* AADMSAAccountProvider.h */,
-				0017A4962135B53C00EB86D8 /* MSAAccountProvider.h */,
-				0017A4972135B53C00EB86D8 /* SampleAccountActionFailureReason.h */,
-				0017A4952135B53C00EB86D8 /* SingleUserAccountProvider.h */,
-				0017A4892135B52700EB86D8 /* AADAccountProvider.m */,
-				0017A48C2135B52700EB86D8 /* AADMSAAccountProvider.m */,
-				0017A48F2135B52800EB86D8 /* MSAAccountProvider.m */,
-				0017A48B2135B52700EB86D8 /* MSATokenCache.h */,
-				0017A48D2135B52700EB86D8 /* MSATokenCache.m */,
-				0017A48E2135B52700EB86D8 /* MSATokenRequest.h */,
-				0017A48A2135B52700EB86D8 /* MSATokenRequest.m */,
+				0017D23721E55C6300FFE2A5 /* AADAccount.h */,
+				0017D23221E55C6200FFE2A5 /* AADAccount.m */,
+				0017D23421E55C6300FFE2A5 /* MSAAccount.h */,
+				0017D22E21E55C6200FFE2A5 /* MSAAccount.m */,
+				0017D22F21E55C6200FFE2A5 /* MSATokenCache.h */,
+				0017D23321E55C6200FFE2A5 /* MSATokenCache.m */,
+				0017D23621E55C6300FFE2A5 /* MSATokenRequest.h */,
+				0017D23521E55C6300FFE2A5 /* MSATokenRequest.m */,
+				0017D23021E55C6200FFE2A5 /* SampleAccountActionFailureReason.h */,
+				0017D23821E55C6300FFE2A5 /* SignInAccount.h */,
+				0017D23121E55C6200FFE2A5 /* SingleUserAccountProvider.h */,
 			);
 			path = SampleAccountProviders;
 			sourceTree = "<group>";
@@ -126,16 +114,12 @@
 			isa = PBXGroup;
 			children = (
 				00D6D0642138519C008E5E33 /* GraphNotificationsSample.entitlements */,
-				0017A49B2135D10A00EB86D8 /* NotificationProvider.h */,
-				0017A49C2135D10E00EB86D8 /* NotificationProvider.m */,
 				0082335F212F114B0055F6E4 /* AppDelegate.h */,
 				00823360212F114B0055F6E4 /* AppDelegate.m */,
 				00823362212F114B0055F6E4 /* RootViewController.h */,
 				00823363212F114B0055F6E4 /* RootViewController.m */,
 				00823365212F114B0055F6E4 /* LoginViewController.h */,
 				00823366212F114B0055F6E4 /* LoginViewController.m */,
-				00823368212F114B0055F6E4 /* ModelController.h */,
-				00823369212F114B0055F6E4 /* ModelController.m */,
 				0082336B212F114B0055F6E4 /* Main.storyboard */,
 				0082336E212F114B0055F6E4 /* Assets.xcassets */,
 				00823370212F114B0055F6E4 /* LaunchScreen.storyboard */,
@@ -145,8 +129,6 @@
 				003421A821347622007FC970 /* NotificationsManager.m */,
 				00D6D05E21372041008E5E33 /* NotificationsViewController.h */,
 				00D6D05F213720E5008E5E33 /* NotificationsViewController.m */,
-				00D6D06121384BA3008E5E33 /* HistoryViewController.h */,
-				00D6D06221384D00008E5E33 /* HistoryViewController.m */,
 				913EB4AA217E75C700A78C79 /* Secrets.h */,
 			);
 			path = GraphNotificationsSample;
@@ -184,6 +166,7 @@
 				00823359212F114B0055F6E4 /* Frameworks */,
 				0082335A212F114B0055F6E4 /* Resources */,
 				534E2B6519087712F45067D1 /* [CP] Embed Pods Frameworks */,
+				C62E42AF81F89136AC56D4FD /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -207,6 +190,9 @@
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.Push = {
 								enabled = 1;
 							};
@@ -281,7 +267,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		C62E42AF81F89136AC56D4FD /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GraphNotificationsSample/Pods-GraphNotificationsSample-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -291,20 +292,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0017A4922135B52800EB86D8 /* AADMSAAccountProvider.m in Sources */,
 				00823375212F114B0055F6E4 /* main.m in Sources */,
 				00823364212F114B0055F6E4 /* RootViewController.m in Sources */,
 				003421A921347622007FC970 /* NotificationsManager.m in Sources */,
-				0017A4942135B52800EB86D8 /* MSAAccountProvider.m in Sources */,
-				00D6D06321384D00008E5E33 /* HistoryViewController.m in Sources */,
-				0017A4932135B52800EB86D8 /* MSATokenCache.m in Sources */,
-				0082336A212F114B0055F6E4 /* ModelController.m in Sources */,
 				00D6D060213720E5008E5E33 /* NotificationsViewController.m in Sources */,
-				0017A49D2135D10E00EB86D8 /* NotificationProvider.m in Sources */,
-				0017A4902135B52800EB86D8 /* AADAccountProvider.m in Sources */,
 				00823367212F114B0055F6E4 /* LoginViewController.m in Sources */,
+				0017D23B21E55C6300FFE2A5 /* MSATokenCache.m in Sources */,
 				00823361212F114B0055F6E4 /* AppDelegate.m in Sources */,
-				0017A4912135B52800EB86D8 /* MSATokenRequest.m in Sources */,
+				0017D23C21E55C6300FFE2A5 /* MSATokenRequest.m in Sources */,
+				0017D23A21E55C6300FFE2A5 /* AADAccount.m in Sources */,
+				0017D23921E55C6300FFE2A5 /* MSAAccount.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -359,7 +356,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -414,7 +411,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -429,6 +426,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -440,17 +438,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = GraphNotificationsSample/GraphNotificationsSample.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = UBF8T346G9;
+				DEVELOPMENT_TEAM = 9UFF8D37DM;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GraphNotificationsSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.connecteddevices.graphnotifications;
+				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.connecteddevices.graphnotificationsample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "ba3afbc5-30e6-4150-9eb9-d8967de4ce9b";
-				PROVISIONING_PROFILE_SPECIFIER = "Graph Notifications Development";
+				PROVISIONING_PROFILE_SPECIFIER = "GN Adhoc";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -461,17 +460,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = GraphNotificationsSample/GraphNotificationsSample.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = UBF8T346G9;
+				DEVELOPMENT_TEAM = 9UFF8D37DM;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GraphNotificationsSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.connecteddevices.graphnotifications;
+				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.connecteddevices.graphnotificationsample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "ba3afbc5-30e6-4150-9eb9-d8967de4ce9b";
-				PROVISIONING_PROFILE_SPECIFIER = "Graph Notifications Development";
+				PROVISIONING_PROFILE_SPECIFIER = "GN Adhoc";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

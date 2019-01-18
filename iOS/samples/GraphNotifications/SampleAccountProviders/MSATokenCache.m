@@ -8,6 +8,7 @@
 static NSString* const MsaOfflineAccessScope = @"wl.offline_access";
 
 static NSString* const JsonTokenKey = @"refresh_token";
+static NSString* const JsonAccountIdKey = @"account_id";
 static NSString* const JsonExpirationKey = @"expires";
 
 // Max number of times to try to refresh a token through transient failures
@@ -32,10 +33,12 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
 // @brief Private helper class, encapsulates a single MSA token to be cached, and how to refresh it.
 @interface MSATokenCacheItem : NSObject
 + (nullable instancetype)cacheItemWithToken:(nonnull NSString*)token
+                                  accountId:(nonnull NSUUID*)accountId
                                   expiresIn:(NSTimeInterval)expiry
                                 refreshWith:(nonnull MSATokenRequest*)refreshRequest
                                      parent:(nonnull MSATokenCache*)parent;
 - (nullable instancetype)initWithToken:(nonnull NSString*)token
+                             accountId:(nonnull NSUUID*)accountId
                              expiresIn:(NSTimeInterval)expiry
                            refreshWith:(nonnull MSATokenRequest*)refreshRequest
                                 parent:(nonnull MSATokenCache*)parent;
@@ -44,6 +47,7 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
 - (void)getTokenAsync:(nonnull void (^)(NSString* _Nullable token))callback;
 
 @property(readwrite, nonnull, nonatomic, copy) NSString* token;
+@property(readwrite, nonnull, nonatomic, copy) NSUUID* accountId;
 @property(readwrite, nonnull, nonatomic, strong) NSDate* expirationDate;
 @property(readwrite, nonnull, nonatomic, strong) MSATokenRequest* refreshRequest;
 @property(readwrite, nonnull, nonatomic, strong) MSATokenCache* parent;
@@ -80,14 +84,16 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
 @implementation MSATokenCacheItem
 
 + (instancetype)cacheItemWithToken:(NSString*)token
+                         accountId:(NSUUID*)accountId
                          expiresIn:(NSTimeInterval)expiry
                        refreshWith:(MSATokenRequest*)refreshRequest
                             parent:(MSATokenCache*)parent
 {
-    return [[self alloc] initWithToken:token expiresIn:expiry refreshWith:refreshRequest parent:parent];
+    return [[self alloc] initWithToken:token accountId:accountId expiresIn:expiry refreshWith:refreshRequest parent:parent];
 }
 
 - (instancetype)initWithToken:(NSString*)token
+                    accountId:(NSUUID*)accountId
                     expiresIn:(NSTimeInterval)expiry
                   refreshWith:(MSATokenRequest*)refreshRequest
                        parent:(MSATokenCache*)parent
@@ -95,11 +101,17 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
     if (self = [super init])
     {
         _token = [token copy];
+        _accountId = [accountId copy];
         _expirationDate = [NSDate dateWithTimeIntervalSinceNow:expiry];
         _refreshRequest = refreshRequest;
         _parent = parent;
     }
     return self;
+}
+
+- (nullable NSUUID*)getAccountId
+{
+    return _accountId;
 }
 
 - (void)getTokenAsync:(void (^)(NSString*))callback
@@ -246,6 +258,8 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
 
     NSDictionary* tokenDict = (NSDictionary*)deserializedTokenData;
     NSString* loadedRefreshToken = (NSString*)(tokenDict[JsonTokenKey]);
+    NSString* uuidString = tokenDict[JsonAccountIdKey];
+    NSUUID* loadedAccountId = [[NSUUID alloc] initWithUUIDString:uuidString];
 
     NSDateFormatter* dateFormatter = [NSDateFormatter new];
     dateFormatter.dateStyle = NSDateFormatterFullStyle;
@@ -262,8 +276,11 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
                                                                       grantType:MsaTokenRequestGrantTypeRefresh
                                                                           scope:MsaOfflineAccessScope
                                                                     redirectUri:nil];
-    MSARefreshTokenCacheItem* ret =
-        [self cacheItemWithToken:loadedRefreshToken expiresIn:timeUntilExpiration refreshWith:refreshRequest parent:parent];
+    MSARefreshTokenCacheItem* ret = [self cacheItemWithToken:loadedRefreshToken
+                                                   accountId:loadedAccountId
+                                                   expiresIn:timeUntilExpiration
+                                                 refreshWith:refreshRequest
+                                                      parent:parent];
 
     NSLog(@"Successfully loaded refresh token from keychain.");
     return ret;
@@ -276,7 +293,11 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
     NSDateFormatter* dateFormatter = [NSDateFormatter new];
     dateFormatter.dateStyle = NSDateFormatterFullStyle;
     dateFormatter.timeStyle = NSDateFormatterFullStyle;
-    NSDictionary* tokenDict = @{ JsonTokenKey : self.token, JsonExpirationKey : [dateFormatter stringFromDate:self.expirationDate] };
+    NSDictionary* tokenDict = @{
+        JsonTokenKey : self.token,
+        JsonAccountIdKey : self.accountId.UUIDString,
+        JsonExpirationKey : [dateFormatter stringFromDate:self.expirationDate]
+    };
 
     NSError* jsonError = nil;
     NSData* tokenData = [NSJSONSerialization dataWithJSONObject:tokenDict options:0 error:&jsonError];
@@ -342,7 +363,6 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
         [self.parent markAccessTokensExpired];
     }
 }
-
 @end
 
 // MSATokenCache implementation
@@ -364,7 +384,7 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
     return self;
 }
 
-- (void)setRefreshToken:(NSString*)refreshToken
+- (void)setRefreshToken:(NSString*)refreshToken withAccountId:(NSUUID*)accountId
 {
     MSATokenRequest* refreshRequest = [MSATokenRequest tokenRequestWithClientId:_clientId
                                                                       grantType:MsaTokenRequestGrantTypeRefresh
@@ -373,6 +393,7 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
     @synchronized(self)
     {
         _cachedRefreshToken = [MSARefreshTokenCacheItem cacheItemWithToken:refreshToken
+                                                                 accountId:accountId
                                                                  expiresIn:MsaRefreshTokenExpirationInterval
                                                                refreshWith:refreshRequest
                                                                     parent:self];
@@ -381,16 +402,19 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
     }
 }
 
-- (void)setAccessToken:(NSString*)accessToken forScope:(NSString*)scope expiresIn:(NSTimeInterval)expiry
+- (void)setAccessToken:(NSString*)accessToken withAccountId:(NSUUID*)accountId forScope:(NSString*)scope expiresIn:(NSTimeInterval)expiry
 {
     MSATokenRequest* refreshRequest =
         [MSATokenRequest tokenRequestWithClientId:_clientId grantType:MsaTokenRequestGrantTypeRefresh scope:scope redirectUri:nil];
 
     @synchronized(self)
     {
-        [_cachedAccessTokens
-            setValue:[MSATokenCacheItem cacheItemWithToken:accessToken expiresIn:expiry refreshWith:refreshRequest parent:self]
-              forKey:scope];
+        [_cachedAccessTokens setObject:[MSATokenCacheItem cacheItemWithToken:accessToken
+                                                                   accountId:accountId
+                                                                   expiresIn:expiry
+                                                                 refreshWith:refreshRequest
+                                                                      parent:self]
+                                forKey:scope];
     }
 }
 
@@ -423,6 +447,11 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
             callback(nil);
         }
     }
+}
+
+- (nullable NSUUID*)getAccountId
+{
+    return _cachedRefreshToken.accountId;
 }
 
 - (NSArray<NSString*>*)allScopes

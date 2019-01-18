@@ -20,10 +20,14 @@
 - (nullable instancetype)initWithClientId:(nonnull NSString*)clientId delegate:(nullable id<MSATokenCacheDelegate>)delegate;
 
 // @brief Adds/gets tokens to/from the cache, automatically refreshing them once expired.
-- (void)setRefreshToken:(nonnull NSString*)refreshToken;
-- (void)setAccessToken:(nonnull NSString*)accessToken forScope:(nonnull NSString*)scope expiresIn:(NSTimeInterval)expiry;
+- (void)setRefreshToken:(nonnull NSString*)refreshToken withAccountId:(nonnull NSUUID*)accountId;
+- (void)setAccessToken:(nonnull NSString*)accessToken
+         withAccountId:(nonnull NSUUID*)accountId
+              forScope:(nonnull NSString*)scope
+             expiresIn:(NSTimeInterval)expiry;
 - (void)getRefreshTokenAsync:(nonnull void (^)(NSString* _Nullable accessToken))callback;
 - (void)getAccessTokenForScopeAsync:(nonnull NSString*)scope callback:(nonnull void (^)(NSString* _Nullable accessToken))callback;
+- (nullable NSUUID*)getAccountId;
 
 // @brief Returns the scopes for which there are currently access tokens cached.
 - (nonnull NSArray<NSString*>*)allScopes;

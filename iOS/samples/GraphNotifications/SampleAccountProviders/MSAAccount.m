@@ -2,7 +2,7 @@
 //  Copyright (c) Microsoft Corporation. All rights reserved.
 //
 
-#import "MSAAccountProvider.h"
+#import "MSAAccount.h"
 #import "MSATokenCache.h"
 #import "MSATokenRequest.h"
 
@@ -51,6 +51,17 @@
  *      4. Now treated as signed out. Account is no longer exposed to CDP. userAccountChanged event is fired.
  */
 
+/*
+- (nullable instancetype)initWithClientId:(nonnull NSString*)clientId
+                              accountType:(MCDConnectedDevicesAccountType)type
+                           scopeOverrides:(nullable NSDictionary<NSString*, NSArray<NSString*>*>*)scopes
+                              redirectUri:(nonnull NSURL*)redirectUri;
+
+- (nullable instancetype)initMSAWithClientId:(nonnull NSString*)clientId
+                              scopeOverrides:(nullable NSDictionary<NSString*, NSArray<NSString*>*>*)scopes;
+
+- (nullable instancetype)initAADWithClientId:(nonnull NSString*)clientId redirectUri:(nonnull NSURL*)redirectUri;*/
+
 #pragma mark - Constants
 // CDP's SDK currently requires authorization for all features, otherwise platform initialization will fail.
 // As such, the user must sign in/consent for the following scopes. This may change to become more modular in the future.
@@ -61,7 +72,7 @@ static NSString* const MsaRequiredScopes =                               //
     @"dds.register+"                                                     // device discovery scope (allow discovering this device)
     @"wns.connect+"                                                      // push notification scope
     @"asimovrome.telemetry+"                                             // asimov token scope
-    @"https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp"; // default userdata.useractivities scope
+    @"https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp"; // default useractivities scope
 
 // OAuth URLs
 static NSString* const MsaRedirectUrl = @"https://login.live.com/oauth20_desktop.srf";
@@ -70,9 +81,6 @@ static NSString* const MsaLogoutUrl = @"https://login.live.com/oauth20_logout.sr
 
 // NSError constants
 static NSString* const MsaAccountProviderErrorDomain = @"MSAAccountProvider";
-static const NSInteger MsaAccountProviderErrorInvalidAccountId = 100;
-static const NSInteger MsaAccountProviderErrorAccessTokenTemporaryError = 101;
-static const NSInteger MsaAccountProviderErrorAccessTokenPermanentError = 102;
 
 #pragma mark - Static Helpers
 // Helper function - gets the NSURLQueryItem matching name
@@ -85,24 +93,21 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
 }
 
 #pragma mark - Private Members
-@interface MSAAccountProvider () <MSATokenCacheDelegate, UIWebViewDelegate>
+@interface MSAAccount () <MSATokenCacheDelegate, UIWebViewDelegate>
 {
     NSString* _clientId;
     NSDictionary<NSString*, NSArray<NSString*>*>* _scopeOverrides;
-    MCDUserAccount* _account;
     MSATokenCache* _tokenCache;
     BOOL _signInSignOutInProgress;
-    SampleAccountProviderCompletionBlock _signInSignOutCallback;
+    void (^_signInSignOutCallback)(MCDConnectedDevicesAccount*, NSError*);
     UIWebView* _webView;
 }
 @end
 
 #pragma mark - Implementation
-@implementation MSAAccountProvider
-@synthesize userAccountChanged = _userAccountChanged;
+@implementation MSAAccount
 
-- (instancetype)initWithClientId:(NSString*)clientId
-                  scopeOverrides:(NSDictionary<NSString*, NSArray<NSString*>*>*)scopes
+- (instancetype)initWithClientId:(NSString*)clientId scopeOverrides:(NSDictionary<NSString*, NSArray<NSString*>*>*)scopes
 {
     NSLog(@"MSAAccountProvider initWithClientId");
 
@@ -113,14 +118,14 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
 
         _tokenCache = [MSATokenCache cacheWithClientId:_clientId delegate:self];
 
-        _userAccountChanged = [MCDUserAccountChangedEvent new];
         _signInSignOutInProgress = NO;
-        _signInSignOutCallback = nil;
 
         if ([_tokenCache loadSavedRefreshToken])
         {
             NSLog(@"Loaded previous session for MSAAccountProvider. Starting as signed in.");
-            _account = [[MCDUserAccount alloc] initWithAccountId:[[NSUUID UUID] UUIDString] type:MCDUserAccountTypeMSA];
+
+            _mcdAccount = [[MCDConnectedDevicesAccount alloc] initWithAccountId:[[_tokenCache getAccountId] UUIDString]
+                                                                           type:MCDConnectedDevicesAccountTypeMSA];
         }
         else
         {
@@ -132,7 +137,7 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
 }
 
 #pragma mark - Private Helpers
-- (NSString*)_getAuthScopes: (NSArray<NSString*>*) incoming
+- (NSString*)_getAuthScopes:(NSArray<NSString*>*)incoming
 {
     NSMutableArray<NSString*>* scopes = [NSMutableArray new];
     for (NSString* scope in incoming)
@@ -148,40 +153,6 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
         }
     }
     return [scopes componentsJoinedByString:@"+"];
-}
-
-- (void)_raiseAccountChangedEvent
-{
-    NSLog(@"Raise Account changed event");
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // fire event on a different thread
-        [self.userAccountChanged raise];
-    });
-}
-
-- (void)_addAccount
-{
-    @synchronized(self)
-    {
-        NSLog(@"Adding an account.");
-        _account = [[MCDUserAccount alloc] initWithAccountId:[[NSUUID UUID] UUIDString] type:MCDUserAccountTypeMSA];
-        [self _raiseAccountChangedEvent];
-    }
-}
-
-- (void)_removeAccount
-{
-    @synchronized(self)
-    {
-        // clean account states
-        if (self.signedIn)
-        {
-            NSLog(@"Removing account.");
-            _account = nil;
-            [_tokenCache clearTokens];
-            [self _raiseAccountChangedEvent];
-        }
-    }
 }
 
 - (void)_loadWebRequest:(NSString*)requestUri
@@ -204,72 +175,22 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
     }
 }
 
-- (void)_signInSignOutSucceededAsync:(BOOL)successful reason:(SampleAccountActionFailureReason)reason
+- (void)_signInSignOutSucceededAsync:(BOOL)__unused successful error:(NSError*)error
 {
     dispatch_async(dispatch_get_main_queue(), ^{ [_webView removeFromSuperview]; });
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        _signInSignOutCallback(successful, reason);
+        _signInSignOutCallback(_mcdAccount, error);
         _signInSignOutCallback = nil;
         _signInSignOutInProgress = NO;
     });
 }
 
-/**
- * Asynchronously requests a new access token for the provided scope(s) and caches it.
- * This assumes that the sign in helper is currently signed in.
- */
-- (void)_requestNewAccessTokenAsync:(NSString*)scope callback:(void (^)(MCDAccessTokenResult*, NSError*))completionBlock
-{
-    // Need the refresh token first, then can use it to request an access token
-    [_tokenCache getRefreshTokenAsync:^void(NSString* refreshToken) {
-        NSLog(@"Fetching access token for scope:%@", scope);
-        [MSATokenRequest
-            doAsyncRequestWithClientId:_clientId
-                             grantType:MsaTokenRequestGrantTypeRefresh
-                                 scope:scope
-                           redirectUri:nil
-                                 token:refreshToken
-                              callback:^void(MSATokenRequestResult* result) {
-                                  switch (result.status)
-                                  {
-                                  case MSATokenRequestStatusSuccess:
-                                  {
-                                      NSLog(@"Successfully fetched access token.");
-                                      [_tokenCache setAccessToken:result.accessToken forScope:scope expiresIn:result.expiresIn];
-
-                                      completionBlock([[MCDAccessTokenResult alloc] initWithAccessToken:result.accessToken
-                                                                                                 status:MCDAccessTokenRequestStatusSuccess],
-                                          nil);
-                                      break;
-                                  }
-                                  case MSATokenRequestStatusTransientFailure:
-                                  {
-                                      NSLog(@"Requesting new access token failed temporarily, please try again.");
-                                      completionBlock(nil, [NSError errorWithDomain:MsaAccountProviderErrorDomain
-                                                                               code:MsaAccountProviderErrorAccessTokenTemporaryError
-                                                                           userInfo:nil]);
-                                      break;
-                                  }
-                                  default: // PermanentFailure
-                                  {
-                                      NSLog(@"Permanent error occurred while fetching access token.");
-                                      [self onAccessTokenError:_account.accountId scopes:@[ scope ] isPermanentError:YES];
-                                      completionBlock(nil, [NSError errorWithDomain:MsaAccountProviderErrorDomain
-                                                                               code:MsaAccountProviderErrorAccessTokenPermanentError
-                                                                           userInfo:nil]);
-                                      break;
-                                  }
-                                  }
-                              }];
-    }];
-}
-
 #pragma mark - Interactive Sign In/Out
-- (BOOL)signedIn
+- (BOOL)isSignedIn
 {
     @synchronized(self)
     {
-        return _account != nil;
+        return _mcdAccount != nil;
     }
 }
 
@@ -277,18 +198,20 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
  * Pops up a webview for the user to sign in with their MSA, then uses the auth code returned to cache a refresh token for the user.
  * If a refresh token was already cached from a previous session, it will be used instead, and no webview will be displayed.
  */
-- (void)signInWithCompletionCallback:(SampleAccountProviderCompletionBlock)signInCallback
+- (void)signInWithCompletionCallback:(void (^)(MCDConnectedDevicesAccount*, NSError*))signInCallback
 {
     @synchronized(self)
     {
         _signInSignOutCallback = signInCallback;
 
-        if (self.signedIn || _signInSignOutInProgress)
+        if (self.isSignedIn || _signInSignOutInProgress)
         {
             // if already signed in or in the process, callback immediately with failure and reason
-            [self _signInSignOutSucceededAsync:NO
-                                        reason:(self.signedIn ? SampleAccountActionFailureReasonAlreadySignedIn :
-                                                                SampleAccountActionFailureReasonSigninSignOutInProgress)];
+            NSError* error = [NSError errorWithDomain:MsaAccountProviderErrorDomain
+                                                 code:(self.isSignedIn ? SampleAccountActionFailureReasonAlreadySignedIn :
+                                                                         SampleAccountActionFailureReasonSigninSignOutInProgress)
+                                             userInfo:nil];
+            [self _signInSignOutSucceededAsync:NO error:error];
             return;
         }
 
@@ -304,18 +227,20 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
 /**
  * Signs the user out by going through the webview, then clears the cache and current state.
  */
-- (void)signOutWithCompletionCallback:(SampleAccountProviderCompletionBlock)signOutCallback
+- (void)signOutWithCompletionCallback:(void (^)(MCDConnectedDevicesAccount*, NSError*))signOutCallback
 {
     @synchronized(self)
     {
         _signInSignOutCallback = signOutCallback;
 
-        if (!self.signedIn || _signInSignOutInProgress)
+        if (!self.isSignedIn || _signInSignOutInProgress)
         {
-            // if already signed out or in the process, callback immediately with failure and reason
-            [self _signInSignOutSucceededAsync:NO
-                                        reason:(self.signedIn ? SampleAccountActionFailureReasonSigninSignOutInProgress :
-                                                                SampleAccountActionFailureReasonAlreadySignedOut)];
+            // if already signed out or in the process, callback immediately with failure
+            NSError* error = [NSError errorWithDomain:MsaAccountProviderErrorDomain
+                                                 code:(self.isSignedIn ? SampleAccountActionFailureReasonSigninSignOutInProgress :
+                                                                         SampleAccountActionFailureReasonAlreadySignedOut)
+                                             userInfo:nil];
+            [self _signInSignOutSucceededAsync:NO error:error];
             return;
         }
 
@@ -323,6 +248,22 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
 
         // issue request to sign out
         [self _loadWebRequest:[NSString stringWithFormat:@"%@?client_id=%@&redirect_uri=%@", MsaLogoutUrl, _clientId, MsaRedirectUrl]];
+    }
+}
+
+- (void)removeAccount
+{
+    @synchronized(self)
+    {
+        NSLog(@"Remove the account");
+
+        // clean account states
+        if (self.isSignedIn)
+        {
+            NSLog(@"Remove the account - clean cached account state");
+            _mcdAccount = nil;
+            [_tokenCache clearTokens];
+        }
     }
 }
 
@@ -346,10 +287,14 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
 
         NSArray<NSURLQueryItem*>* tokenURLQueryItems = tokenURLComponents.queryItems;
 
-        if (GetQueryItemForName(tokenURLQueryItems, @"error"))
+        NSURLQueryItem* errorResponse = GetQueryItemForName(tokenURLQueryItems, @"error");
+        if (errorResponse)
         {
             // sign in or sign out ending in failure
-            [self _signInSignOutSucceededAsync:NO reason:SampleAccountActionFailureReasonUnknown];
+            NSError* error = [NSError errorWithDomain:MsaAccountProviderErrorDomain
+                                                 code:SampleAccountActionFailureReasonGeneric
+                                             userInfo:@{ NSLocalizedDescriptionKey : errorResponse.description }];
+            [self _signInSignOutSucceededAsync:NO error:error];
             return;
         }
 
@@ -357,8 +302,22 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
         if (!authCode)
         {
             // sign out ended in success
-            [self _removeAccount];
-            [self _signInSignOutSucceededAsync:YES reason:SampleAccountActionNoFailure];
+            // Delete cookies
+            NSHTTPCookieStorage* cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+            NSArray<NSHTTPCookie*>* cookies = [[cookieJar cookies] copy];
+            for (NSHTTPCookie* cookie in cookies)
+            {
+                if ([cookie.domain containsString:@"live.com"])
+                {
+                    [cookieJar deleteCookie:cookie];
+                }
+            }
+
+            [self removeAccount];
+            [self _signInSignOutSucceededAsync:YES
+                                         error:[NSError errorWithDomain:MsaAccountProviderErrorDomain
+                                                                   code:SampleAccountActionFailureReasonFailToRetrieveAuthCode
+                                                               userInfo:nil]];
         }
         else
         {
@@ -366,7 +325,10 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
             if (authCode.length <= 0)
             {
                 // very unusual
-                [self _signInSignOutSucceededAsync:NO reason:SampleAccountActionFailureReasonFailToRetrieveAuthCode];
+                [self _signInSignOutSucceededAsync:NO
+                                             error:[NSError errorWithDomain:MsaAccountProviderErrorDomain
+                                                                       code:SampleAccountActionFailureReasonFailToRetrieveAuthCode
+                                                                   userInfo:nil]];
                 return;
             }
 
@@ -378,14 +340,23 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
                     NSAssert(newRefreshToken != nil, @"refresh token can not be null when refreshing refresh token succeeded");
 
                     NSLog(@"Successfully fetch the root refresh token.");
-                    [_tokenCache setRefreshToken:newRefreshToken];
-                    [self _addAccount];
-                    [self _signInSignOutSucceededAsync:YES reason:SampleAccountActionNoFailure];
+                    NSUUID* accountId = [NSUUID UUID];
+                    [_tokenCache setRefreshToken:newRefreshToken withAccountId:accountId];
+                    @synchronized(self)
+                    {
+                        NSLog(@"Adding an account.");
+                        _mcdAccount = [[MCDConnectedDevicesAccount alloc] initWithAccountId:[accountId UUIDString]
+                                                                                       type:MCDConnectedDevicesAccountTypeMSA];
+                    }
+                    [self _signInSignOutSucceededAsync:YES error:nil];
                 }
                 else
                 {
                     NSLog(@"Failed to fetch root refresh token using authcode.");
-                    [self _signInSignOutSucceededAsync:NO reason:SampleAccountActionFailureReasonFailToRetrieveRefreshToken];
+                    [self _signInSignOutSucceededAsync:NO
+                                                 error:[NSError errorWithDomain:MsaAccountProviderErrorDomain
+                                                                           code:SampleAccountActionFailureReasonFailToRetrieveRefreshToken
+                                                                       userInfo:nil]];
                 }
             };
 
@@ -414,21 +385,23 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
         if (error.code != WebKitErrorFrameLoadInterruptedByPolicyChange /*interrupted*/
             && error.code != NSURLErrorCancelled)
         {
-            [self _signInSignOutSucceededAsync:NO reason:SampleAccountActionFailureReasonUserCancelled];
+            [self _signInSignOutSucceededAsync:NO
+                                         error:[NSError errorWithDomain:MsaAccountProviderErrorDomain
+                                                                   code:SampleAccountActionFailureReasonUserCancelled
+                                                               userInfo:nil]];
         }
     }
 }
 
-#pragma mark - MCDUserAccountProvider Overrides
 - (void)getAccessTokenForUserAccountIdAsync:(NSString*)accountId
                                      scopes:(NSArray<NSString*>*)scopes
-                                 completion:(void (^)(MCDAccessTokenResult*, NSError*))completionBlock
+                                 completion:(void (^)(NSString*, NSError*))completionBlock
 {
-    if (![accountId isEqualToString:_account.accountId])
+    if (![accountId isEqualToString:_mcdAccount.accountId])
     {
         NSLog(@"accountId did not match logged in account - is the user signed in?");
-        completionBlock(
-            nil, [NSError errorWithDomain:MsaAccountProviderErrorDomain code:MsaAccountProviderErrorInvalidAccountId userInfo:nil]);
+        completionBlock([NSString stringWithFormat:@"Account ID %@ does it match account ID %@", accountId, _mcdAccount.accountId],
+            [NSError errorWithDomain:MsaAccountProviderErrorDomain code:SampleAccountActionFailureReasonInvalidAccountId userInfo:nil]);
         return;
     }
 
@@ -444,8 +417,7 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
                 if (accessToken.length > 0)
                 {
                     NSLog(@"Found valid access token for scope %@ in cache, return early", accessTokenScope);
-                    completionBlock(
-                        [[MCDAccessTokenResult alloc] initWithAccessToken:accessToken status:MCDAccessTokenRequestStatusSuccess], nil);
+                    completionBlock(accessToken, nil);
                     return;
                 }
 
@@ -457,21 +429,13 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
     });
 }
 
-- (NSArray<MCDUserAccount*>*)getUserAccounts
-{
-    @synchronized(self)
-    {
-        return _account ? @[ _account ] : nil;
-    }
-}
-
 - (void)onAccessTokenError:(NSString*)__unused accountId scopes:(NSArray<NSString*>*)__unused scopes isPermanentError:(BOOL)isPermanentError
 {
     @synchronized(self)
     {
         if (isPermanentError)
         {
-            [self _removeAccount];
+            [self removeAccount];
         }
         else
         {
@@ -483,10 +447,63 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
 #pragma mark - MSATokenCache Delegate
 - (void)onTokenCachePermanentFailure
 {
-    if (_account)
+    if (_mcdAccount)
     {
-        [self onAccessTokenError:_account.accountId scopes:[_tokenCache allScopes] isPermanentError:YES];
+        [self onAccessTokenError:_mcdAccount.accountId scopes:[_tokenCache allScopes] isPermanentError:YES];
     }
+}
+
+/**
+ * Asynchronously requests a new access token for the provided scope(s) and caches it.
+ * This assumes that the sign in helper is currently signed in.
+ */
+- (void)_requestNewAccessTokenAsync:(NSString*)scope callback:(void (^)(NSString*, NSError*))completionBlock
+{
+    // Need the refresh token first, then can use it to request an access token
+    [_tokenCache getRefreshTokenAsync:^void(NSString* refreshToken) {
+        NSLog(@"Fetching access token for scope:%@", scope);
+        [MSATokenRequest
+            doAsyncRequestWithClientId:_clientId
+                             grantType:MsaTokenRequestGrantTypeRefresh
+                                 scope:scope
+                           redirectUri:nil
+                                 token:refreshToken
+                              callback:^void(MSATokenRequestResult* result) {
+                                  switch (result.status)
+                                  {
+                                  case MSATokenRequestStatusSuccess:
+                                  {
+                                      NSLog(@"Successfully fetched access token.");
+                                      [_tokenCache setAccessToken:result.accessToken
+                                                    withAccountId:[NSUUID UUID]
+                                                         forScope:scope
+                                                        expiresIn:result.expiresIn];
+
+                                      completionBlock(result.accessToken, nil);
+                                      break;
+                                  }
+                                  case MSATokenRequestStatusTransientFailure:
+                                  {
+                                      NSLog(@"Requesting new access token failed temporarily, please try again.");
+                                      completionBlock(
+                                          @"fail2", [NSError errorWithDomain:MsaAccountProviderErrorDomain
+                                                                        code:SampleAccountActionFailureReasonAccessTokenTemporaryError
+                                                                    userInfo:nil]);
+                                      break;
+                                  }
+                                  default: // PermanentFailure
+                                  {
+                                      NSLog(@"Permanent error occurred while fetching access token.");
+                                      [self onAccessTokenError:_mcdAccount.accountId scopes:@[ scope ] isPermanentError:YES];
+                                      completionBlock(
+                                          @"fail3", [NSError errorWithDomain:MsaAccountProviderErrorDomain
+                                                                        code:SampleAccountActionFailureReasonAccessTokenPermanentError
+                                                                    userInfo:nil]);
+                                      break;
+                                  }
+                                  }
+                              }];
+    }];
 }
 
 @end

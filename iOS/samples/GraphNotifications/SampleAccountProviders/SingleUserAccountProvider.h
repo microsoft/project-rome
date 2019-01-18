@@ -4,12 +4,12 @@
 
 #pragma once
 
-#import <ConnectedDevices/Core/Core.h>
+#import <ConnectedDevices/ConnectedDevices.h>
 
 #import "SampleAccountActionFailureReason.h"
 
 // @brief Protocol for a MCDUserAccountProvider that supports logging into/out of a single user account.
-@protocol SingleUserAccountProvider <MCDUserAccountProvider>
+@protocol SingleUserAccountProvider
 - (void)signInWithCompletionCallback:(nonnull SampleAccountProviderCompletionBlock)callback;
 - (void)signOutWithCompletionCallback:(nonnull SampleAccountProviderCompletionBlock)callback;
 @property(readonly, atomic) BOOL signedIn;
