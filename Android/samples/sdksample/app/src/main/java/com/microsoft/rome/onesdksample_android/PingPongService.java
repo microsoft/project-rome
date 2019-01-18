@@ -29,8 +29,8 @@ public class PingPongService extends BaseService {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
     // endregion
 
-    public PingPongService(MainActivity mainActivity) {
-        super(mainActivity, new AppServiceInfo(APP_SERVICE_NAME));
+    public PingPongService(/*MainActivity mainActivity*/) {
+        super(/*mainActivity,*/ new AppServiceInfo(APP_SERVICE_NAME));
     }
 
     // region Constructor
@@ -44,8 +44,8 @@ public class PingPongService extends BaseService {
         AppServiceRequest request = args.getRequest();
         Map<String, Object> message = request.getMessage();
 
-        mMainActivity.getHostingFragment().logTrafficMessage(
-            "PingPongService received AppService request message with payload " + message.toString());
+        //MainActivity.getHostingFragment().logTrafficMessage(
+        //    "PingPongService received AppService request message with payload " + message.toString());
 
         Map<String, Object> response = null;
 
@@ -80,7 +80,7 @@ public class PingPongService extends BaseService {
         Log.i(TAG, "Received app service command to launch URI " + uriStr);
         Uri uri = Uri.parse((String)uriStr);
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, uri);
-        mMainActivity.startActivity(launchIntent);
+        //mMainActivity.startActivity(launchIntent);
 
         // Respond to our caller
         Map<String, Object> response = new HashMap<>();

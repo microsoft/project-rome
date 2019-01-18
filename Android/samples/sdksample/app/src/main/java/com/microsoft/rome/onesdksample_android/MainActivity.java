@@ -18,10 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceProvider;
 
 import java.util.ArrayList;
-
 /**
  * Most importantly in MainActivity is the platform initialization, happening in init()
  *
@@ -121,9 +119,6 @@ public class MainActivity extends AppCompatActivity {
             };
         mNavigationDrawer.addDrawerListener(actionBarDrawerToggle);
 
-        // Start platform and complete registrations
-        startPlatform();
-
         // Initialize the UserActivity Feed
         getUserActivityFragment().initializeUserActivityFeed();
     }
@@ -137,19 +132,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
     // endregion
-
-    public void startPlatform() {
-        PlatformBroker platformBroker = PlatformBroker.getPlatformBroker();
-        platformBroker.startPlatform();
-        platformBroker.createNotificationReceiver(this);
-        platformBroker.registerNotificationsForAccount(platformBroker.getAccount(AccountBroker.getCurrentAccountId()));
-
-        ArrayList<AppServiceProvider> appServiceProviders = new ArrayList<>();
-        appServiceProviders.add(new PingPongService(this));
-        appServiceProviders.add(new EchoService(this));
-
-        platformBroker.register(this, platformBroker.getAccount(AccountBroker.getCurrentAccountId()), appServiceProviders, new SimpleLaunchHandler(this));
-    }
 
     /**
      * Get the current selected fragment visible to the user

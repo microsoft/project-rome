@@ -95,7 +95,7 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
             "wns.connect",                                                     // push notification scope
             "asimovrome.telemetry",                                            // asimov token scope
             "https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp" // default useractivities scope
-    );
+            );
 
     // OAuth URLs
     private static final String REDIRECT_URL = "https://login.live.com/oauth20_desktop.srf";
@@ -130,7 +130,7 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
         });
 
         if (mTokenCache.loadSavedRefreshToken()) {
-            // Note: Very important to provide the correct account ID for the signed in account in the current session.
+            // Note: It is important to provide the correct account ID for the signed in account in the current session.
             String id = mTokenCache.readSavedAccountId();
             Log.i(TAG, "Loaded previous session for MSASigninHelperAccount: " + id + ". Starting as signed in.");
             mAccount = new ConnectedDevicesAccount(id, ConnectedDevicesAccountType.MSA);
@@ -151,8 +151,7 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
             return AsyncOperation.completedFuture(mAccount);
         }
 
-        final String signInUrl = AUTHORIZE_URL + "?redirect_uri=" + REDIRECT_URL + "&response_type=code&client_id=" + mClientId +
-                "&scope=" + TextUtils.join("+", getAuthScopes(KNOWN_SCOPES));
+        final String signInUrl = AUTHORIZE_URL + "?redirect_uri=" + REDIRECT_URL + "&response_type=code&client_id=" + mClientId + "&scope=" + TextUtils.join("+", getAuthScopes(KNOWN_SCOPES));
         final AsyncOperation<String> authCodeOperation = new AsyncOperation<>();
         final AsyncOperation<ConnectedDevicesAccount> signInOperation = new AsyncOperation<>();
 
@@ -288,19 +287,25 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
                 return AsyncOperation.completedFuture(accessToken);
             } else {
                 // Token does not yet exist in the cache, need to request a new one
-                return requestNewAccessTokenAsync(scopes);
+                return requestNewAccessTokenAsync(scope);
             }
         });
+    }
+
+    @Override
+    public synchronized boolean isSignedIn() {
+        return mAccount != null;
+    }
+
+    @Override
+    public synchronized ConnectedDevicesAccount getAccount() {
+        return mAccount;
     }
     // endregion
 
     // region Public Instance Methods
     public String getClientId() {
         return mClientId;
-    }
-
-    public synchronized boolean isSignedIn() {
-        return mAccount != null;
     }
 
     public void onSignOutPageFinishedInternal(String url, Dialog dialog, AsyncOperation<ConnectedDevicesAccount> signOutOperation) {
@@ -390,6 +395,7 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
         if (isSignedIn()) {
             Log.i(TAG, "Removing account.");
             mAccount = null;
+            // We clear all tokens we assume we only have 1 account added.
             mTokenCache.clearTokens();
         }
 
@@ -400,9 +406,7 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
      * Asynchronously requests a new access token for the provided scope(s) and caches it.
      * This assumes that the sign in helper is currently signed in.
      */
-    public AsyncOperation<String> requestNewAccessTokenAsync(final List<String> scopes) {
-        final String scope = TextUtils.join(" ", getAuthScopes(scopes));
-
+    private AsyncOperation<String> requestNewAccessTokenAsync(final String scope) {
         // Need the refresh token first, then can use it to request an access token
         return mTokenCache.getRefreshTokenAsync()
                 .thenComposeAsync((AsyncOperation.ResultFunction<String, AsyncOperation<MSATokenRequest.Result>>) refreshToken -> MSATokenRequest.requestAsync(mClientId, MSATokenRequest.GrantType.REFRESH, scope, null, refreshToken))

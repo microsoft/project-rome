@@ -67,7 +67,7 @@ public class GcmNotificationReceiver extends BroadcastReceiver {
 
         synchronized (this) {
             mNotificationRegistration = new ConnectedDevicesNotificationRegistration();
-            mNotificationRegistration.setNotificationType(ConnectedDevicesNotificationType.GCM);
+            mNotificationRegistration.setType(ConnectedDevicesNotificationType.GCM);
             mNotificationRegistration.setToken(token);
             mNotificationRegistration.setAppId(Secrets.GCM_SENDER_ID);
             mNotificationRegistration.setAppDisplayName("OneRomanApp");

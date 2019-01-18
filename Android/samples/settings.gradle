@@ -4,7 +4,7 @@ include ':signinhelpers',
         ':nearsharestandalone'
 
 project(':sdksample').projectDir = new File('sdksample/app')
-project(':signinhelpers').projectDir = new File('sdksample/signinhelpers')
+project(':signinhelpers').projectDir = new File('signinhelpers')
 project(':nearsharestandalone').projectDir = new File('nearsharestandalone/app')
 project(':graphnotificationssample').projectDir = new File('graphnotificationssample/app')
 

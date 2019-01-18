@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeMap;
 
 public class PlatformBroker {
     // region Member Variables
@@ -37,7 +38,9 @@ public class PlatformBroker {
     private GcmNotificationReceiver gcmNotificationReceiver;
     private static PlatformBroker platformBroker;
 
+    // region Constructor
     private PlatformBroker() { }
+    // endregion
 
     public synchronized ConnectedDevicesPlatform getPlatform() {
         return sPlatform;
@@ -80,11 +83,11 @@ public class PlatformBroker {
         // Subscribe to AccessTokenInvalidated event
         sPlatform.getAccountManager().accessTokenInvalidated().subscribe((accountManager, args) -> {
             // If access token in invalidated, refresh token and renew access token.
-            AccountBroker.getSignInHelper().requestNewAccessTokenAsync(args.getScopes());
+            AccountBroker.getSignInHelper().getAccessTokenAsync(args.getScopes());
         });
 
         // Subscribe to NotificationRegistrationStateChanged event
-        sPlatform.getNotificationRegistrationManager().stateChanged().subscribe((notificationRegistrationManager, args) -> {
+        sPlatform.getNotificationRegistrationManager().notificationRegistrationStateChanged().subscribe((notificationRegistrationManager, args) -> {
             // If notification registration state is expiring or expired, re-register for account again.
             ConnectedDevicesNotificationRegistrationState state = args.getState();
             if (state == ConnectedDevicesNotificationRegistrationState.EXPIRING || state == ConnectedDevicesNotificationRegistrationState.EXPIRED) {
@@ -137,7 +140,7 @@ public class PlatformBroker {
             return null;
         }
 
-        List<ConnectedDevicesAccount> allAccounts = sPlatform.getAccountManager().getAllAccounts();
+        List<ConnectedDevicesAccount> allAccounts = sPlatform.getAccountManager().getAccounts();
         if(allAccounts.isEmpty()) {
             Log.e(TAG,"No accounts found in the account manager.");
             return null;
@@ -163,6 +166,7 @@ public class PlatformBroker {
         // Get notification registration manager
         ConnectedDevicesNotificationRegistrationManager registrationManager = sPlatform.getNotificationRegistrationManager();
 
+        Log.v(TAG, "Getting NotificationNotification to register for notifications for account: " + account.getId() + " with type: " + account.getType());
         gcmNotificationReceiver.getNotificationRegistrationAsync().whenCompleteAsync((connectedDevicesNotificationRegistration, throwable) -> {
                     String accountId = account.getId();
 
@@ -185,15 +189,19 @@ public class PlatformBroker {
 
     public void register(Context context, ConnectedDevicesAccount account, ArrayList<AppServiceProvider> appServiceProviders, LaunchUriProvider launchUriProvider) {
         // Initialize the platform with all possible services
-        RemoteSystemAppRegistration registration = new RemoteSystemAppRegistration(account);
-        registration.addAttribute(TIMESTAMP_KEY, getInitialRegistrationDateTime(context));
-        registration.addAttribute(PACKAGE_KEY, PACKAGE_VALUE);
+        // Crashing
+        RemoteSystemAppRegistration registration = RemoteSystemAppRegistration.getForAccount(account, sPlatform);
+
+        registration.setAttributes(new TreeMap<String, String>() {
+            {
+                put(TIMESTAMP_KEY, getInitialRegistrationDateTime(context));
+                put(PACKAGE_KEY, PACKAGE_VALUE);
+            }
+        });
 
         // Add the given AppService and LaunchUri Providers to the registration
         if (appServiceProviders != null) {
-            for (AppServiceProvider provider : appServiceProviders) {
-                registration.addAppServiceProvider(provider);
-            }
+            registration.setAppServiceProviders(appServiceProviders);
         }
         if (launchUriProvider != null) {
             registration.setLaunchUriProvider(launchUriProvider);

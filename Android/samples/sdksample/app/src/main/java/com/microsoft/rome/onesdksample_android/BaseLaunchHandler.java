@@ -13,10 +13,10 @@ import com.microsoft.connecteddevices.remotesystems.commanding.RemoteLauncherOpt
  * Base class for launch uri handler.
  */
 public abstract class BaseLaunchHandler implements LaunchUriProvider {
-    protected MainActivity mMainActivity;
+    //protected MainActivity mMainActivity;
 
-    public BaseLaunchHandler(MainActivity fragment) {
-        mMainActivity = fragment;
+    public BaseLaunchHandler(/*MainActivity fragment*/) {
+        //mMainActivity = fragment;
     }
 
     @Override

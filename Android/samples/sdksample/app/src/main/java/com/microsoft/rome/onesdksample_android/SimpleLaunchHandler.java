@@ -13,8 +13,8 @@ import com.microsoft.connecteddevices.remotesystems.commanding.RemoteLauncherOpt
  * Returns success for all incoming LaunchUri requests and logs the request to the Launch Page.
  */
 public class SimpleLaunchHandler extends BaseLaunchHandler {
-    public SimpleLaunchHandler(MainActivity mainActivity) {
-        super(mainActivity);
+    public SimpleLaunchHandler(/*MainActivity mainActivity*/) {
+        super(/*mainActivity*/);
     }
 
     /**
@@ -26,7 +26,7 @@ public class SimpleLaunchHandler extends BaseLaunchHandler {
         AsyncOperation<Boolean> result = super.onLaunchUriAsync(uri, options);
 
         // Inform the hosting fragment that we received a URI
-        mMainActivity.getHostingFragment().logTrafficMessage("SimpleLaunchHandler received uri: " + uri);
+        //mMainActivity.getHostingFragment().logTrafficMessage("SimpleLaunchHandler received uri: " + uri);
 
         return result;
     }
