@@ -132,8 +132,12 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
         if (mTokenCache.loadSavedRefreshToken()) {
             // Note: It is important to provide the correct account ID for the signed in account in the current session.
             String id = mTokenCache.readSavedAccountId();
-            Log.i(TAG, "Loaded previous session for MSASigninHelperAccount: " + id + ". Starting as signed in.");
-            mAccount = new ConnectedDevicesAccount(id, ConnectedDevicesAccountType.MSA);
+            if (!id.isEmpty()) {
+                Log.i(TAG, "Loaded previous session for MSASigninHelperAccount: " + id + ". Starting as signed in.");
+                mAccount = new ConnectedDevicesAccount(id, ConnectedDevicesAccountType.MSA);
+            } else {
+                Log.w(TAG, "There exists a previous session of this app, however no ID exists. This is likely an upgrade of an older MSASigninHelperAccount version.");
+            }
         } else {
             Log.i(TAG, "No previous session could be loaded for MSASigninHelperAccount. Starting as signed out.");
         }

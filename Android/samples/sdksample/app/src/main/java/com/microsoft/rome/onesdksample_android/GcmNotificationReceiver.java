@@ -20,8 +20,6 @@ public class GcmNotificationReceiver extends BroadcastReceiver {
     private static final String TAG = GcmNotificationReceiver.class.getName();
     private static final String RegistrationComplete = "registrationComplete";
 
-    private ConnectedDevicesNotificationRegistration mNotificationRegistration;
-    private AsyncOperation<ConnectedDevicesNotificationRegistration> mNotificationRegistrationOperation;
     private Context mContext;
     // endregion
 
@@ -35,20 +33,11 @@ public class GcmNotificationReceiver extends BroadcastReceiver {
      * This function returns Notification Registration after it completes async operation.
      * @return Notification Registration.
      */
-    public synchronized AsyncOperation<ConnectedDevicesNotificationRegistration> getNotificationRegistrationAsync() {
-        if (mNotificationRegistrationOperation == null) {
-            mNotificationRegistrationOperation = new AsyncOperation<>();
-        }
-        if (mNotificationRegistration != null) {
-            mNotificationRegistrationOperation.complete(mNotificationRegistration);
-        }
-        return mNotificationRegistrationOperation;
-    }
 
     /**
      * When GCM has been registered, this will get fired.
-     * @param  context  the application's context.
-     * @param  intent   the broadcast intent sent to any interested BroadcastReceiver components.
+     * @param context the application's context.
+     * @param intent the broadcast intent sent to any interested BroadcastReceiver components.
      */
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -65,23 +54,8 @@ public class GcmNotificationReceiver extends BroadcastReceiver {
             Log.e(TAG, "Got notification that GCM had been registered, but token is null. Was app ID set in GcmRegistrationIntentService?");
         }
 
-        synchronized (this) {
-            mNotificationRegistration = new ConnectedDevicesNotificationRegistration();
-            mNotificationRegistration.setType(ConnectedDevicesNotificationType.GCM);
-            mNotificationRegistration.setToken(token);
-            mNotificationRegistration.setAppId(Secrets.GCM_SENDER_ID);
-            mNotificationRegistration.setAppDisplayName("OneRomanApp");
-
-            // Create the async event for returning the NotificationRegistration if it does not exist
-            if (mNotificationRegistrationOperation == null) {
-                mNotificationRegistrationOperation = new AsyncOperation<>();
-            }
-
-            Log.i(TAG, "Completing the GcmNotificationReceiver operation with token: " + token);
-
-            // Complete the async event so the NotificationRegistration can be accessed when needed
-            mNotificationRegistrationOperation.complete(mNotificationRegistration);
-        }
+        // Get an existing ConnectedDevicesManager or initialize one and give it the notification token
+        ConnectedDevicesManager.getOrInitializeConnectedDevicesManager(context).setNotificationRegistration(token);
 
         mContext.startService(new Intent(mContext, SampleGcmListenerService.class));
     }

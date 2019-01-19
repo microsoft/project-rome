@@ -17,7 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-
+import android.content.Context;
 
 import java.util.ArrayList;
 /**
@@ -26,7 +26,6 @@ import java.util.ArrayList;
  *
  */
 public class MainActivity extends AppCompatActivity {
-
     // region Member Variables
     private static final String TAG = MainActivity.class.getName();
 
@@ -50,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private ModuleSelectFragment mModuleSelectFragment;
     private UserActivityFragment mUserActivityFragment;
     private HostingFragment mHostingFragment;
+    private ConnectedDevicesManager mConnectedDevicesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,8 +119,15 @@ public class MainActivity extends AppCompatActivity {
             };
         mNavigationDrawer.addDrawerListener(actionBarDrawerToggle);
 
-        // Initialize the UserActivity Feed
-        getUserActivityFragment().initializeUserActivityFeed();
+        // Create the ConnectedDevicesManager
+        mConnectedDevicesManager = ConnectedDevicesManager.getOrInitializeConnectedDevicesManager((Context)this);
+
+        // Sign the user in, which may or may not require UI interaction
+        mConnectedDevicesManager.signInMsa(this).thenAcceptAsync((Void v) -> {
+            // Initialize the UserActivity Feed
+            // TODO: Enable this once race is solved
+            // getUserActivityFragment().initializeUserActivityFeed();
+        });
     }
 
     @Override

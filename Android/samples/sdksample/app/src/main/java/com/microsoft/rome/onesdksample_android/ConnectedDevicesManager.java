@@ -1,0 +1,392 @@
+//
+//  Copyright (c) Microsoft Corporation. All rights reserved.
+//
+
+package com.microsoft.rome.onesdksample_android;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.Context;
+import android.util.ArrayMap;
+import android.util.Log;
+
+import com.microsoft.connecteddevices.ConnectedDevicesAccessTokenRequest;
+import com.microsoft.connecteddevices.ConnectedDevicesAccessTokenRequestedEventArgs;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationStateChangedEventArgs;
+import com.microsoft.connecteddevices.ConnectedDevicesAccessTokenInvalidatedEventArgs;
+import com.microsoft.connecteddevices.ConnectedDevicesAccount;
+import com.microsoft.connecteddevices.ConnectedDevicesAccountManager;
+import com.microsoft.connecteddevices.ConnectedDevicesAccountType;
+import com.microsoft.connecteddevices.ConnectedDevicesAddAccountResult;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationManager;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationState;
+import com.microsoft.connecteddevices.ConnectedDevicesPlatform;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceProvider;
+import com.microsoft.connecteddevices.remotesystems.commanding.LaunchUriProvider;
+import com.microsoft.connecteddevices.signinhelpers.SigninHelperAccount;
+import com.microsoft.connecteddevices.signinhelpers.MSASigninHelperAccount;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppRegistration;
+import com.microsoft.connecteddevices.AsyncOperation;
+import com.microsoft.connecteddevices.ConnectedDevicesAccount;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.Optional;
+import java.util.Map;
+
+/**
+ * This is a singleton object which holds onto the app's ConnectedDevicesPlatform and handles account management.
+ */
+public class ConnectedDevicesManager {
+    // region Member Variables
+    private final String TAG = ConnectedDevicesManager.class.getName();
+
+    private String currentAccountId;
+    private List<Account> mAccounts;
+
+    private ConnectedDevicesPlatform mPlatform;
+    private static ConnectedDevicesManager sConnectedDevicesManager;
+    // endregion
+
+    // region Constructors
+    /**
+     * This is a singleton object which holds onto the app's ConnectedDevicesPlatform and handles account management. 
+     * @param context Application context
+     */
+    private ConnectedDevicesManager(Context context) {
+        // Initialize list of known accounts
+        mAccounts = new ArrayList<Account>();
+        
+        // Create Platform
+        mPlatform = new ConnectedDevicesPlatform(context);
+
+        // Subscribe to the AccessTokenRequested event
+        mPlatform.getAccountManager().accessTokenRequested().subscribe((accountManager, args) -> onAccessTokenRequested(accountManager, args));
+
+        // Subscribe to AccessTokenInvalidated event
+        mPlatform.getAccountManager().accessTokenInvalidated().subscribe((accountManager, args) -> onAccessTokenInvalidated(accountManager, args));
+
+        // Subscribe to NotificationRegistrationStateChanged event
+        mPlatform.getNotificationRegistrationManager().notificationRegistrationStateChanged().subscribe((notificationRegistrationManager, args) -> onNotificationRegistrationStateChanged(notificationRegistrationManager, args));
+
+        // Start the platform as we have sibscribed to the events it can raise
+        mPlatform.start();
+
+        // Pull the accounts from our app's cache and synchronize the list with the apps cached by 
+        // ConnectedDevicesPlatform.AccountManager.
+        List<Account> deserializedAccounts = deserializeAccounts(context);
+
+        // Finally initialize the accounts. This will refresh registrations when needed, add missing accounts,
+        // and remove stale accounts from the ConnectedDevicesPlatform.AccountManager.
+        prepareAccounts(deserializedAccounts, context);
+    }
+    // endregion
+
+    // region public static methods
+    public static synchronized ConnectedDevicesManager getConnectedDevicesManager() {
+        return sConnectedDevicesManager;
+    }
+
+    public static synchronized ConnectedDevicesManager getOrInitializeConnectedDevicesManager(Context context) {
+        if (sConnectedDevicesManager == null) {
+            sConnectedDevicesManager = new ConnectedDevicesManager(context);
+        }
+        return sConnectedDevicesManager;
+    }
+    // endregion
+
+    // region public instance methods
+    /**
+     * Attempt to ensure there is a signed in MSA Account
+     * @param activity Application activity
+     * @return The async result for when this operation completes
+     */
+    public synchronized AsyncOperation<Void> signInMsa(final Activity activity) {
+        AsyncOperation<Void> returnOperation = new AsyncOperation<Void>();
+
+        // Create a Signin helper Account with a client id for msa, a map of requested scopes to override, and the context
+        SigninHelperAccount signInHelper = new MSASigninHelperAccount(Secrets.MSA_CLIENT_ID, new ArrayMap<String, String[]>(), (Context)activity);
+
+        if (!signInHelper.isSignedIn()) {
+            Log.i(TAG, "Signin in a MSA account");
+
+            // Call signin, which may prompt the user to enter credentials or just retreive a cached token if they exist and are valid
+            signInHelper.signIn(activity).thenAcceptAsync((ConnectedDevicesAccount account) -> {
+                // Prepare the account, adding it to the list of app's cached accounts is prepared successfully
+                prepareAccount(new Account(signInHelper, AccountRegistrationState.IN_APP_CACHE_ONLY, mPlatform), (Context)activity);
+                returnOperation.complete(null);
+            });
+        } else {
+            Log.i(TAG, "Already signed in with a MSA account");
+            returnOperation.complete(null);
+        }
+
+        return returnOperation;
+    }
+
+    /**
+     * Sign out and remove the given Account from the ConnectedDevicesManager
+     * @param activity Application activity
+     * @return The async result for when this operation completes
+     */
+    public synchronized AsyncOperation<ConnectedDevicesAccount> logout(Account account, Activity activity) {
+        // First remove this account from the list of "ready to go" accounts so it cannot be used while logging out
+        mAccounts.remove(account);
+
+        // Now log out this account
+        return account.logoutAsync(activity);
+    }
+
+    public synchronized void setNotificationRegistration(final String token) {
+        // Get the NotificationRegistrationManager from the platforfm
+        ConnectedDevicesNotificationRegistrationManager registrationManager = mPlatform.getNotificationRegistrationManager();
+
+        // Create a NotificationRegistration obect to store all notification information
+        ConnectedDevicesNotificationRegistration registration = new ConnectedDevicesNotificationRegistration();
+        notification.setType(ConnectedDevicesNotificationType.GCM);
+        notification.setToken(token);
+        notification.setAppId(Secrets.GCM_SENDER_ID);
+        notification.setAppDisplayName("OneSDK Sample");
+
+        Log.i(TAG, "Completing the GcmNotificationReceiver operation with token: " + token);
+
+        // For each prepared account, register for notifications
+        for (Account account : mAccounts) {
+            registrationManager.registerForAccountAsync(account, notification)
+                .whenCompleteAsync((Boolean result, Throwable throwable) -> {
+                    if (throwable != null) {
+                        Log.e(TAG, "RegistrationManager registration encountered " + throwable);
+                    } else if (result) {
+                        Log.i(TAG, "Successfully performed notification registration for given account");
+                    } else {
+                        Log.e(TAG, "Failed to perform notification registration for given account." + throwable);
+                    }
+
+                    notifyNotificationRegistered(throwable == null && result);
+                });
+        }
+
+        // Because the notificaiton registration is expiring, the per account registration work needs to be kicked off again.
+        // This means registering with the NotificationRegistrationManager as well as any sub component work like RemoteSystemAppRegistration.
+        Log.i(TAG, "Notification " + args.getState() + " for account: " + args.getAccount().getId());
+        Optional<Account> account = mAccounts
+            .stream()
+            .filter(acc -> accountsMatch(args.getAccount(), acc.getAccount()))
+            .findFirst();
+
+        // If the account has been prepared for use then re-register the account with SDK
+        if (account.isPresent() && account.get().getRegistrationState() == AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE) {
+            account.get().registerAccountWithSdkAsync();
+        }
+        break;
+    }
+
+    /**
+     * Give the GCM notification to Rome to process.
+     * @param data The bundle of data in a GCM notification
+     * @return The async result for this operation
+     */
+    public AsyncOperation<Void> receiveNotificationAsync(Bundle data) {
+        return mPlatform.processNotification(data).waitForCompletionAsync();
+    }
+
+    /**
+     * Give the FCM notification to Rome to process.
+     * @param data The map of data in a FCM notification
+     * @return The async result for this operation
+     */
+    public AsyncOperation<Void> receiveNotificationAsync(Map data) {
+        return mPlatform.processNotification(data).waitForCompletionAsync();
+    }
+
+    public ConnectedDevicesPlatform getPlatform() {
+        return mPlatform;
+    }
+
+    public List<Account> getAccounts() {
+        return mAccounts;
+    }
+    // endregion
+
+    // region private instance methods
+    /**
+     * Pull the accounts from our app's cache and synchronize the list with the 
+     * apps cached by ConnectedDevicesPlatform.AccountManager.
+     * @param context Application context
+     */
+    private List<Account> deserializeAccounts(Context context) {
+        // Since our helper lib can only cache 1 app at a time, we create sign-in helper,
+        // which does user account and access token management for us. Takes three parameters:
+        // a client id for msa, a map of requested auto scopes to override, and the context
+        SigninHelperAccount signInHelper = new MSASigninHelperAccount(Secrets.MSA_CLIENT_ID, new ArrayMap<String, String[]>(), context);
+
+        // Get all of the ConnectedDevicesPlatform's added accounts
+        List<ConnectedDevicesAccount> sdkCachedAccounts = mPlatform.getAccountManager().getAccounts();
+
+        List<Account> returnAccounts = new ArrayList<Account>();
+
+        // If there is a signed in account in the app's cache, find it exists in the SDK's cache
+        if (signInHelper.isSignedIn()) {
+            // Check if the account is also present in ConnectedDevicesPlatform.AccountManager.
+            Optional<ConnectedDevicesAccount> sdkCachedAccount = sdkCachedAccounts
+                .stream()
+                .filter(acc -> accountsMatch(signInHelper.getAccount(), acc))
+                .findFirst();
+
+            AccountRegistrationState registrationState;
+            if (sdkCachedAccount.isPresent()) {
+                // Account found in the SDK cache, remove it from the list of sdkCachedAccounts. After 
+                // all the appCachedAccounts have been processed any accounts remaining in sdkCachedAccounts
+                // are only in the SDK cache, and should be removed.
+                registrationState = AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE;
+                sdkCachedAccounts.remove(sdkCachedAccount.get());
+            } else {
+                // Account not found in the SDK cache. Later when we initialize the Account,
+                // it will be added to the SDK cache and perform registration.
+                registrationState = AccountRegistrationState.IN_APP_CACHE_ONLY;
+            }
+
+            // Add the app's cached account with the correct registration state
+            returnAccounts.add(new Account(signInHelper, registrationState, mPlatform));
+        }
+
+        // Add all the accounts which exist only in the SDK
+        for (ConnectedDevicesAccount account : sdkCachedAccounts) {
+            returnAccounts.add(new Account(account, mPlatform));
+        }
+
+        return returnAccounts;
+    }
+
+    /**
+     * Matcher function to compare ConnectedDevicesAccounts are equal
+     * @param account1 ConnectedDevicesAccount 1 
+     * @param account2 ConnectedDevicesAccount 2 
+     * @return Boolean of if the given accounts match
+     */
+    private static boolean accountsMatch(ConnectedDevicesAccount account1, ConnectedDevicesAccount account2) {
+        String accountId1 = account1.getId();
+        ConnectedDevicesAccountType accountType1 = account1.getType();
+
+        String accountId2 = account2.getId();
+        ConnectedDevicesAccountType accountType2 = account2.getType();
+
+        return accountId2.equals(accountId1) && accountType2.equals(accountType1);
+    }
+ 
+    /**
+     * Prepare the accounts; refresh registrations when needed, add missing accounts and remove stale accounts from the ConnectedDevicesPlatform.AccountManager.
+     * @param context Application context
+     */
+    private void prepareAccounts(List<Account> accounts, Context context) {
+        for (Account account : accounts) {
+            prepareAccount(account, context);
+        }
+    }
+
+    /**
+     * Attempt to prepare the account. If the account was prepared successfully, add it to the list of "ready to use" accounts.
+     * @param context Application context
+     */
+    private void prepareAccount(Account account, Context context) {
+        Log.v(TAG, "Preparing account: " + account.getAccount().getId());
+
+        // Add the account to the list of available accounts
+        mAccounts.add(account);
+
+        // Prepare the account, removing it from the list of accounts if it failed
+        account.prepareAccountAsync(context).thenAcceptAsync((success) -> {
+            if (success) {
+                Log.i(TAG, "Account: " + account.getAccount().getId() + " is prepared!.");
+            } else {
+                mAccounts.remove(account);
+                Log.w(TAG, "Removed account: " + account.getAccount().getId() + " from the list of ready-to-go accounts as it failed to be prepared.");
+            }
+        });
+    }
+
+    /**
+     * This event is fired when there is a need to request a token. This event should be subscribed and ready to respond before any request is sent out.
+     * @param sender ConnectedDevicesAccountManager which is making the request
+     * @param args Contains arguments for the event
+     */
+    private void onAccessTokenRequested(ConnectedDevicesAccountManager sender, ConnectedDevicesAccessTokenRequestedEventArgs args) {
+        ConnectedDevicesAccessTokenRequest request = args.getRequest();
+        List<String> scopes = request.getScopes();
+
+        // Compare the app cached account to find a match in the sdk cached accounts
+        Optional<Account> account = mAccounts
+            .stream()
+            .filter(acc -> accountsMatch(request.getAccount(), acc.getAccount()))
+            .findFirst();
+
+        // We always need to complete the request, even if a matching account is not found
+        if (!account.isPresent()) {
+            Log.e(TAG, "Failed to find a SigninHelperAccount matching the given account for the token request");
+            request.completeWithErrorMessage("The app could not find a matching ConnectedDevicesAccount to get a token");
+            return;
+        }
+
+        // Complete the request with a token
+        account.get().getAccessTokenAsync(scopes)
+            .thenAcceptAsync((String token) -> {
+                request.completeWithAccessToken(token);
+            }).exceptionally(throwable -> {
+                request.completeWithErrorMessage("The Account could not return a token with those scopes");
+                return null;
+            });
+    }
+
+    /**
+     * This event is fired when a token consumer reports a token error. The token provider needs to
+     * either refresh their token cache or request a new user login to fix their account setup.
+     * If access token in invalidated, refresh token and renew access token.
+     * @param sender ConnectedDevicesAccountManager which is making the request
+     * @param args Contains arguments for the event
+     */
+    private void onAccessTokenInvalidated(ConnectedDevicesAccountManager sender, ConnectedDevicesAccessTokenInvalidatedEventArgs args) {
+        Log.i(TAG, "Token invalidated for account: " + args.getAccount().getId());
+    }
+
+    /**
+     * Event for when the registration state changes for a given account.
+     * @param sender ConnectedDevicesNotificationRegistrationManager which is making the request
+     * @param args Contains arguments for the event
+     */
+    private void onNotificationRegistrationStateChanged(ConnectedDevicesNotificationRegistrationManager sender, ConnectedDevicesNotificationRegistrationStateChangedEventArgs args) {
+        // If notification registration state is expiring or expired, re-register for account again.
+        ConnectedDevicesNotificationRegistrationState state = args.getState();
+        switch (args.getState()) {
+            case UNREGISTERED:
+                Log.w(TAG, "Notification registration state is unregistered for account: " + args.getAccount().getId());
+                break;
+            case REGISTERED:
+                Log.i(TAG, "Notification registration state is registered for account: " + args.getAccount().getId());
+                break;
+            case EXPIRING: // fallthrough
+            case EXPIRED:
+            {
+                 // Because the notificaiton registration is expiring, the per account registration work needs to be kicked off again.
+                 // This means registering with the NotificationRegistrationManager as well as any sub component work like RemoteSystemAppRegistration.
+                Log.i(TAG, "Notification " + args.getState() + " for account: " + args.getAccount().getId());
+                Optional<Account> account = mAccounts
+                    .stream()
+                    .filter(acc -> accountsMatch(args.getAccount(), acc.getAccount()))
+                    .findFirst();
+
+                // If the account has been prepared for use then re-register the account with SDK
+                if (account.isPresent() && account.get().getRegistrationState() == AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE) {
+                    account.get().registerAccountWithSdkAsync();
+                }
+                break;
+            }
+            default:
+                break;
+        }
+
+    }
+    // endregion
+}
