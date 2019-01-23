@@ -74,7 +74,7 @@ namespace SDKTemplate
 
         public async Task RegisterAccountWithSdkAsync()
         {
-            var scopes = new List<IUserDataFeedSyncScope> { UserNotificationChannel.SyncScope };
+            var scopes = new List<UserDataFeedSyncScope> { UserNotificationChannel.SyncScope };
             bool registered = await m_feed.SubscribeToSyncScopesAsync(scopes);
             if (!registered)
             {
@@ -220,18 +220,20 @@ namespace SDKTemplate
     [DataContract]
     public class Account
     {
-        public AccountRegistrationState RegistrationState { get; set; }
-
-        [DataMember]
-        public String Token { get; set; }
-
         [DataMember]
         public String Id { get; set; }
 
         [DataMember]
         public ConnectedDevicesAccountType Type { get; set; }
-        private ConnectedDevicesPlatform m_platform;
+        
+        [DataMember]
+        public String Token { get; set; }
+
+        public AccountRegistrationState RegistrationState { get; set; }
+
         public UserNotificationsManager UserNotifications { get; set; }
+
+        private ConnectedDevicesPlatform m_platform;
 
         public Account(ConnectedDevicesPlatform platform, String id, 
             ConnectedDevicesAccountType type, String token, AccountRegistrationState registrationState)
@@ -256,6 +258,11 @@ namespace SDKTemplate
             {
                 InitializeSubcomponents();
             }
+        }
+
+        public bool EqualsTo(ConnectedDevicesAccount other)
+        {
+            return ((other.Id == Id) && (other.Type == Type));
         }
 
         public async Task InitializeAccountAsync()
