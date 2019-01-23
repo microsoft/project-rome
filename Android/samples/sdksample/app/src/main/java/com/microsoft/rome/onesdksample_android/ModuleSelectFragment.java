@@ -20,25 +20,13 @@ public class ModuleSelectFragment extends BaseFragment {
 
         // Initialize buttons
         rootView.findViewById(R.id.device_relay_button)
-            .setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    getMainActivity().navigateToPage((MainActivity.DEVICE_RELAY));
-                }
-            });
+            .setOnClickListener(v -> getMainActivity().navigateToPage((MainActivity.DEVICE_RELAY)));
 
         rootView.findViewById(R.id.activities_button)
-            .setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    getMainActivity().navigateToPage((MainActivity.USER_ACTIVITIES));
-                }
-            });
+            .setOnClickListener(v -> getMainActivity().navigateToPage((MainActivity.USER_ACTIVITIES)));
 
         rootView.findViewById(R.id.hosting_button)
-            .setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    getMainActivity().navigateToPage((MainActivity.HOSTING));
-                }
-            });
+            .setOnClickListener(v -> getMainActivity().navigateToPage((MainActivity.HOSTING)));
 
         return rootView;
     }

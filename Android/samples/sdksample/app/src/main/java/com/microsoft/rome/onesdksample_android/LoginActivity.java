@@ -8,10 +8,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 
-import com.microsoft.connecteddevices.base.AsyncOperation;
+import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceProvider;
 
+import java.util.ArrayList;
 /**
  * LoginActivity uses the sampleAccountProviders library to trigger auth flow
  * On successful sign in, the user is redirected to the ModuleSelectFragment where they can select Device Relay or Activities
@@ -20,7 +20,7 @@ public class LoginActivity extends AppCompatActivity {
     // region Member Variables
     private static final String TAG = LoginActivity.class.getName();
 
-    private AccountProviderBroker accountProviderBroker;
+    private AccountBroker accountBroker;
     // endregion
 
     // region Overrides
@@ -30,44 +30,53 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-        accountProviderBroker = new AccountProviderBroker(getBaseContext());
+        PlatformBroker.getPlatformBroker().getOrInitializePlatform(this);
+        accountBroker = new AccountBroker(getBaseContext());
 
-        // Initialize buttons incase the user clicks out of the webview
+        // Initialize buttons in case the user clicks out of the webview
         findViewById(R.id.sign_in_button)
-            .setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    signIn();
-                }
-            });
+            .setOnClickListener(v -> signIn());
 
-        if (!accountProviderBroker.isSignedIn()) {
-            signIn();
-        } else {
-            launchMainActivity();
-        }
+        signIn();
     }
     // endregion
 
     private void signIn() {
-        accountProviderBroker.signIn(this, new SignInCompletionHandler());
-    }
+        Log.d(TAG, "Start signin");
+        accountBroker.signIn(this, (account, throwable) -> {
+            Log.d(TAG, "Sign in completed.");
 
-    /**
-     * Implementation of callback for signIn operations
-     * On sign in success, change view to ModuleSelectFragment (where user can choose between device relay & activities)
-     */
-    private class SignInCompletionHandler implements AsyncOperation.ResultBiConsumer<Boolean, Throwable> {
-        @Override
-        public void accept(final Boolean signInSuccess, final Throwable e) throws Throwable {
-            Log.d(TAG, "Sign in complete " + Boolean.toString(signInSuccess));
+            Log.v(TAG, "Start the platform");
+            PlatformBroker platformBroker = PlatformBroker.getPlatformBroker();
+            platformBroker.startPlatform();
 
-            if (signInSuccess) {
+            if (accountBroker.isSignedIn()) {
+                Log.d(TAG, "Adding received account to account manager");
+                // Adding account to Account Manager
+                PlatformBroker.getPlatformBroker().addAccountToAccountManager(account);
+
+                // Saving Id to Account Broker, so it can be used in other places
+                AccountBroker.setCurrentAccountId(account.getId());
+
+                Log.v(TAG, "Register for notifications");
+                platformBroker.createNotificationReceiver(this);
+                // This cannot be called now
+                platformBroker.registerNotificationsForAccount(platformBroker.getAccount(AccountBroker.getCurrentAccountId()));
+
+                Log.v(TAG, "Register the Relay SDK");
+                ArrayList<AppServiceProvider> appServiceProviders = new ArrayList<>();
+                appServiceProviders.add(new PingPongService());
+                appServiceProviders.add(new EchoService());
+
+                platformBroker.register(this, platformBroker.getAccount(AccountBroker.getCurrentAccountId()), appServiceProviders, new SimpleLaunchHandler());
+
                 launchMainActivity();
             }
-        }
+        });
     }
 
     private void launchMainActivity() {
+        Log.d(TAG, "Launching MainActivity");
         startActivity(new Intent(LoginActivity.this, MainActivity.class));
         finish();
     }
