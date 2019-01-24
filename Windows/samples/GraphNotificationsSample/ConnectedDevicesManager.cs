@@ -101,7 +101,7 @@ namespace SDKTemplate
 
                 // Check if the account is also present in ConnectedDevicesPlatform.AccountManager.
                 AccountRegistrationState registrationState;
-                var sdkAccount = sdkCachedAccounts.Find((x) => x.Id == account.Id);
+                var sdkAccount = sdkCachedAccounts.Find((x) => account.EqualsTo(x));
                 if (sdkAccount == null)
                 {
                     // Account not found in the SDK cache. Later when Account.InitializeAsync runs this will 
@@ -114,7 +114,7 @@ namespace SDKTemplate
                     // all the appCachedAccounts have been processed any accounts remaining in sdkCachedAccounts
                     // are only in the SDK cache, and should be removed.
                     registrationState = AccountRegistrationState.InAppCacheAndSdkCache;
-                    sdkCachedAccounts.RemoveAll((x) => x.Id == account.Id);
+                    sdkCachedAccounts.RemoveAll((x) => account.EqualsTo(x));
                 }
 
                 m_accounts.Add(new Account(m_platform, account.Id, account.Type, account.Token, registrationState));
@@ -160,7 +160,7 @@ namespace SDKTemplate
         {
             if ((args.State == ConnectedDevicesNotificationRegistrationState.Expired) || (args.State == ConnectedDevicesNotificationRegistrationState.Expiring))
             {
-                var account = m_accounts.Find((x) => x.Id == args.Account.Id);
+                var account = m_accounts.Find((x) => x.EqualsTo(args.Account));
                 if (account != null)
                 {
                     await account.RegisterAccountWithSdkAsync();
@@ -172,7 +172,7 @@ namespace SDKTemplate
         {
             Logger.Instance.LogMessage($"Token requested by platform for {args.Request.Account.Id} and {string.Join(" ", args.Request.Scopes)}");
 
-            var account = m_accounts.Find((x) => x.Id == args.Request.Account.Id);
+            var account = m_accounts.Find((x) => x.EqualsTo(args.Request.Account));
             if (account != null)
             {
                 try
