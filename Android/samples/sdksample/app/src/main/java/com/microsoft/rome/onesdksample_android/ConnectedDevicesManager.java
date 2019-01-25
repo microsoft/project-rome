@@ -16,7 +16,9 @@ import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationSt
 import com.microsoft.connecteddevices.ConnectedDevicesAccessTokenInvalidatedEventArgs;
 import com.microsoft.connecteddevices.ConnectedDevicesAccount;
 import com.microsoft.connecteddevices.ConnectedDevicesAccountManager;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistration;
 import com.microsoft.connecteddevices.ConnectedDevicesAccountType;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationType;
 import com.microsoft.connecteddevices.ConnectedDevicesAddAccountResult;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationManager;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationState;
@@ -47,6 +49,7 @@ public class ConnectedDevicesManager {
     private String currentAccountId;
     private List<Account> mAccounts;
 
+    private GcmNotificationReceiver mNotificationReceiver;
     private ConnectedDevicesPlatform mPlatform;
     private static ConnectedDevicesManager sConnectedDevicesManager;
     // endregion
@@ -60,6 +63,9 @@ public class ConnectedDevicesManager {
         // Initialize list of known accounts
         mAccounts = new ArrayList<Account>();
         
+        // Create the NotificationReceiver
+        mNotificationReceiver = new GcmNotificationReceiver(context);
+
         // Create Platform
         mPlatform = new ConnectedDevicesPlatform(context);
 
@@ -80,20 +86,17 @@ public class ConnectedDevicesManager {
         List<Account> deserializedAccounts = deserializeAccounts(context);
 
         // Finally initialize the accounts. This will refresh registrations when needed, add missing accounts,
-        // and remove stale accounts from the ConnectedDevicesPlatform.AccountManager.
+        // and remove stale accounts from the ConnectedDevicesPlatform AccountManager. The AsyncOperation associated
+        // with all of this asynchronous work need not be waited on as any sub component work will be accomplished
+        // in the synchronous portion of the call. If your app needs to sequence when other apps can see this app's registration
+        // (i.e. when RemoteSystemAppRegistration SaveAsync completes) then it would be useful to use the AsyncOperation returned by
+        // prepareAccountsAsync
         prepareAccounts(deserializedAccounts, context);
     }
     // endregion
 
     // region public static methods
-    public static synchronized ConnectedDevicesManager getConnectedDevicesManager() {
-        return sConnectedDevicesManager;
-    }
-
-    public static synchronized ConnectedDevicesManager getOrInitializeConnectedDevicesManager(Context context) {
-        if (sConnectedDevicesManager == null) {
-            sConnectedDevicesManager = new ConnectedDevicesManager(context);
-        }
+    public static synchronized ConnectedDevicesManager getConnectedDevicesManager(Context context) {
         return sConnectedDevicesManager;
     }
     // endregion
@@ -104,27 +107,22 @@ public class ConnectedDevicesManager {
      * @param activity Application activity
      * @return The async result for when this operation completes
      */
-    public synchronized AsyncOperation<Void> signInMsa(final Activity activity) {
-        AsyncOperation<Void> returnOperation = new AsyncOperation<Void>();
-
+    public synchronized AsyncOperation<Boolean> signInMsaAsync(final Activity activity) {
         // Create a Signin helper Account with a client id for msa, a map of requested scopes to override, and the context
         SigninHelperAccount signInHelper = new MSASigninHelperAccount(Secrets.MSA_CLIENT_ID, new ArrayMap<String, String[]>(), (Context)activity);
 
-        if (!signInHelper.isSignedIn()) {
-            Log.i(TAG, "Signin in a MSA account");
-
-            // Call signin, which may prompt the user to enter credentials or just retreive a cached token if they exist and are valid
-            signInHelper.signIn(activity).thenAcceptAsync((ConnectedDevicesAccount account) -> {
-                // Prepare the account, adding it to the list of app's cached accounts is prepared successfully
-                prepareAccount(new Account(signInHelper, AccountRegistrationState.IN_APP_CACHE_ONLY, mPlatform), (Context)activity);
-                returnOperation.complete(null);
-            });
-        } else {
+        if (signInHelper.isSignedIn()) {
             Log.i(TAG, "Already signed in with a MSA account");
-            returnOperation.complete(null);
+            return AsyncOperation.completedFuture(true);
         }
 
-        return returnOperation;
+        Log.i(TAG, "Signin in a MSA account");
+
+        // Call signin, which may prompt the user to enter credentials or just retreive a cached token if they exist and are valid
+        return signInHelper.signIn(activity).thenComposeAsync((ConnectedDevicesAccount account) -> {
+            // Prepare the account, adding it to the list of app's cached accounts is prepared successfully
+            return prepareAccountAsync(new Account(signInHelper, AccountRegistrationState.IN_APP_CACHE_ONLY, mPlatform), (Context)activity);
+        });
     }
 
     /**
@@ -146,60 +144,42 @@ public class ConnectedDevicesManager {
 
         // Create a NotificationRegistration obect to store all notification information
         ConnectedDevicesNotificationRegistration registration = new ConnectedDevicesNotificationRegistration();
-        notification.setType(ConnectedDevicesNotificationType.GCM);
-        notification.setToken(token);
-        notification.setAppId(Secrets.GCM_SENDER_ID);
-        notification.setAppDisplayName("OneSDK Sample");
+        registration.setType(ConnectedDevicesNotificationType.GCM);
+        registration.setToken(token);
+        registration.setAppId(Secrets.GCM_SENDER_ID);
+        registration.setAppDisplayName("OneSDK Sample");
 
         Log.i(TAG, "Completing the GcmNotificationReceiver operation with token: " + token);
 
         // For each prepared account, register for notifications
         for (Account account : mAccounts) {
-            registrationManager.registerForAccountAsync(account, notification)
-                .whenCompleteAsync((Boolean result, Throwable throwable) -> {
+            registrationManager.registerForAccountAsync(account.getAccount(), registration)
+                .whenCompleteAsync((Boolean success, Throwable throwable) -> {
                     if (throwable != null) {
                         Log.e(TAG, "RegistrationManager registration encountered " + throwable);
-                    } else if (result) {
-                        Log.i(TAG, "Successfully performed notification registration for given account");
+                    } else if (!success) {
+                        Log.e(TAG, "Failed to perform notification registration for given account.");
                     } else {
-                        Log.e(TAG, "Failed to perform notification registration for given account." + throwable);
+                        Log.i(TAG, "Successfully performed notification registration for given account");
                     }
-
-                    notifyNotificationRegistered(throwable == null && result);
                 });
         }
 
-        // Because the notificaiton registration is expiring, the per account registration work needs to be kicked off again.
-        // This means registering with the NotificationRegistrationManager as well as any sub component work like RemoteSystemAppRegistration.
-        Log.i(TAG, "Notification " + args.getState() + " for account: " + args.getAccount().getId());
-        Optional<Account> account = mAccounts
-            .stream()
-            .filter(acc -> accountsMatch(args.getAccount(), acc.getAccount()))
-            .findFirst();
+        // The two cases of receiving a new notification token are:
+        // 1. A notification registration is asked for and now it is available. In this case there is a pending promise that was made
+        //    at the time of requesting the information. It now needs completed.
+        // 2. The account is already registered but for whatever reason the registration changes (GCM/FCM gives the app a new token)
+        //
+        // In order to most cleany handle both cases set the new notification information and then trigger a re registration of all accounts
+        // that are in good standing.
+        GcmNotificationReceiver.setNotificationRegistration(registration);
 
-        // If the account has been prepared for use then re-register the account with SDK
-        if (account.isPresent() && account.get().getRegistrationState() == AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE) {
-            account.get().registerAccountWithSdkAsync();
+        // For all the accounts which have been prepared successfully, perform Relay SDK registration
+        for (Account account : mAccounts) {
+            if (account.getRegistrationState() == AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE) {
+                account.registerAccountWithSdkAsync();
+            }
         }
-        break;
-    }
-
-    /**
-     * Give the GCM notification to Rome to process.
-     * @param data The bundle of data in a GCM notification
-     * @return The async result for this operation
-     */
-    public AsyncOperation<Void> receiveNotificationAsync(Bundle data) {
-        return mPlatform.processNotification(data).waitForCompletionAsync();
-    }
-
-    /**
-     * Give the FCM notification to Rome to process.
-     * @param data The map of data in a FCM notification
-     * @return The async result for this operation
-     */
-    public AsyncOperation<Void> receiveNotificationAsync(Map data) {
-        return mPlatform.processNotification(data).waitForCompletionAsync();
     }
 
     public ConnectedDevicesPlatform getPlatform() {
@@ -280,31 +260,48 @@ public class ConnectedDevicesManager {
     /**
      * Prepare the accounts; refresh registrations when needed, add missing accounts and remove stale accounts from the ConnectedDevicesPlatform.AccountManager.
      * @param context Application context
+     * @return A async operation that will complete when all accounts are prepared
      */
-    private void prepareAccounts(List<Account> accounts, Context context) {
+    private AsyncOperation<Void> prepareAccounts(List<Account> accounts, Context context) {
+        List<AsyncOperation<Boolean>> operations = new ArrayList<>();
+
+        // Kick off all the account preperation and store the AsyncOperations
         for (Account account : accounts) {
-            prepareAccount(account, context);
+            operations.add(prepareAccountAsync(account, context));
         }
+
+        // Return an operation that will complete when all of the operations complete.
+        return AsyncOperation.allOf(operations.toArray(new AsyncOperation[operations.size()]));
     }
 
     /**
      * Attempt to prepare the account. If the account was prepared successfully, add it to the list of "ready to use" accounts.
      * @param context Application context
+     * @return AsyncOperation with the exception captured
      */
-    private void prepareAccount(Account account, Context context) {
+    private AsyncOperation<Boolean> prepareAccountAsync(Account account, Context context) {
         Log.v(TAG, "Preparing account: " + account.getAccount().getId());
 
         // Add the account to the list of available accounts
         mAccounts.add(account);
 
         // Prepare the account, removing it from the list of accounts if it failed
-        account.prepareAccountAsync(context).thenAcceptAsync((success) -> {
-            if (success) {
-                Log.i(TAG, "Account: " + account.getAccount().getId() + " is prepared!.");
-            } else {
+        return account.prepareAccountAsync(context).thenComposeAsync((Boolean success) -> {
+            // If an exception is raised or we gracefully fail to prepare the account, remove it
+            if (!success) {
                 mAccounts.remove(account);
                 Log.w(TAG, "Removed account: " + account.getAccount().getId() + " from the list of ready-to-go accounts as it failed to be prepared.");
+            } else {
+                Log.i(TAG, "Account: " + account.getAccount().getId() + " is prepared!.");
             }
+
+            // Return the success of the account preparation
+            return AsyncOperation.completedFuture(success);
+        }).exceptionally((Throwable throwable) -> {
+            mAccounts.remove(account);
+            Log.e(TAG, "Removed account: " + account.getAccount().getId() + " from the list of ready-to-go accounts as an exception was encountered");
+            // Return the account preparation was not successful
+            return false;
         });
     }
 

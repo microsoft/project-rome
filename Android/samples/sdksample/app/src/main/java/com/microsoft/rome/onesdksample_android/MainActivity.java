@@ -120,13 +120,16 @@ public class MainActivity extends AppCompatActivity {
         mNavigationDrawer.addDrawerListener(actionBarDrawerToggle);
 
         // Create the ConnectedDevicesManager
-        mConnectedDevicesManager = ConnectedDevicesManager.getOrInitializeConnectedDevicesManager((Context)this);
+        mConnectedDevicesManager = ConnectedDevicesManager.getConnectedDevicesManager((Context)this);
 
         // Sign the user in, which may or may not require UI interaction
-        mConnectedDevicesManager.signInMsa(this).thenAcceptAsync((Void v) -> {
-            // Initialize the UserActivity Feed
-            // TODO: Enable this once race is solved
-            // getUserActivityFragment().initializeUserActivityFeed();
+        mConnectedDevicesManager.signInMsaAsync(this).thenAcceptAsync((success) -> {
+            if (success) {
+                // Initialize the UserActivity Feed
+                getUserActivityFragment().initializeUserActivityFeed();
+            } else {
+                Log.e(TAG, "ConnectedDevicesManager failed to sign in an MSA account");
+            }
         });
     }
 

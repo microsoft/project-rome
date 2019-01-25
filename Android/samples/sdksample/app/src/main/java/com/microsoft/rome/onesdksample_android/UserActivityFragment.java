@@ -85,7 +85,7 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
     private String mStatusText;
 
     private UserDataFeed getUserDataFeed(ConnectedDevicesAccount account, List<UserDataFeedSyncScope> scopes, EventListener<UserDataFeed, UserDataFeedSyncStatusChangedEventArgs> listener) {
-        UserDataFeed feed = UserDataFeed.getForAccount(account, ConnectedDevicesManager.getConnectedDevicesManager().getPlatform(), Secrets.APP_HOST_NAME);
+        UserDataFeed feed = UserDataFeed.getForAccount(account, ConnectedDevicesManager.getConnectedDevicesManager(getActivity()).getPlatform(), Secrets.APP_HOST_NAME);
         feed.syncStatusChanged().subscribe(listener);
         // TODO: Subscribe to sync scopes async
         feed.startSync();
@@ -99,7 +99,7 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
         try {
             // Step #1
             // get the UserDataFeed for the signed in account
-            ConnectedDevicesManager manager = ConnectedDevicesManager.getConnectedDevicesManager();
+            ConnectedDevicesManager manager = ConnectedDevicesManager.getConnectedDevicesManager(getActivity());
             List<Account> accounts = manager.getAccounts();
 
             // Ensure we have an account to use

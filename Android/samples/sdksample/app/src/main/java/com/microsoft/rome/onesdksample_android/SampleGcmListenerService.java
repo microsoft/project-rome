@@ -30,7 +30,9 @@ public class SampleGcmListenerService extends GcmListenerService {
     public void onMessageReceived(String from, Bundle data) {
         Log.d(TAG, "GCM listener received data from: " + from);
 
-        // Get an existing ConnectedDevicesManager or initialize one and give it the notification
-        ConnectedDevicesManager.getOrInitializeConnectedDevicesManager(getApplicationContext()).receiveNotificationAsync(data);
+        // Get a ConnectedDevicesPlatform to give the notification to
+        ConnectedDevicesPlatform platform = ConnectedDevicesManager.getConnectedDevicesManager(getApplicationContext()).getPlatform();
+
+        platform.processNotification(data).waitForCompletionAsync();
     }
 }

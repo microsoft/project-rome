@@ -21,6 +21,7 @@ public class GcmNotificationReceiver extends BroadcastReceiver {
     private static final String RegistrationComplete = "registrationComplete";
 
     private Context mContext;
+    private static AsyncOperation<ConnectedDevicesNotificationRegistration> sNotificationRegistrationOperation; 
     // endregion
 
     GcmNotificationReceiver(Context context) {
@@ -30,9 +31,30 @@ public class GcmNotificationReceiver extends BroadcastReceiver {
     }
 
     /**
+     * TODO: Comment
+     * @param registration
+     */
+    public static synchronized void setNotificationRegistration(ConnectedDevicesNotificationRegistration registration) {
+        // Create the registration operation if it has not been requested already
+        if (sNotificationRegistrationOperation == null) {
+            sNotificationRegistrationOperation = new AsyncOperation<>();
+        }
+
+        // Complete the operation with the registration, to be fetched later
+        sNotificationRegistrationOperation.complete(registration);
+    }
+
+    /**
      * This function returns Notification Registration after it completes async operation.
      * @return Notification Registration.
      */
+    public synchronized static AsyncOperation<ConnectedDevicesNotificationRegistration> getNotificationRegistrationAsync() {
+        // Create the registration operation if it the registration has not been received yet
+        if (sNotificationRegistrationOperation == null) {
+            sNotificationRegistrationOperation = new AsyncOperation<>();
+        }
+        return sNotificationRegistrationOperation;
+    }
 
     /**
      * When GCM has been registered, this will get fired.
@@ -52,10 +74,13 @@ public class GcmNotificationReceiver extends BroadcastReceiver {
 
         if (token == null) {
             Log.e(TAG, "Got notification that GCM had been registered, but token is null. Was app ID set in GcmRegistrationIntentService?");
-        }
+        } else if (token.isEmpty()) {
+            Log.e(TAG, "GcmNotificationReceiver gained the a token however it was empty");
+        } else {
+            Log.i(TAG, "GcmNotificationReceiver gained the token: " + token);
 
-        // Get an existing ConnectedDevicesManager or initialize one and give it the notification token
-        ConnectedDevicesManager.getOrInitializeConnectedDevicesManager(context).setNotificationRegistration(token);
+            ConnectedDevicesManager.getConnectedDevicesManager(context).setNotificationRegistration(token);
+        }
 
         mContext.startService(new Intent(mContext, SampleGcmListenerService.class));
     }

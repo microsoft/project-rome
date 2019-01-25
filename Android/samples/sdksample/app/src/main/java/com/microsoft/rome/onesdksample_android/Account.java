@@ -51,7 +51,6 @@ public class Account {
     private SigninHelperAccount mSignInHelper;
     private ConnectedDevicesAccount mAccount;
     private AccountRegistrationState mState;
-    private GcmNotificationReceiver mNotificationReceiver;
     private ConnectedDevicesPlatform mPlatform;
     private RemoteSystemAppRegistration mRegistration;
     // endregion
@@ -101,86 +100,68 @@ public class Account {
         // For scenario 1, initialize our subcomponents.
         // For scenario 2, subcomponents will be initialized after InitializeAccountAsync registers the account with the SDK.
         // For scenario 3, InitializeAccountAsync will unregister the account and subcomponents will never be initialized.
-        AsyncOperation<Boolean> returnOperation = new AsyncOperation<Boolean>();
         switch (mState) {
             // Scenario 1
             case IN_APP_CACHE_AND_SDK_CACHE:
                 initializeSubcomponents(context);
-                // This account has been prepared
-                Log.e(TAG, "[CDP_TRACES] IN_APP_CACHE_AND_SDK_CACHE");
-                returnOperation.complete(true);
-                break;
+                return registerAccountWithSdkAsync();
             // Scenario 2
             case IN_APP_CACHE_ONLY: {
                 // Add the this account to the ConnectedDevicesPlatform.AccountManager
-                mPlatform.getAccountManager().addAccountAsync(mAccount).whenComplete((ConnectedDevicesAddAccountResult result, Throwable throwable) -> {
-                    // Note: If add account fails, retry again at a later time. Any operations that require
-                    // the account cannot be performed until the account has been added successfully.
-                    if (throwable != null) {
-                        Log.e(TAG, "[CDP_TRACES] AddAccount encountered " + throwable);
-                        returnOperation.complete(false);
-                    } else if (result.getStatus() != ConnectedDevicesAccountAddedStatus.SUCCESS) {
-                        Log.e(TAG, "[CDP_TRACES] Failed to add account " + mAccount.getId() + " to the AccountManager due to " + result.getStatus());
-                        returnOperation.complete(false);
-                    } else {
-                        // Set the registration state of this account as in both app and sdk cache
-                        mState = AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE;
-                        initializeSubcomponents(context);
-                        // This account has been prepared
-                        Log.e(TAG, "[CDP_TRACES] IN_APP_CACHE_ONLY");
-                        returnOperation.complete(true);
+                return mPlatform.getAccountManager().addAccountAsync(mAccount).thenComposeAsync((ConnectedDevicesAddAccountResult result) -> {
+                    // We failed to add the account, so exit with a failure to prepare bool
+                    if (result.getStatus() != ConnectedDevicesAccountAddedStatus.SUCCESS) {
+                        Log.e(TAG, "Failed to add account " + mAccount.getId() + " to the AccountManager due to " + result.getStatus());
+                        return AsyncOperation.completedFuture(false);
                     }
+
+                    // Set the registration state of this account as in both app and sdk cache
+                    mState = AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE;
+                    initializeSubcomponents(context);
+                    return registerAccountWithSdkAsync();
                 });
-                break;
             }
             // Scenario 3
             case IN_SDK_CACHE_ONLY:
                 // Remove the account from the SDK since the app has no knowledge of it
                 mPlatform.getAccountManager().removeAccountAsync(mAccount);
                 // This account could not be prepared
-                Log.e(TAG, "[CDP_TRACES] IN_SDK_CACHE_ONLY");
-                returnOperation.complete(false);
-                break;
+                return AsyncOperation.completedFuture(false);
+            default:
+                // This account could not be prepared
+                return AsyncOperation.completedFuture(false);
         }
-
-        return returnOperation;
     }
 
     /**
      * Performs non-blocking registrations for this account, which are
      * for notifications then for the relay SDK.
      */
-    public void registerAccountWithSdkAsync() {
+    // This needs to return a AsyncOperation that prepareAccountAsync returns
+    public AsyncOperation<Boolean> registerAccountWithSdkAsync() {
         if (mState != AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE) {
-            throw new IllegalStateException("Cannot register this account due to bad state: " + mAccount.getId());
+            AsyncOperation<Boolean> toReturn = new AsyncOperation<>();
+            toReturn.completeExceptionally(new IllegalStateException("Cannot register this account due to bad state: " + mAccount.getId()));
+            return toReturn;
         }
 
-        mNotificationReceiver.getNotificationRegistrationAsync().whenCompleteAsync((ConnectedDevicesNotificationRegistration notificationRegistration, Throwable notificationThowable) -> {
-            if (notificationThowable != null) {
-                Log.e(TAG, "NotificationReceiver.getNotificationRegistrationAsync for account " + mAccount.getId() + " encountered " + notificationThowable);
-                return;
-            }
-
+        // Grab the shared GCM/FCM notification token from this app's BroadcastReceiver
+        return GcmNotificationReceiver.getNotificationRegistrationAsync().thenComposeAsync((ConnectedDevicesNotificationRegistration notificationRegistration) -> {
             // Perform the registration using the NotificationRegistration
-            mPlatform.getNotificationRegistrationManager().registerForAccountAsync(mAccount, notificationRegistration)
-                .whenCompleteAsync((Boolean success, Throwable throwable) -> {
-                    if (throwable != null) {
-                        Log.e(TAG, "NotificationRegistrationManager encountered " + throwable);
-                    } else if (!success) {
+            return mPlatform.getNotificationRegistrationManager().registerForAccountAsync(mAccount, notificationRegistration)
+                .thenComposeAsync((Boolean success) -> {
+                    if (!success) {
                         Log.e(TAG, "Failed to perform notification registration for account: " + mAccount.getId());
-                    } else {
-                        Log.i(TAG, "Successfully performed notification registration for account:" + mAccount.getId());
+                        return AsyncOperation.completedFuture(success);
                     }
-                });
-        });
 
-        // Perform the relay SDK registration by saving the RemoteSystemAppRegistration object
-        mRegistration.saveAsync().whenCompleteAsync((Boolean success, Throwable throwable) -> {
-            if (throwable != null) {
-                Log.e(TAG, "Registration saveAsync completed with throwable: " + throwable);
-            } else {
-                Log.v(TAG, "RemoteSystemHostRegistration was saved with success: " + success);
-            }
+                    Log.i(TAG, "Successfully performed notification registration for account:" + mAccount.getId());
+                    // Perform the relay SDK registration by saving the RemoteSystemAppRegistration object
+                    return mRegistration.saveAsync().thenComposeAsync((Boolean saveSuccess) -> {
+                        Log.v(TAG, "RemoteSystemHostRegistration was saved with success: " + saveSuccess);
+                        return AsyncOperation.completedFuture(saveSuccess);
+                    });
+                });
         });
     }
 
@@ -192,9 +173,6 @@ public class Account {
         if (mState != AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE) {
             throw new IllegalStateException("Cannot initialize subcomponents of this account due to bad state: " + mAccount.getId());
         }
-
-        // Create the NotificationReceiver
-        mNotificationReceiver = new GcmNotificationReceiver(context);
 
         // Create our attributes, a timestamp for registration and package,
         // used to identity the RemoteSystemApp and sort by newest
