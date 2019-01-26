@@ -33,6 +33,10 @@ public class SampleGcmListenerService extends GcmListenerService {
         // Get a ConnectedDevicesPlatform to give the notification to
         ConnectedDevicesPlatform platform = ConnectedDevicesManager.getConnectedDevicesManager(getApplicationContext()).getPlatform();
 
-        platform.processNotification(data).waitForCompletionAsync();
+        platform.processNotification(data).waitForCompletionAsync().thenAcceptAsync((Void v) -> {
+            // The notification has finished being processed. The app is ready to
+            // be shutdown or if woken from the background service, this is where
+            // you would shutdown your background service early to be a good citizen.
+        });
     }
 }

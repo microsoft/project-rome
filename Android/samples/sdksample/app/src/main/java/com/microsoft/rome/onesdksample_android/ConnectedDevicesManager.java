@@ -78,7 +78,7 @@ public class ConnectedDevicesManager {
         // Subscribe to NotificationRegistrationStateChanged event
         mPlatform.getNotificationRegistrationManager().notificationRegistrationStateChanged().subscribe((notificationRegistrationManager, args) -> onNotificationRegistrationStateChanged(notificationRegistrationManager, args));
 
-        // Start the platform as we have sibscribed to the events it can raise
+        // Start the platform as we have subscribed to the events it can raise
         mPlatform.start();
 
         // Pull the accounts from our app's cache and synchronize the list with the apps cached by 
@@ -97,6 +97,9 @@ public class ConnectedDevicesManager {
 
     // region public static methods
     public static synchronized ConnectedDevicesManager getConnectedDevicesManager(Context context) {
+        if (sConnectedDevicesManager == null) {
+            sConnectedDevicesManager = new ConnectedDevicesManager(context);
+        }
         return sConnectedDevicesManager;
     }
     // endregion
@@ -299,7 +302,7 @@ public class ConnectedDevicesManager {
             return AsyncOperation.completedFuture(success);
         }).exceptionally((Throwable throwable) -> {
             mAccounts.remove(account);
-            Log.e(TAG, "Removed account: " + account.getAccount().getId() + " from the list of ready-to-go accounts as an exception was encountered");
+            Log.e(TAG, "Removed account: " + account.getAccount().getId() + " from the list of ready-to-go accounts as an exception was encountered", throwable);
             // Return the account preparation was not successful
             return false;
         });
