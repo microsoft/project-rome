@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
             if (success) {
                 // Initialize the UserActivity Feed
                 getUserActivityFragment().initializeUserActivityFeed();
+                navigateToPage(DEVICE_RELAY);
             } else {
                 Log.e(TAG, "ConnectedDevicesManager failed to sign in an MSA account");
             }

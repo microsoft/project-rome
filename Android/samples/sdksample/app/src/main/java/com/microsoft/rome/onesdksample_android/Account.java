@@ -88,6 +88,7 @@ public class Account {
      * Perform all actions required to have this account signed in, added to the
      * ConnectedDevicesPlatform.AccountManager and registered with the Rome platform.
      * @param context Application context
+     * @return The async result for this operation
      */
     public AsyncOperation<Boolean> prepareAccountAsync(final Context context) {
         // Accounts can be in 3 different scenarios:
@@ -136,8 +137,8 @@ public class Account {
     /**
      * Performs non-blocking registrations for this account, which are
      * for notifications then for the relay SDK.
+     * @return The async result for this operation
      */
-    // This needs to return a AsyncOperation that prepareAccountAsync returns
     public AsyncOperation<Boolean> registerAccountWithSdkAsync() {
         if (mState != AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE) {
             AsyncOperation<Boolean> toReturn = new AsyncOperation<>();

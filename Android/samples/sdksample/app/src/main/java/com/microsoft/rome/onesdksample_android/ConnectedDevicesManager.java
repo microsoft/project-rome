@@ -141,6 +141,10 @@ public class ConnectedDevicesManager {
         return account.logoutAsync(activity);
     }
 
+    /**
+     * Create a NotificationRegistration using the notification token gained from GCM/FCM.
+     * @param token Notification token gained by the BroadcastReceiver
+     */
     public synchronized void setNotificationRegistration(final String token) {
         // Get the NotificationRegistrationManager from the platforfm
         ConnectedDevicesNotificationRegistrationManager registrationManager = mPlatform.getNotificationRegistrationManager();
@@ -185,10 +189,18 @@ public class ConnectedDevicesManager {
         }
     }
 
+    /**
+     * Get the ConnectedDevicesPlatform owned by this ConnectedDevicesManager.
+     * @return Platform
+     */
     public ConnectedDevicesPlatform getPlatform() {
         return mPlatform;
     }
 
+    /**
+     * Get a list of "ready-to-go" accounts owned by this ConnectedDevicesManager.
+     * @return accounts
+     */
     public List<Account> getAccounts() {
         return mAccounts;
     }
@@ -199,6 +211,7 @@ public class ConnectedDevicesManager {
      * Pull the accounts from our app's cache and synchronize the list with the 
      * apps cached by ConnectedDevicesPlatform.AccountManager.
      * @param context Application context
+     * @return List of accounts from the app and SDK's cache
      */
     private List<Account> deserializeAccounts(Context context) {
         // Since our helper lib can only cache 1 app at a time, we create sign-in helper,
