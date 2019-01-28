@@ -85,11 +85,14 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
     private String mStatusText;
 
     private UserDataFeed getUserDataFeed(ConnectedDevicesAccount account, List<UserDataFeedSyncScope> scopes, EventListener<UserDataFeed, UserDataFeedSyncStatusChangedEventArgs> listener) {
-        UserDataFeed feed = UserDataFeed.getForAccount(account, PlatformBroker.getPlatformBroker().getPlatform(), Secrets.APP_HOST_NAME);
-        feed.syncStatusChanged().subscribe(listener);
-        // TODO: Subscribe to sync scopes async
-        feed.startSync();
-        return feed;
+        UserDataFeed dataFeed = UserDataFeed.getForAccount(account, ConnectedDevicesManager.getConnectedDevicesManager(getActivity()).getPlatform(), Secrets.APP_HOST_NAME);
+        dataFeed.syncStatusChanged().subscribe(listener);
+        dataFeed.subscribeToSyncScopesAsync(scopes).whenCompleteAsync((success, throwable) -> {
+            if (success) {
+                dataFeed.startSync();
+            }
+        });
+        return dataFeed;
     }
 
     public void initializeUserActivityFeed() {
@@ -97,33 +100,38 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
         Log.d(TAG, mStatusText);
 
         try {
-            if (!AccountBroker.getSignInHelper().isSignedIn()) {
-                mStatusText = getStringValue(R.string.status_activities_signin_required);
-                Log.e(TAG, mStatusText);
-                return;
-            }
-
             // Step #1
             // get the UserDataFeed for the signed in account
-            List<UserDataFeedSyncScope> scopes =  Arrays.asList(UserActivityChannel.getSyncScope());
-            mUserDataFeed = getUserDataFeed(PlatformBroker.getPlatformBroker().getAccount(AccountBroker.getCurrentAccountId()), scopes, (userDataFeed, args) -> {
-                if (userDataFeed.getSyncStatus() == UserDataFeedSyncStatus.SYNCHRONIZED) {
-                    mStatusText = getStringValue(R.string.status_activities_initialize_complete);
-                    Log.e(TAG, mStatusText);
-                } else {
-                    mStatusText = getStringValue(R.string.status_activities_initialize_failed);
-                    Log.e(TAG, mStatusText);
-                }
-            });
+            ConnectedDevicesManager manager = ConnectedDevicesManager.getConnectedDevicesManager(getActivity());
+            List<Account> accounts = manager.getAccounts();
 
-            mStatusText = getStringValue(R.string.status_activities_get_channel);
-            Log.d(TAG, mStatusText);
+            // Ensure we have an account to use
+            if (accounts.size() > 0) {
+                ConnectedDevicesAccount account = accounts.get(0).getAccount();
 
-            // Step #2
-            // create a UserActivityChannel on the UserDataFeed
-            mActivityChannel = new UserActivityChannel(mUserDataFeed);
+                List<UserDataFeedSyncScope> scopes =  Arrays.asList(UserActivityChannel.getSyncScope());
+                mUserDataFeed = getUserDataFeed(account, scopes, (userDataFeed, args) -> {
+                    if (userDataFeed.getSyncStatus() == UserDataFeedSyncStatus.SYNCHRONIZED) {
+                        mStatusText = getStringValue(R.string.status_activities_initialize_complete);
+                        Log.e(TAG, mStatusText);
+                    } else {
+                        mStatusText = getStringValue(R.string.status_activities_initialize_failed);
+                        Log.e(TAG, mStatusText);
+                    }
+                });
 
-            mStatusText = getStringValue(R.string.status_activities_get_channel_success);
+                mStatusText = getStringValue(R.string.status_activities_get_channel);
+                Log.d(TAG, mStatusText);
+
+                // Step #2
+                // create a UserActivityChannel on the UserDataFeed
+                mActivityChannel = new UserActivityChannel(mUserDataFeed);
+
+                mStatusText = getStringValue(R.string.status_activities_get_channel_success);
+            } else {
+                mStatusText = "Must have an active account to publish activities!";
+            }
+
             Log.d(TAG, mStatusText);
         } catch (Exception e) {
             e.printStackTrace();

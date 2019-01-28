@@ -10,7 +10,6 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.microsoft.connecteddevices.ConnectedDevicesPlatform;
 import com.microsoft.connecteddevices.ConnectedDevicesProcessNotificationOperation;
-import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceProvider;
 
 import java.util.ArrayList;
 
@@ -19,10 +18,9 @@ import java.util.ArrayList;
  */
 
 public class SampleGcmListenerService extends GcmListenerService {
-    private static final String TAG = "GcmListenerService";
+    private final String TAG = SampleGcmListenerService.class.getName();
 
     /**
-     * Check whether it's a rome notification or not.
      * If it is a rome notification,
      * It will notify the apps with the information in the notification.
      * @param  from  describes message sender.
@@ -30,37 +28,15 @@ public class SampleGcmListenerService extends GcmListenerService {
      */
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        Log.d(TAG, "From: " + from);
+        Log.d(TAG, "GCM listener received data from: " + from);
 
-        ConnectedDevicesPlatform platform;
+        // Get a ConnectedDevicesPlatform to give the notification to
+        ConnectedDevicesPlatform platform = ConnectedDevicesManager.getConnectedDevicesManager(getApplicationContext()).getPlatform();
 
-        try {
-            platform = ensurePlatformInitialized();
-        } catch (Exception e) {
-            Log.e(TAG, "Dropping cloud notification because platform could not be initialized", e);
-            return;
-        }
-
-        ConnectedDevicesProcessNotificationOperation operation = platform.processNotification(data);
-    }
-
-    private ConnectedDevicesPlatform ensurePlatformInitialized() {
-        // First see if we have an existing platform
-        PlatformBroker platformBroker = PlatformBroker.getPlatformBroker();
-        ConnectedDevicesPlatform platform = platformBroker.getPlatform();
-        if (platform != null) {
-            return platform;
-        }
-
-        // No existing platform, so we have to create our own
-        GcmNotificationReceiver gcmNotificationProvider = new GcmNotificationReceiver(this);
-        platformBroker.getOrInitializePlatform(getApplicationContext());
-        platformBroker.startPlatform();
-        platformBroker.createNotificationReceiver(this);
-        platformBroker.registerNotificationsForAccount(platformBroker.getAccount(AccountBroker.getCurrentAccountId()));
-
-        // TODO: Check for RemoteSystemAppRegistration for all accounts.
-
-        return platformBroker.getPlatform();
+        platform.processNotification(data).waitForCompletionAsync().thenAcceptAsync((Void v) -> {
+            // The notification has finished being processed. The app is ready to
+            // be shutdown or if woken from the background service, this is where
+            // you would shutdown your background service early to be a good citizen.
+        });
     }
 }
