@@ -85,11 +85,14 @@ public class UserActivityFragment extends BaseFragment implements View.OnClickLi
     private String mStatusText;
 
     private UserDataFeed getUserDataFeed(ConnectedDevicesAccount account, List<UserDataFeedSyncScope> scopes, EventListener<UserDataFeed, UserDataFeedSyncStatusChangedEventArgs> listener) {
-        UserDataFeed feed = UserDataFeed.getForAccount(account, ConnectedDevicesManager.getConnectedDevicesManager(getActivity()).getPlatform(), Secrets.APP_HOST_NAME);
-        feed.syncStatusChanged().subscribe(listener);
-        // TODO: Subscribe to sync scopes async
-        feed.startSync();
-        return feed;
+        UserDataFeed dataFeed = UserDataFeed.getForAccount(account, ConnectedDevicesManager.getConnectedDevicesManager(getActivity()).getPlatform(), Secrets.APP_HOST_NAME);
+        dataFeed.syncStatusChanged().subscribe(listener);
+        dataFeed.subscribeToSyncScopesAsync(scopes).whenCompleteAsync((success, throwable) -> {
+            if (success) {
+                dataFeed.startSync();
+            }
+        });
+        return dataFeed;
     }
 
     public void initializeUserActivityFeed() {

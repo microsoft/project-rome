@@ -69,14 +69,17 @@ public class ConnectedDevicesManager {
         // Create Platform
         mPlatform = new ConnectedDevicesPlatform(context);
 
+        // Create a final reference to the list of accounts
+        final List<Account> accounts = mAccounts;
+
         // Subscribe to the AccessTokenRequested event
-        mPlatform.getAccountManager().accessTokenRequested().subscribe((accountManager, args) -> onAccessTokenRequested(accountManager, args));
+        mPlatform.getAccountManager().accessTokenRequested().subscribe((accountManager, args) -> onAccessTokenRequested(accountManager, args, accounts));
 
         // Subscribe to AccessTokenInvalidated event
-        mPlatform.getAccountManager().accessTokenInvalidated().subscribe((accountManager, args) -> onAccessTokenInvalidated(accountManager, args));
+        mPlatform.getAccountManager().accessTokenInvalidated().subscribe((accountManager, args) -> onAccessTokenInvalidated(accountManager, args, accounts));
 
         // Subscribe to NotificationRegistrationStateChanged event
-        mPlatform.getNotificationRegistrationManager().notificationRegistrationStateChanged().subscribe((notificationRegistrationManager, args) -> onNotificationRegistrationStateChanged(notificationRegistrationManager, args));
+        mPlatform.getNotificationRegistrationManager().notificationRegistrationStateChanged().subscribe((notificationRegistrationManager, args) -> onNotificationRegistrationStateChanged(notificationRegistrationManager, args, accounts));
 
         // Start the platform as we have subscribed to the events it can raise
         mPlatform.start();
@@ -325,13 +328,14 @@ public class ConnectedDevicesManager {
      * This event is fired when there is a need to request a token. This event should be subscribed and ready to respond before any request is sent out.
      * @param sender ConnectedDevicesAccountManager which is making the request
      * @param args Contains arguments for the event
+     * @param accounts List of accounts to search for
      */
-    private void onAccessTokenRequested(ConnectedDevicesAccountManager sender, ConnectedDevicesAccessTokenRequestedEventArgs args) {
+    private void onAccessTokenRequested(ConnectedDevicesAccountManager sender, ConnectedDevicesAccessTokenRequestedEventArgs args, List<Account> accounts) {
         ConnectedDevicesAccessTokenRequest request = args.getRequest();
         List<String> scopes = request.getScopes();
 
         // Compare the app cached account to find a match in the sdk cached accounts
-        Optional<Account> account = mAccounts
+        Optional<Account> account = accounts
             .stream()
             .filter(acc -> accountsMatch(request.getAccount(), acc.getAccount()))
             .findFirst();
@@ -359,8 +363,9 @@ public class ConnectedDevicesManager {
      * If access token in invalidated, refresh token and renew access token.
      * @param sender ConnectedDevicesAccountManager which is making the request
      * @param args Contains arguments for the event
+     * @param accounts List of accounts to search for
      */
-    private void onAccessTokenInvalidated(ConnectedDevicesAccountManager sender, ConnectedDevicesAccessTokenInvalidatedEventArgs args) {
+    private void onAccessTokenInvalidated(ConnectedDevicesAccountManager sender, ConnectedDevicesAccessTokenInvalidatedEventArgs args, List<Account> accounts) {
         Log.i(TAG, "Token invalidated for account: " + args.getAccount().getId());
     }
 
@@ -368,8 +373,9 @@ public class ConnectedDevicesManager {
      * Event for when the registration state changes for a given account.
      * @param sender ConnectedDevicesNotificationRegistrationManager which is making the request
      * @param args Contains arguments for the event
+     * @param accounts List of accounts to search for
      */
-    private void onNotificationRegistrationStateChanged(ConnectedDevicesNotificationRegistrationManager sender, ConnectedDevicesNotificationRegistrationStateChangedEventArgs args) {
+    private void onNotificationRegistrationStateChanged(ConnectedDevicesNotificationRegistrationManager sender, ConnectedDevicesNotificationRegistrationStateChangedEventArgs args, List<Account> accounts) {
         // If notification registration state is expiring or expired, re-register for account again.
         ConnectedDevicesNotificationRegistrationState state = args.getState();
         switch (args.getState()) {
@@ -385,7 +391,7 @@ public class ConnectedDevicesManager {
                  // Because the notificaiton registration is expiring, the per account registration work needs to be kicked off again.
                  // This means registering with the NotificationRegistrationManager as well as any sub component work like RemoteSystemAppRegistration.
                 Log.i(TAG, "Notification " + args.getState() + " for account: " + args.getAccount().getId());
-                Optional<Account> account = mAccounts
+                Optional<Account> account = accounts
                     .stream()
                     .filter(acc -> accountsMatch(args.getAccount(), acc.getAccount()))
                     .findFirst();
