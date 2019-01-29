@@ -12,7 +12,6 @@ void uncaughtExceptionHandler(NSException* uncaughtException)
 @property (nonatomic) MCDConnectedDevicesAccount* pendingAccount;
 @property (nonatomic) void (^pendingCallback)(BOOL,NSError*);
 - (void)createNotificationRegistrationWithToken:(NSString* _Nonnull)deviceToken;
-- (BOOL)processNotification:(NSDictionary* _Nonnull)userInfo;
 @end
 
 @implementation AppDelegate
@@ -69,41 +68,6 @@ void uncaughtExceptionHandler(NSException* uncaughtException)
     }
 }
 
-- (BOOL)processNotification:(NSDictionary* _Nonnull)userInfo
-{
-    @try
-    {
-        if ([NSJSONSerialization isValidJSONObject:userInfo])
-        {
-            id romeData = userInfo[@"rome-data"];
-            if ([romeData isKindOfClass:NSDictionary.class])
-            {
-                userInfo = romeData;
-            }
-
-            // Forward the notification to CDP.
-            NSError* error;
-            NSData* data = [NSJSONSerialization dataWithJSONObject:userInfo options:0 error:&error];
-            if (data != nil && error == nil)
-            {
-                NSString* byteString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                MCDConnectedDevicesProcessNotificationOperation* result = [self.platform processNotification:byteString];
-                return result.connectedDevicesNotification;
-            }
-        }
-        else
-        {
-            NSLog(@"Notification was not valid json! %@", userInfo);
-        }
-    }
-    @catch (NSException* e)
-    {
-        NSLog(@"GraphNotifications Error. Processing notification failed.");
-    }
-
-    return NO;
-}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
@@ -137,15 +101,8 @@ void uncaughtExceptionHandler(NSException* uncaughtException)
     }
     else
     {
-        @try
-        {
-            // app run in background and received the push notification, app is launched by user tapping the alert view
-            [self processNotification:userInfo];
-        }
-        @catch(NSException* exception)
-        {
-            NSLog(@"GraphNotifications Failed start up notification with exception %@", exception);
-        }
+        // app run in background and received the push notification, app is launched by user tapping the alert view
+        [self.platform processNotification:userInfo];
     }
     return YES;
 }
@@ -221,15 +178,11 @@ didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings*)notifi
     NSLog(@"GraphNotifications Received remote notification...");
     [userInfo enumerateKeysAndObjectsUsingBlock:^(
                                                   id _Nonnull key, id _Nonnull obj, __unused BOOL* _Nonnull stop) { NSLog(@"%@: %@", key, obj); }];
-    @try
+
+    MCDConnectedDevicesProcessNotificationOperation* operation = [self.platform processNotification:userInfo];
+    if (!operation.connectedDevicesNotification)
     {
-        if (![self processNotification:userInfo])
-        {
-            NSLog(@"GraphNotifications Received notification was not for Rome");
-        }
-    }
-    @catch(NSException* exception) {
-        NSLog(@"GraphNotifications Failed to receive notification with exception %@", exception);
+        NSLog(@"GraphNotifications Received notification was not for Rome");
     }
 }
 

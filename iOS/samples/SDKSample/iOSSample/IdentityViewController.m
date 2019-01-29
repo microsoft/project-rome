@@ -3,72 +3,102 @@
 //
 
 #import "IdentityViewController.h"
-#import "AppDataSource.h"
-#import "MSAAccountProvider.h"
+#import "ConnectedDevicesPlatformManager.h"
 #import "MainNavigationController.h"
-#import <ConnectedDevices/Core/MCDPlatform.h>
 #import <UIKit/UIKit.h>
 
 @interface IdentityViewController ()
 @property(nonatomic, strong) UITextView* textView;
 @end
 
-@implementation IdentityViewController
+@implementation IdentityViewController {
+    ConnectedDevicesPlatformManager* _platformManager;
+}
+
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil
+                         bundle:(NSBundle *)nibBundleOrNil {
+    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+        _platformManager = [ConnectedDevicesPlatformManager sharedInstance];
+    }
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    if (self = [super initWithCoder:coder]) {
+        _platformManager = [ConnectedDevicesPlatformManager sharedInstance];
+    }
+    return self;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    if ([AppDataSource sharedInstance].accountProvider.signedIn)
-    {
-        // Wait just long enough for this ViewController to be added to the stack before trying to transition
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10), dispatch_get_main_queue(), ^{ [self _transitionToMainViewController]; });
-    }
+    [self _setStatusText:@"Checking accounts"];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    if ([AppDataSource sharedInstance].accountProvider.signedIn)
-    {
-        [self _setStatusText:@"Currently signed in"];
-        [_loginButton setTitle:(@"Sign Out") forState:UIControlStateNormal];
-    }
-    else
-    {
-        [self _setStatusText:@"Currently signed out"];
-        [_loginButton setTitle:(@"Sign In") forState:UIControlStateNormal];
-    }
+    
+    _platformManager.accountsPromise.then(^{
+        
+        // This logic would be better if the UI supported more than one account. Since this is a simple app, just check for one account
+        // that is synced to key off of for sign in state.
+        NSArray<Account*>* accounts = _platformManager.accounts;
+        Account* account = nil;
+        if (accounts.count > 0) {
+            account = [accounts objectAtIndex:[accounts indexOfObjectPassingTest:^BOOL (Account* account, NSUInteger index, BOOL* stop) {
+                return account.state == AccountRegistrationStateInAppCacheAndSdkCache;
+            }]];
+        }
+        
+        if (account != nil)
+        {
+            [self _setStatusText:@"Currently signed in"];
+            [_loginButton setTitle:(@"Sign Out") forState:UIControlStateNormal];
+            [self _transitionToMainViewController];
+        }
+        else
+        {
+            [self _setStatusText:@"Currently signed out"];
+            [_loginButton setTitle:(@"Sign In") forState:UIControlStateNormal];
+        }
+    });
 }
 
-- (IBAction)loginButtonPressed:(id)sender
-{
-    // Currently, this sample only supports MSA accounts
-    if (![AppDataSource sharedInstance].accountProvider.signedIn)
-    {
-        [self _setStatusText:@"Signing in.."];
-
-        // Sign in
-        [[AppDataSource sharedInstance].accountProvider
-            signInWithCompletionCallback:^(BOOL successful, SampleAccountActionFailureReason reason) {
-                [self _setStatusText:[NSString stringWithFormat:@"%@ [%ld]", (successful ? @"Currently signed in" : @"Sign in failed"),
-                                               (long)reason]];
-                [self.loginButton setTitle:(@"Sign Out") forState:UIControlStateNormal];
-
-                if (successful)
-                {
-                    // Once sign-in has completed successfully, it's time to initialize the platform in sdkViewController
-                    [self _transitionToMainViewController];
-                }
-            }];
+- (IBAction)loginButtonPressed:(id)sender {
+    // Currently, this sample only supports a single MSA account. Just find the first account in good standing to log out.
+    Account* account = nil;
+    if (_platformManager.accounts.count > 0) {
+        NSInteger index = [_platformManager.accounts indexOfObjectPassingTest:^BOOL (Account* account, NSUInteger index, BOOL* stop) {
+            return account.state == AccountRegistrationStateInAppCacheAndSdkCache;
+        }];
+        
+        
+        if (index != NSNotFound) {
+            account = [_platformManager.accounts objectAtIndex:index];
+        }
     }
-    else
-    {
-        [[AppDataSource sharedInstance].accountProvider
-            signOutWithCompletionCallback:^(BOOL successful, SampleAccountActionFailureReason reason) {
-                [self _setStatusText:[NSString stringWithFormat:@"%@ [%ld]", (successful ? @"Currently signed out" : @"Sign out failed"),
-                                               (long)reason]];
-                [self.loginButton setTitle:(@"Sign In") forState:UIControlStateNormal];
-            }];
+    
+    if (account == nil) {
+        [self _setStatusText:@"Signing in.."];
+        
+        // Perform actual sign in
+        [_platformManager signInMsaAsync].then(^{
+            [self _setStatusText:[NSString stringWithFormat:@"Currently signed in"]];
+            [self.loginButton setTitle:(@"Sign Out") forState:UIControlStateNormal];
+            [self _transitionToMainViewController];
+        }).catch(^(NSError* error){
+            NSLog(@"%@", error);
+            [self _setStatusText:[NSString stringWithFormat:@"Sign in failed!"]];
+        });
+    } else {
+       [_platformManager signOutAsync:account].then(^{
+            [self _setStatusText:[NSString stringWithFormat:@"Currently signed out"]];
+            [self.loginButton setTitle:(@"Sign In") forState:UIControlStateNormal];
+        }).catch(^(NSError* error){
+            NSLog(@"%@", error);
+            [self _setStatusText:[NSString stringWithFormat:@"Sign out failed!"]];
+        });
     }
 }
 

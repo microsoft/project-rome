@@ -3,12 +3,21 @@
 //
 
 #import "AppDelegate.h"
-#import "AppDataSource.h"
-#import <ConnectedDevices/RemoteSystems.Commanding/RemoteSystems.Commanding.h>
-#import <ConnectedDevices/Core/MCDNotificationRegistration.h>
-#import <ConnectedDevices/Core/MCDPlatform.h>
+#import "ConnectedDevicesPlatformManager.h"
+#import <ConnectedDevicesRemoteSystemsCommanding/ConnectedDevicesRemoteSystemsCommanding.h>
+#import <ConnectedDevices/MCDConnectedDevicesNotificationRegistration.h>
+#import <ConnectedDevices/MCDConnectedDevicesPlatform.h>
 
-@implementation AppDelegate
+@implementation AppDelegate {
+    ConnectedDevicesPlatformManager* _platformManager;
+}
+
+-(instancetype)init {
+    if (self = [super init]) {
+        _platformManager = [ConnectedDevicesPlatformManager sharedInstance];
+    }
+    return self;
+}
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
@@ -23,8 +32,10 @@
     }
     else
     {
-        // app run in background and received the push notification, app is launched by user tapping the alert view
-        [MCDNotificationReceiver receiveNotification:notificationInfo];
+        // Once all accounts that are in good standing have their subcomponents initialized, its safe to pump the notification information into the platform. Before that point, a notification
+        // may be for an account that isn't fully set up yet. This is more likely to happen when the app is launched as a result of the notification so there
+        // isn't much time to start the platform before needing to process the notification.
+        [_platformManager.platform processNotification:notificationInfo];
     }
 
     return YES;
@@ -46,16 +57,8 @@
     {
         [deviceTokenStr appendFormat:@"%02X", (unsigned int)byteBuffer[i]];
     }
-    NSLog(@"APNs token: %@", deviceTokenStr);
-
-    // invoke notificationProvider with new notification registration
-    [[AppDataSource sharedInstance].notificationProvider
-        updateNotificationRegistration:[MCDNotificationRegistration
-                                           registrationWithNotificationType:MCDNotificationTypeAPN
-                                                                      token:deviceTokenStr
-                                                                      appId:[[NSBundle mainBundle] bundleIdentifier]
-                                                             appDisplayName:(NSString*)[[NSBundle mainBundle]
-                                                                                objectForInfoDictionaryKey:@"CFBundleDisplayName"]]];
+    NSLog(@"APNS token: %@", deviceTokenStr);
+    [_platformManager setNotificationRegistration:deviceTokenStr];
 }
 
 - (void)applicationWillResignActive:(__unused UIApplication*)application
@@ -67,17 +70,28 @@
     // pause the game.
 }
 
-- (void)application:(__unused UIApplication*)application didReceiveRemoteNotification:(nonnull NSDictionary*)notificationInfo
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notificationInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
-    // app run in foreground and received the push notification, pump notification into CDPPlatform
     NSLog(@"Received remote notification...");
     [notificationInfo enumerateKeysAndObjectsUsingBlock:^(
         id _Nonnull key, id _Nonnull obj, __unused BOOL* _Nonnull stop) { NSLog(@"%@: %@", key, obj); }];
-    if (![MCDNotificationReceiver receiveNotification:notificationInfo])
-    {
-        NSLog(@"Received notification was not for Rome");
-    }
+    
+    // Once all accounts that are in good standing have their subcomponents initialized, its safe to pump the notification information into the platform. Before that point, a notification
+    // may be for an account that isn't fully set up yet. This is more likely to happen when the app is launched as a result of the notification so there
+    // isn't much time to start the platform before needing to process the notification.
+    MCDConnectedDevicesProcessNotificationOperation* processOperation = [_platformManager.platform processNotification:notificationInfo];
+    [AnyPromise promiseWithAdapterBlock:^(PMKAdapter _Nonnull adapter) {
+        [processOperation waitForCompletionAsync:^(NSError* error){
+            adapter(nil, error);
+        }];
+    }].then(^{
+        completionHandler(UIBackgroundFetchResultNewData);
+    }).catch(^{
+        completionHandler(UIBackgroundFetchResultNoData);
+    });
 }
+
+
 
 - (void)applicationDidEnterBackground:(__unused UIApplication*)application
 {
@@ -101,8 +115,6 @@
 - (void)applicationWillTerminate:(__unused UIApplication*)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    // PlatformManager* platformManager = [PlatformManager sharedInstance];
-    //[platformManager shutdownPlatform];
 }
 
 void uncaughtExceptionHandler(NSException* uncaughtException)

@@ -141,7 +141,7 @@
                                 <color key="textColor" red="0.28812987200000001" green="0.42992432310000001" blue="0.53264653500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="ms-windows-store://pdp/?productid=9NBLGGH4NNQJ" borderStyle="roundedRect" adjustsFontForContentSizeCategory="YES" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gSN-PK-RsD">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="http://www.bing.com" borderStyle="roundedRect" adjustsFontForContentSizeCategory="YES" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gSN-PK-RsD">
                                 <rect key="frame" x="22" y="253" width="304" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="ZnF-UU-m5C"/>

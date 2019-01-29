@@ -46,7 +46,8 @@ static NSString* const AADAccountProviderErrorDomain = @"AADAccount";
         // Don't share token cache between applications, only need them to be cached for this application
         // Without this, the MRRT is not cached, and the acquireTokenSilentWithResource: in getAccessToken
         // always fails with AD_ERROR_SERVER_USER_INPUT_NEEDED
-        [[ADAuthenticationSettings sharedInstance] setDefaultKeychainGroup:nil];
+        static dispatch_once_t initKeyChainGroup;
+        dispatch_once(&initKeyChainGroup, ^{ [[ADAuthenticationSettings sharedInstance] setDefaultKeychainGroup:nil]; });
 #endif
 
         ADAuthenticationError* error = nil;
@@ -113,7 +114,6 @@ static NSString* const AADAccountProviderErrorDomain = @"AADAccount";
     // a consent prompt for all app resources will be raised when an access token for a new resource is requested -
     // see getAccessTokenForUserAccountIdAsync:
     NSString* defaultResource = @"https://graph.windows.net";
-
     [_authContext
         acquireTokenWithResource:defaultResource
                         clientId:_clientId

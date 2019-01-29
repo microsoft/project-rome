@@ -6,6 +6,14 @@
 
 @implementation InboundRequestLogger
 
++ (instancetype)sharedInstance {
+    static dispatch_once_t onceToken;
+    static InboundRequestLogger* sharedInstance;
+    
+    dispatch_once(&onceToken, ^{ sharedInstance = [[InboundRequestLogger alloc] init]; });
+    return sharedInstance;
+}
+
 - (instancetype)init
 {
     if (self = [super init])

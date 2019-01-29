@@ -7,10 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0017D23921E55C6300FFE2A5 /* MSAAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017D22E21E55C6200FFE2A5 /* MSAAccount.m */; };
-		0017D23A21E55C6300FFE2A5 /* AADAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017D23221E55C6200FFE2A5 /* AADAccount.m */; };
-		0017D23B21E55C6300FFE2A5 /* MSATokenCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017D23321E55C6200FFE2A5 /* MSATokenCache.m */; };
-		0017D23C21E55C6300FFE2A5 /* MSATokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0017D23521E55C6300FFE2A5 /* MSATokenRequest.m */; };
 		003421A921347622007FC970 /* NotificationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 003421A821347622007FC970 /* NotificationsManager.m */; };
 		00823361212F114B0055F6E4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823360212F114B0055F6E4 /* AppDelegate.m */; };
 		00823364212F114B0055F6E4 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823363212F114B0055F6E4 /* RootViewController.m */; };
@@ -21,20 +17,13 @@
 		00823375212F114B0055F6E4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823374212F114B0055F6E4 /* main.m */; };
 		00D6D060213720E5008E5E33 /* NotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D6D05F213720E5008E5E33 /* NotificationsViewController.m */; };
 		86E3681E27114147F58BE403 /* libPods-GraphNotificationsSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06928972061C754C239718DC /* libPods-GraphNotificationsSample.a */; };
+		913BC24121FBCC1600ED6A1C /* AADAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC23C21FBCC1600ED6A1C /* AADAccount.m */; };
+		913BC24221FBCC1600ED6A1C /* MSAAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC23D21FBCC1600ED6A1C /* MSAAccount.m */; };
+		913BC24321FBCC1600ED6A1C /* MSATokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC23E21FBCC1600ED6A1C /* MSATokenRequest.m */; };
+		913BC24421FBCC1600ED6A1C /* MSATokenCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC23F21FBCC1600ED6A1C /* MSATokenCache.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0017D22E21E55C6200FFE2A5 /* MSAAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAAccount.m; sourceTree = "<group>"; };
-		0017D22F21E55C6200FFE2A5 /* MSATokenCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenCache.h; sourceTree = "<group>"; };
-		0017D23021E55C6200FFE2A5 /* SampleAccountActionFailureReason.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleAccountActionFailureReason.h; sourceTree = "<group>"; };
-		0017D23121E55C6200FFE2A5 /* SingleUserAccountProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingleUserAccountProvider.h; sourceTree = "<group>"; };
-		0017D23221E55C6200FFE2A5 /* AADAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AADAccount.m; sourceTree = "<group>"; };
-		0017D23321E55C6200FFE2A5 /* MSATokenCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenCache.m; sourceTree = "<group>"; };
-		0017D23421E55C6300FFE2A5 /* MSAAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAAccount.h; sourceTree = "<group>"; };
-		0017D23521E55C6300FFE2A5 /* MSATokenRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenRequest.m; sourceTree = "<group>"; };
-		0017D23621E55C6300FFE2A5 /* MSATokenRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenRequest.h; sourceTree = "<group>"; };
-		0017D23721E55C6300FFE2A5 /* AADAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AADAccount.h; sourceTree = "<group>"; };
-		0017D23821E55C6300FFE2A5 /* SignInAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignInAccount.h; sourceTree = "<group>"; };
 		003421A72130A887007FC970 /* NotificationsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationsManager.h; sourceTree = "<group>"; };
 		003421A821347622007FC970 /* NotificationsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationsManager.m; sourceTree = "<group>"; };
 		0082335C212F114B0055F6E4 /* GraphNotificationsSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GraphNotificationsSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -54,6 +43,16 @@
 		00D6D0642138519C008E5E33 /* GraphNotificationsSample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GraphNotificationsSample.entitlements; sourceTree = "<group>"; };
 		06928972061C754C239718DC /* libPods-GraphNotificationsSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GraphNotificationsSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		63E3FBAFA254E6B80A8DA76E /* Pods-GraphNotifications.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GraphNotifications.release.xcconfig"; path = "Pods/Target Support Files/Pods-GraphNotifications/Pods-GraphNotifications.release.xcconfig"; sourceTree = "<group>"; };
+		913BC23521FBCC1600ED6A1C /* SignInAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignInAccount.h; sourceTree = "<group>"; };
+		913BC23621FBCC1600ED6A1C /* SampleAccountActionFailureReason.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleAccountActionFailureReason.h; sourceTree = "<group>"; };
+		913BC23821FBCC1600ED6A1C /* MSAAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAAccount.h; sourceTree = "<group>"; };
+		913BC23921FBCC1600ED6A1C /* AADAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AADAccount.h; sourceTree = "<group>"; };
+		913BC23B21FBCC1600ED6A1C /* MSATokenCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenCache.h; sourceTree = "<group>"; };
+		913BC23C21FBCC1600ED6A1C /* AADAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AADAccount.m; sourceTree = "<group>"; };
+		913BC23D21FBCC1600ED6A1C /* MSAAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAAccount.m; sourceTree = "<group>"; };
+		913BC23E21FBCC1600ED6A1C /* MSATokenRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenRequest.m; sourceTree = "<group>"; };
+		913BC23F21FBCC1600ED6A1C /* MSATokenCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenCache.m; sourceTree = "<group>"; };
+		913BC24021FBCC1600ED6A1C /* MSATokenRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenRequest.h; sourceTree = "<group>"; };
 		913EB4AA217E75C700A78C79 /* Secrets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Secrets.h; sourceTree = "<group>"; };
 		9B6312F300B55978A0074729 /* libPods-GraphNotifications.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GraphNotifications.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D94FF25B740D15AF01A2530D /* Pods-GraphNotificationsSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GraphNotificationsSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-GraphNotificationsSample/Pods-GraphNotificationsSample.release.xcconfig"; sourceTree = "<group>"; };
@@ -73,28 +72,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0017A49A2135B55400EB86D8 /* SampleAccountProviders */ = {
-			isa = PBXGroup;
-			children = (
-				0017D23721E55C6300FFE2A5 /* AADAccount.h */,
-				0017D23221E55C6200FFE2A5 /* AADAccount.m */,
-				0017D23421E55C6300FFE2A5 /* MSAAccount.h */,
-				0017D22E21E55C6200FFE2A5 /* MSAAccount.m */,
-				0017D22F21E55C6200FFE2A5 /* MSATokenCache.h */,
-				0017D23321E55C6200FFE2A5 /* MSATokenCache.m */,
-				0017D23621E55C6300FFE2A5 /* MSATokenRequest.h */,
-				0017D23521E55C6300FFE2A5 /* MSATokenRequest.m */,
-				0017D23021E55C6200FFE2A5 /* SampleAccountActionFailureReason.h */,
-				0017D23821E55C6300FFE2A5 /* SignInAccount.h */,
-				0017D23121E55C6200FFE2A5 /* SingleUserAccountProvider.h */,
-			);
-			path = SampleAccountProviders;
-			sourceTree = "<group>";
-		};
 		00823353212F114A0055F6E4 = {
 			isa = PBXGroup;
 			children = (
-				0017A49A2135B55400EB86D8 /* SampleAccountProviders */,
+				913BC23321FBCC1600ED6A1C /* SignInHelpers */,
 				0082335E212F114B0055F6E4 /* GraphNotificationsSample */,
 				0082335D212F114B0055F6E4 /* Products */,
 				D9CF36B91E745B7CB13F10B3 /* Pods */,
@@ -143,6 +124,40 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		913BC23321FBCC1600ED6A1C /* SignInHelpers */ = {
+			isa = PBXGroup;
+			children = (
+				913BC23421FBCC1600ED6A1C /* include */,
+				913BC23A21FBCC1600ED6A1C /* src */,
+			);
+			name = SignInHelpers;
+			path = ../SignInHelpers;
+			sourceTree = "<group>";
+		};
+		913BC23421FBCC1600ED6A1C /* include */ = {
+			isa = PBXGroup;
+			children = (
+				913BC23521FBCC1600ED6A1C /* SignInAccount.h */,
+				913BC23621FBCC1600ED6A1C /* SampleAccountActionFailureReason.h */,
+				913BC23821FBCC1600ED6A1C /* MSAAccount.h */,
+				913BC23921FBCC1600ED6A1C /* AADAccount.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		913BC23A21FBCC1600ED6A1C /* src */ = {
+			isa = PBXGroup;
+			children = (
+				913BC23B21FBCC1600ED6A1C /* MSATokenCache.h */,
+				913BC23C21FBCC1600ED6A1C /* AADAccount.m */,
+				913BC23D21FBCC1600ED6A1C /* MSAAccount.m */,
+				913BC23E21FBCC1600ED6A1C /* MSATokenRequest.m */,
+				913BC23F21FBCC1600ED6A1C /* MSATokenCache.m */,
+				913BC24021FBCC1600ED6A1C /* MSATokenRequest.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		D9CF36B91E745B7CB13F10B3 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -166,7 +181,6 @@
 				00823359212F114B0055F6E4 /* Frameworks */,
 				0082335A212F114B0055F6E4 /* Resources */,
 				534E2B6519087712F45067D1 /* [CP] Embed Pods Frameworks */,
-				C62E42AF81F89136AC56D4FD /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -267,22 +281,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		C62E42AF81F89136AC56D4FD /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GraphNotificationsSample/Pods-GraphNotificationsSample-resources.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -293,15 +292,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				00823375212F114B0055F6E4 /* main.m in Sources */,
+				913BC24121FBCC1600ED6A1C /* AADAccount.m in Sources */,
 				00823364212F114B0055F6E4 /* RootViewController.m in Sources */,
 				003421A921347622007FC970 /* NotificationsManager.m in Sources */,
+				913BC24421FBCC1600ED6A1C /* MSATokenCache.m in Sources */,
 				00D6D060213720E5008E5E33 /* NotificationsViewController.m in Sources */,
+				913BC24221FBCC1600ED6A1C /* MSAAccount.m in Sources */,
 				00823367212F114B0055F6E4 /* LoginViewController.m in Sources */,
-				0017D23B21E55C6300FFE2A5 /* MSATokenCache.m in Sources */,
 				00823361212F114B0055F6E4 /* AppDelegate.m in Sources */,
-				0017D23C21E55C6300FFE2A5 /* MSATokenRequest.m in Sources */,
-				0017D23A21E55C6300FFE2A5 /* AADAccount.m in Sources */,
-				0017D23921E55C6300FFE2A5 /* MSAAccount.m in Sources */,
+				913BC24321FBCC1600ED6A1C /* MSATokenRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

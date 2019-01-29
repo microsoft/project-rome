@@ -5,14 +5,14 @@
 #import "RemoteSystemViewController.h"
 #import "IdentityViewController.h"
 #import "LaunchAndMessageViewController.h"
-#import <ConnectedDevices/Core/MCDPlatform.h>
-#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemApp.h>
-#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemAuthorizationKindFilter.h>
-#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemDiscoveryTypeFilter.h>
-#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemKindFilter.h>
-#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemKinds.h>
-#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemLocalVisibilityKindFilter.h>
-#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemStatusTypeFilter.h>
+#import <ConnectedDevices/MCDConnectedDevicesPlatform.h>
+#import <ConnectedDevicesRemoteSystems/MCDRemoteSystemApp.h>
+#import <ConnectedDevicesRemoteSystems/MCDRemoteSystemAuthorizationKindFilter.h>
+#import <ConnectedDevicesRemoteSystems/MCDRemoteSystemDiscoveryTypeFilter.h>
+#import <ConnectedDevicesRemoteSystems/MCDRemoteSystemKindFilter.h>
+#import <ConnectedDevicesRemoteSystems/MCDRemoteSystemKinds.h>
+#import <ConnectedDevicesRemoteSystems/MCDRemoteSystemLocalVisibilityKindFilter.h>
+#import <ConnectedDevicesRemoteSystems/MCDRemoteSystemStatusTypeFilter.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
@@ -187,7 +187,7 @@
     cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     cell.textLabel.text = [NSString stringWithFormat:@"%@\nproximal:%@\nspatial:%@\nid:%@", application.displayName,
                                     application.isAvailableByProximity ? @"YES" : @"NO",
-                                    application.isAvailableBySpatialProximity ? @"YES" : @"NO", application.identifier];
+                                    application.isAvailableBySpatialProximity ? @"YES" : @"NO", application.appId];
 
     return cell;
 }

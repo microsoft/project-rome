@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 #import "SignInAccount.h"
 #import <ADAL/ADAL.h>
-#import <ConnectedDevices/ConnectedDevices/ConnectedDevices.h>
+#import <ConnectedDevices/ConnectedDevices.h>
 #import "SignInAccount.h"
 
 @interface AADAccount : NSObject <SignInAccount>

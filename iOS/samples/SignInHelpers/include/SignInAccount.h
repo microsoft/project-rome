@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <ConnectedDevices/ConnectedDevices/ConnectedDevices.h>
+#import <ConnectedDevices/ConnectedDevices.h>
 
 #import "SampleAccountActionFailureReason.h"
 
@@ -20,5 +20,6 @@
                                  completion:(nonnull void (^)(NSString* _Nonnull, NSError* _Nullable))scompletionBlock;
 
 - (BOOL)isSignedIn;
+@property(readonly, nonatomic, nonnull) MCDConnectedDevicesAccount* mcdAccount;
 
 @end

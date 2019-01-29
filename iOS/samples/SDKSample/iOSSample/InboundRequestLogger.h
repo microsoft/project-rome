@@ -12,6 +12,7 @@
 @end
 
 @interface InboundRequestLogger : NSObject <LaunchUriProviderDelegate, AppServiceProviderDelegate>
++ (instancetype)sharedInstance;
 @property(nonatomic, weak) id<InboundRequestLoggerDelegate> delegate;
 @property(nonatomic, readonly, copy) NSString* log;
 @end

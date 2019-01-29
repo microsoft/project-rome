@@ -3,8 +3,8 @@
 
 #import <Foundation/Foundation.h>
 #import <ConnectedDevices/ConnectedDevices.h>
-#import <ConnectedDevices/ConnectedDevicesUserData/ConnectedDevicesUserData.h>
-#import <ConnectedDevices/ConnectedDevicesUserDataUserNotifications/ConnectedDevicesUserDataUserNotifications.h>
+#import <ConnectedDevicesUserData/ConnectedDevicesUserData.h>
+#import <ConnectedDevicesUserDataUserNotifications/ConnectedDevicesUserDataUserNotifications.h>
 #import "AADAccount.h"
 #import "MSAAccount.h"
 

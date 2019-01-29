@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <ConnectedDevices/ConnectedDevices/ConnectedDevices.h>
+#import <ConnectedDevices/ConnectedDevices.h>
 #import "SignInAccount.h"
 
 @interface MSAAccount : NSObject <SignInAccount>

@@ -4,8 +4,8 @@
 
 #pragma once
 
-#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemFilter.h>
-#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemWatcher.h>
+#import <ConnectedDevicesRemoteSystems/MCDRemoteSystemFilter.h>
+#import <ConnectedDevicesRemoteSystems/MCDRemoteSystemWatcher.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
