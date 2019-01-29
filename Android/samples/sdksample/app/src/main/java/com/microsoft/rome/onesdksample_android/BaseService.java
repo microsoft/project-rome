@@ -7,7 +7,7 @@ package com.microsoft.rome.onesdksample_android;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.microsoft.connecteddevices.base.EventListener;
+import com.microsoft.connecteddevices.EventListener;
 import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceConnection;
 import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceRequestReceivedEventArgs;
 import com.microsoft.connecteddevices.remotesystems.AppServiceInfo;
@@ -22,7 +22,7 @@ import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceProvide
 public abstract class BaseService implements AppServiceProvider, EventListener<AppServiceConnection, AppServiceRequestReceivedEventArgs> {
     // region Member Variables
     private static final String TAG = BaseService.class.getName();
-    protected MainActivity mMainActivity;
+    //protected MainActivity mMainActivity;
 
     private AppServiceInfo mInfo;
     // This must be kept alive to receive AppService request messages
@@ -30,8 +30,8 @@ public abstract class BaseService implements AppServiceProvider, EventListener<A
     // endregion
 
     // region Constructor
-    public BaseService(MainActivity mainActivity, AppServiceInfo appServiceInfo) {
-        mMainActivity = mainActivity;
+    public BaseService(/*MainActivity mainActivity, */AppServiceInfo appServiceInfo) {
+        //mMainActivity = mainActivity;
         mInfo = appServiceInfo;
     }
     // endregion

@@ -4,7 +4,6 @@
 
 #pragma once
 
-#import <ConnectedDevices/Core/MCDPlatform.h>
 #import <UIKit/UIKit.h>
 
 @interface SdkViewController : UIViewController

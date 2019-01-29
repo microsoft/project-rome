@@ -16,7 +16,6 @@ class Secrets {
     static final String AAD_CLIENT_ID = "<<AAD client ID goes here>>";
     static final String AAD_REDIRECT_URI = "<<AAD redirect URI goes here>>";
     static final String APP_HOST_NAME = "<<App cross-device domain goes here>>";
-
     // Your client's Firebase Cloud Messaging Sender Id
     static final String FCM_SENDER_ID = "<<FCM sender ID goes here>>";
 }

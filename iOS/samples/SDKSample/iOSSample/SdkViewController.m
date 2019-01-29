@@ -3,100 +3,59 @@
 //
 
 #import "SdkViewController.h"
-#import "AppDataSource.h"
+#import "ConnectedDevicesPlatformManager.h"
 #import "AppServiceProvider.h"
 #import "IdentityViewController.h"
 #import "LaunchUriProvider.h"
-#import "NotificationProvider.h"
-#import <ConnectedDevices/Core/MCDPlatform.h>
-#import <ConnectedDevices/RemoteSystems.Commanding/MCDRemoteSystemAppHostingRegistration.h>
+#import <ConnectedDevices/MCDConnectedDevicesPlatform.h>
+#import <ConnectedDevicesRemoteSystemsCommanding/MCDRemoteSystemAppRegistration.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+@interface SdkViewController() {
+    ConnectedDevicesPlatformManager* _platformManager;
+}
+@end
+
 @implementation SdkViewController : UIViewController
+
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil
+                         bundle:(NSBundle *)nibBundleOrNil {
+    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+        _platformManager = [ConnectedDevicesPlatformManager sharedInstance];
+    }
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    if (self = [super initWithCoder:coder]) {
+        _platformManager = [ConnectedDevicesPlatformManager sharedInstance];
+    }
+    return self;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
-    // Wait to enable the buttons until platform is initialized
-    [self.deviceRelayButton setEnabled:NO];
-    [self.activityFeedButton setEnabled:NO];
-
     UIBarButtonItem* signOutButton =
         [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStyleDone target:self action:@selector(_signOutClicked:)];
     self.navigationItem.rightBarButtonItem = signOutButton;
-
-    [self initializePlatform];
-}
-
-- (void)initializePlatform
-{
-    // Only register for APNs if this app is enabled for push notifications
-    NotificationProvider* notificationProvider;
-    if ([[UIApplication sharedApplication] isRegisteredForRemoteNotifications])
-    {
-        notificationProvider = [AppDataSource sharedInstance].notificationProvider;
-    }
-    else
-    {
-        NSLog(@"Initializing platform without a notification provider!");
-        notificationProvider = nil;
-    }
-
-    // Initialize platform
-    [AppDataSource sharedInstance].platform = [MCDPlatform platformWithAccountProvider:[AppDataSource sharedInstance].accountProvider notificationProvider:notificationProvider];
-
-    // App is registered asynchronously.
-    MCDRemoteSystemAppHostingRegistration* registration = [MCDRemoteSystemAppHostingRegistration new];
-    [registration setLaunchUriProvider:[[LaunchUriProvider alloc] initWithDelegate:[AppDataSource sharedInstance].inboundRequestLogger]];
-    [registration addAppServiceProvider:[[AppServiceProvider alloc] initWithDelegate:[AppDataSource sharedInstance].inboundRequestLogger]];
-    [registration addAttribute:@"ExampleAttribute" forName:@"ExampleName"];
-    
-    [registration.statusChanged subscribe:^(__unused MCDRemoteSystemAppHostingRegistration* reg, MCDRemoteSystemAppRegistrationStatusChangedEventArgs* args) {
-        NSLog(@"Registration Status Changed listener");
-        switch (args.status) {
-            case MCDRemoteSystemAppRegistrationStatusFailed:
-                NSLog(@"Registration completed with status Failed");
-                break;
-            case MCDRemoteSystemAppRegistrationStatusInProgress:
-                NSLog(@"Registration in progress");
-                break;
-            case MCDRemoteSystemAppRegistrationStatusNotStarted:
-                NSLog(@"Registration not started");
-                break;
-            case MCDRemoteSystemAppRegistrationStatusSucceeded:
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    // The app has been registered.  It is safe to enable button.
-                    [self.deviceRelayButton setEnabled:YES];
-                    [self.activityFeedButton setEnabled:YES];
-                });
-                break;
-        }
-    }];
-    
-    [registration save];
 }
 
 - (void)_signOutClicked:(id)sender
 {
-    // Disable buttons when starting sign-out
-    [self.deviceRelayButton setEnabled:NO];
-    [self.activityFeedButton setEnabled:NO];
-
-    if ([AppDataSource sharedInstance].accountProvider.signedIn)
-    {
-        [[AppDataSource sharedInstance].accountProvider
-            signOutWithCompletionCallback:^(BOOL successful, SampleAccountActionFailureReason reason) {
-                NSLog(@"%@", (successful ? @"Currently signed out" : @"Sign out failed"));
-                dispatch_async(dispatch_get_main_queue(), ^{ [self dismissViewControllerAnimated:YES completion:nil]; });
-            }];
+    NSMutableArray<AnyPromise*>* logoutPromises = [NSMutableArray new];
+    for (Account*  account in _platformManager.accounts) {
+        [logoutPromises addObject:[_platformManager signOutAsync:account]];
     }
-    else
-    {
-        // If we're somehow already signed out, just dismiss
+    
+    PMKWhen(logoutPromises).then(^{
+        NSLog(@"Currently signed out");
         [self dismissViewControllerAnimated:YES completion:nil];
-    }
+    }).catch(^(NSError* e){
+        NSLog(@"Sign out failed with error: %@", e);
+    });
 }
 
 @end

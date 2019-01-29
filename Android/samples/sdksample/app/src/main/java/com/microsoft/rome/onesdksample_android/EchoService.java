@@ -23,8 +23,8 @@ public class EchoService extends BaseService {
     private static final String APP_SERVICE_NAME = "com.microsoft.test.echo";
     // endregion
 
-    public EchoService(MainActivity mainActivity) {
-        super(mainActivity, new AppServiceInfo(APP_SERVICE_NAME));
+    public EchoService(/*MainActivity mainActivity*/) {
+        super(/*mainActivity,*/ new AppServiceInfo(APP_SERVICE_NAME));
     }
 
     /**
@@ -35,8 +35,8 @@ public class EchoService extends BaseService {
         AppServiceRequest request = args.getRequest();
         Map<String, Object> message = request.getMessage();
 
-        mMainActivity.getHostingFragment().logTrafficMessage(
-            "EchoService received AppService request message with payload " + message.toString());
+        // mMainActivity.getHostingFragment().logTrafficMessage(
+        //    "EchoService received AppService request message with payload " + message.toString());
 
         Map<String, Object> response = new HashMap<>();
 

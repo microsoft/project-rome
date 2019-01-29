@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,12 +22,23 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
+import java.lang.ref.WeakReference;
 
-import com.microsoft.connecteddevices.base.AsyncOperation;
-import com.microsoft.connecteddevices.base.CancellationToken;
-import com.microsoft.connecteddevices.base.EventListener;
+import com.microsoft.connecteddevices.AsyncOperation;
+import com.microsoft.connecteddevices.CancellationToken;
+import com.microsoft.connecteddevices.ConnectedDevicesAccount;
+import com.microsoft.connecteddevices.ConnectedDevicesAccountManager;
+import com.microsoft.connecteddevices.ConnectedDevicesAccountAddedStatus;
+import com.microsoft.connecteddevices.ConnectedDevicesAccessTokenInvalidatedEventArgs;
+import com.microsoft.connecteddevices.ConnectedDevicesAccessTokenRequestedEventArgs;
+import com.microsoft.connecteddevices.ConnectedDevicesAccountManager;
+import com.microsoft.connecteddevices.ConnectedDevicesAddAccountResult;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistration;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationManager;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationStateChangedEventArgs;
+import com.microsoft.connecteddevices.EventListener;
 import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemConnectionRequest;
-import com.microsoft.connecteddevices.core.Platform;
+import com.microsoft.connecteddevices.ConnectedDevicesPlatform;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystem;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemAddedEventArgs;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemAuthorizationKind;
@@ -41,11 +53,10 @@ import com.microsoft.connecteddevices.remotesystems.RemoteSystemUpdatedEventArgs
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemWatcher;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemWatcherError;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemWatcherErrorOccurredEventArgs;
-import com.microsoft.connecteddevices.remotesystems.nearshare.NearShareHelper;
-import com.microsoft.connecteddevices.remotesystems.nearshare.NearShareSender;
-import com.microsoft.connecteddevices.remotesystems.nearshare.NearShareFileProvider;
-import com.microsoft.connecteddevices.remotesystems.nearshare.NearShareStatus;
-import com.microsoft.connecteddevices.remotesystems.nearshare.ProgressCallback;
+import com.microsoft.connecteddevices.remotesystems.commanding.nearshare.NearShareFileProvider;
+import com.microsoft.connecteddevices.remotesystems.commanding.nearshare.NearShareHelper;
+import com.microsoft.connecteddevices.remotesystems.commanding.nearshare.NearShareSender;
+import com.microsoft.connecteddevices.remotesystems.commanding.nearshare.NearShareStatus;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -55,79 +66,64 @@ import java.util.logging.Logger;
 import static android.content.Intent.ACTION_SEND;
 import static android.content.Intent.ACTION_SEND_MULTIPLE;
 
+/*
+ * Wrapper to hold the Rome ConnectedDevicesAccount and RemoteSystemWatcher,
+ * as well as additional information required for NearShare.
+ * Verification:
+ *      1. Discovery: Launch the NearShare App and select check box "Spatially Proximal"
+ *      2. At the point, Platform is initialized and started and users can
+ *      see list of spatially proximal devices.
+ *      3. Send URI: Select a device from the list and click "Send Uri"
+ *      4. You will see a toast on the target device with the uri that users can click and launch.
+ *      5. Send File(s): Go to photos app or pick any file(s) and select share, pick NearShare app
+ *      6. This will open the NearShareApp, continue to select checkbox "Spatially Proximal"
+ *      7. Select the device you want to send the file to and click "Send Files" from app
+ *      8. Toast will pop up on the target device with options to accept or decline
+ *      9. On clicking accept, file transfer with complete and the users can open\save the file.
+ */
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+    // region Member Variables
     private final static Logger LOG = Logger.getLogger(MainActivity.class.getSimpleName());
-
-    private Platform mPlatform;
+    private ConnectedDevicesPlatform mPlatform;
     private RemoteSystemWatcher mRemoteSystemWatcher;
     private DeviceListAdapter mRemoteDeviceListAdapter;
-    private RemoteSystem mSelectedRemoteSystem = null;
-    private NearShareSender mNearShareSender = null;
+    private RemoteSystem mSelectedRemoteSystem;
+    private NearShareSender mNearShareSender;
     private Uri[] mFiles;
-    private boolean mWatcherStarted = false;
-    private CheckBox mProximalDiscoveryCheckbox = null;
+    private boolean mWatcherStarted;
+    private CheckBox mProximalDiscoveryCheckbox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mRemoteDeviceListAdapter = new DeviceListAdapter(getApplicationContext());
 
-        initializePlatform();
         requestPermissions();
-        startDiscovery();
+        initializePlatform();
 
-        Intent launchIntent = getIntent();
-
-        if ((ACTION_SEND == launchIntent.getAction()) || (ACTION_SEND_MULTIPLE == launchIntent.getAction())) {
-            switch (launchIntent.getAction()) {
-            case ACTION_SEND: {
-                mFiles = new Uri[] { launchIntent.getParcelableExtra(Intent.EXTRA_STREAM) };
-                break;
-            }
-            case ACTION_SEND_MULTIPLE: {
-                ArrayList<Uri> files = launchIntent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-                mFiles = new Uri[files.size()];
-
-                files.toArray(mFiles);
-                break;
-            }
-            }
-        }
-
-        ListView deviceList = (ListView)findViewById(R.id.listRemoteSystems);
+        initFiles();
+        ListView deviceList = (ListView) findViewById(R.id.listRemoteSystems);
         deviceList.setAdapter(mRemoteDeviceListAdapter);
-
         deviceList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-
         deviceList.setOnItemClickListener(this);
 
         findViewById(R.id.btnSendUri)
-            .setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                .setOnClickListener(v -> {
                     sendUri();
-                }
-            });
+                });
 
         findViewById(R.id.btnSendFile)
-            .setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                .setOnClickListener(v -> {
                     sendFile();
-                }
-            });
+                });
 
-        mProximalDiscoveryCheckbox = (CheckBox)findViewById(R.id.chkProximalDiscovery);
-
-        mProximalDiscoveryCheckbox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startDiscovery();
-            }
+        mProximalDiscoveryCheckbox = (CheckBox) findViewById(R.id.chkProximalDiscovery);
+        mProximalDiscoveryCheckbox.setOnClickListener(v -> {
+            startOrRestartRemoteSystemWatcher();
         });
 
         mNearShareSender = new NearShareSender();
@@ -151,100 +147,194 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
-
-    /**
-     * Initialize the platform. This is required before we attempt to use CDP SDK.
-     */
-
-    private void initializePlatform() {
-        mPlatform = new Platform(getApplicationContext(), null, null);
-    }
-
-    /**
-     * This method starts the RemoteSystem discovery process. It sets the corresponding filters
-     * to ensure that only spatially proximal devices are listed. It also sets up listenrs
-     * for important events, such as device added, device updated, and device removed
-     */
-
-    private void startDiscovery() {
-        try {
-            ArrayList<RemoteSystemFilter> filters = new ArrayList<>();
-
-            if (mProximalDiscoveryCheckbox.isChecked()) {
-                filters.add(new RemoteSystemDiscoveryTypeFilter(RemoteSystemDiscoveryType.PROXIMAL));
-            } else {
-                filters.add(new RemoteSystemDiscoveryTypeFilter(RemoteSystemDiscoveryType.SPATIALLY_PROXIMAL));
-            }
-
-            filters.add(new RemoteSystemStatusTypeFilter(RemoteSystemStatusType.ANY));
-            filters.add(new RemoteSystemAuthorizationKindFilter(RemoteSystemAuthorizationKind.ANONYMOUS));
-
-            mRemoteSystemWatcher = new RemoteSystemWatcher(filters);
-            mRemoteSystemWatcher.remoteSystemAdded().subscribe(new RemoteSystemAddedListener());
-            mRemoteSystemWatcher.remoteSystemUpdated().subscribe(new RemoteSystemUpdatedListener());
-            mRemoteSystemWatcher.remoteSystemRemoved().subscribe(new RemoteSystemRemovedListener());
-            mRemoteSystemWatcher.errorOccurred().subscribe(new RemoteSystemErrorListener());
-
-            if (mWatcherStarted) {
-                mRemoteSystemWatcher.stop();
-                mWatcherStarted = false;
-                mRemoteDeviceListAdapter.clear();
-                mRemoteDeviceListAdapter.notifyDataSetChanged();
-            }
-
-            mRemoteSystemWatcher.start();
-            mWatcherStarted = true;
-        } catch (Exception exception) { LOG.log(Level.SEVERE, String.format("Discovery failed: %1$s", exception.getMessage())); }
-    }
+    //endregion
 
     /**
      * Request COARSE_LOCATION permission required for nearshare functionality over bluetooth.
      */
-
     private void requestPermissions() {
         // Request user permission for app to use location services, which is a requirement for Bluetooth.
         Random rng = new Random();
         int permissionRequestCode = rng.nextInt(128);
 
         int permissionCheck =
-            ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION);
+                ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION);
         if (permissionCheck == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(
-                this, new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION }, permissionRequestCode);
+                    this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, permissionRequestCode);
         } else {
-            LOG.log(Level.SEVERE, "ACCESS_COARSE_LOCATION permission denied");
+            LOG.log(Level.INFO, "Requested User Permission To Enable NearShare Prerequisites");
+        }
+    }
+
+    /**
+     * Initialize the platform. This is required before we attempt to use CDP SDK.
+     * Steps to start platform:
+     * 1. Initialize platform
+     * 2. Request Access Token
+     * 3. Start Platform
+     */
+    private void initializePlatform() {
+        mPlatform = new ConnectedDevicesPlatform(getApplicationContext());
+
+        ConnectedDevicesAccountManager accountManager = mPlatform.getAccountManager();
+
+        // This subscription isn't necessary for NearShare because it depends on an Anonymous account;
+        // but is added in the sample for completeness, in case the app supports other accounts.
+        accountManager.accessTokenRequested().subscribe((devicesAccountManager, args) -> onAccessTokenRequested(devicesAccountManager, args));
+        accountManager.accessTokenInvalidated().subscribe((devicesAccountManager, args) -> onAccessTokenInvalidated(devicesAccountManager, args));
+        // Subscribe to NotificationRegistrationStateChanged event
+        mPlatform.getNotificationRegistrationManager().notificationRegistrationStateChanged().subscribe((notificationRegistrationManager, args) -> onNotificationRegistrationStateChanged(notificationRegistrationManager, args));
+        mPlatform.start();
+
+        // After platform start, before we can start remotesystem discovery, need to addaccount,
+        // NearShare only requires anonymous account, other CDP scenarios may require adding signed in
+        // accounts.
+        createAndAddAnonymousAccount(mPlatform);
+    }
+
+    // region TokenRegistrationCallback
+    /**
+     * This event is fired when there is a need to request a token. This event should be subscribed and ready to respond before any request is sent out.
+     *
+     * @param sender ConnectedDevicesAccountManager which is making the request
+     * @param args   Contains arguments for the event
+     */
+    private void onAccessTokenRequested(ConnectedDevicesAccountManager sender, ConnectedDevicesAccessTokenRequestedEventArgs args) {
+        LOG.log(Level.INFO, "Token Access Requested");
+    }
+
+    /**
+     * This event is fired when a token consumer reports a token error. The token provider needs to
+     * either refresh their token cache or request a new user login to fix their account setup.
+     * If access token in invalidated, refresh token and renew access token.
+     *
+     * @param sender ConnectedDevicesAccountManager which is making the request
+     * @param args   Contains arguments for the event
+     */
+    private void onAccessTokenInvalidated(ConnectedDevicesAccountManager sender, ConnectedDevicesAccessTokenInvalidatedEventArgs args) {
+        LOG.log(Level.INFO, "Token invalidated for account");
+    }
+    // endregion TokenRegistrationCallback
+
+    /**
+     * NearShare just works with anonymous account, signed in accounts are needed when using other CDP
+     * features.
+     */
+    private void createAndAddAnonymousAccount(ConnectedDevicesPlatform platform) {
+        ConnectedDevicesAccount account = ConnectedDevicesAccount.getAnonymousAccount();
+        platform.getAccountManager().addAccountAsync(account).whenComplete((ConnectedDevicesAddAccountResult result, Throwable throwable) -> {
+            if (throwable != null) {
+                LOG.log(Level.SEVERE, String.format("AccountManager addAccountAsync returned a throwable: %1$s", throwable.getMessage()));
+            } else {
+                LOG.log(Level.INFO, "AccountManager : Added account successfully");
+            }
+        });
+    }
+
+    /**
+     * Event for when the registration state changes for a given account.
+     *
+     * @param sender ConnectedDevicesNotificationRegistrationManager which is making the request
+     * @param args   Contains arguments for the event
+     */
+    private void onNotificationRegistrationStateChanged(ConnectedDevicesNotificationRegistrationManager sender, ConnectedDevicesNotificationRegistrationStateChangedEventArgs args) {
+        LOG.log(Level.INFO, "NotificationRegistrationStateChanged for account");
+    }
+
+    /**
+     * This method starts the RemoteSystem discovery process. It sets the corresponding filters
+     * to ensure that only spatially proximal devices are listed. It also sets up listeners
+     * for important events, such as device added, device updated, and device removed
+     */
+    private void startOrRestartRemoteSystemWatcher() {
+        ArrayList<RemoteSystemFilter> filters = new ArrayList<>();
+        if (mProximalDiscoveryCheckbox.isChecked()) {
+            filters.add(new RemoteSystemDiscoveryTypeFilter(RemoteSystemDiscoveryType.PROXIMAL));
+        } else {
+            filters.add(new RemoteSystemDiscoveryTypeFilter(RemoteSystemDiscoveryType.SPATIALLY_PROXIMAL));
+        }
+
+        filters.add(new RemoteSystemStatusTypeFilter(RemoteSystemStatusType.ANY));
+        filters.add(new RemoteSystemAuthorizationKindFilter(RemoteSystemAuthorizationKind.ANONYMOUS));
+
+        mRemoteSystemWatcher = new RemoteSystemWatcher(filters);
+        final WeakReference<RemoteSystemWatcher> weakRemoteSystemWatcher = new WeakReference<>(mRemoteSystemWatcher);
+        weakRemoteSystemWatcher.get().remoteSystemAdded().subscribe(new RemoteSystemAddedListener());
+        weakRemoteSystemWatcher.get().remoteSystemUpdated().subscribe(new RemoteSystemUpdatedListener());
+        weakRemoteSystemWatcher.get().remoteSystemRemoved().subscribe(new RemoteSystemRemovedListener());
+        weakRemoteSystemWatcher.get().errorOccurred().subscribe(new RemoteSystemWatcherErrorOccurredListener());
+
+        // Everytime user toggles checkboc Proximal discovery
+        // we restart the watcher with approriate filters to wither do a
+        // Proximal or Spatially Proximal discovery. this check is to see if watcher has been previously started
+        // if was startetd, we stop it and restart with the new set of filters
+        if (mWatcherStarted) {
+            weakRemoteSystemWatcher.get().stop();
+            mWatcherStarted = false;
+            mRemoteDeviceListAdapter.clear();
+            mRemoteDeviceListAdapter.notifyDataSetChanged();
+        }
+
+        weakRemoteSystemWatcher.get().start();
+        mWatcherStarted = true;
+    }
+
+    /**
+     * Helper Function to initialize the files based on whether user is trying to share
+     * single file or multiple files.
+     */
+    private void initFiles() {
+        Intent launchIntent = getIntent();
+
+        if ((ACTION_SEND == launchIntent.getAction()) || (ACTION_SEND_MULTIPLE == launchIntent.getAction())) {
+            switch (launchIntent.getAction()) {
+                case ACTION_SEND: {
+                    mFiles = new Uri[]{launchIntent.getParcelableExtra(Intent.EXTRA_STREAM)};
+                    break;
+                }
+                case ACTION_SEND_MULTIPLE: {
+                    ArrayList<Uri> files = launchIntent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+                    mFiles = new Uri[files.size()];
+                    files.toArray(mFiles);
+                    break;
+                }
+            }
         }
     }
 
     /**
      * Send URI to the target device using nearshare
      */
-
     private void sendUri() {
-        String uriText = ((EditText)findViewById(R.id.txtUri)).getText().toString();
-        RemoteSystemConnectionRequest remoteSystemConnectionRequest = new RemoteSystemConnectionRequest(mSelectedRemoteSystem);
+        String uriText = ((EditText) findViewById(R.id.txtUri)).getText().toString();
+        if (mSelectedRemoteSystem != null) {
+            RemoteSystemConnectionRequest remoteSystemConnectionRequest = new RemoteSystemConnectionRequest(mSelectedRemoteSystem);
 
-        if (mNearShareSender.isNearShareSupported(remoteSystemConnectionRequest)) {
-            mNearShareSender.sendUriAsync(remoteSystemConnectionRequest, uriText);
+            if (mNearShareSender.isNearShareSupported(remoteSystemConnectionRequest)) {
+                mNearShareSender.sendUriAsync(remoteSystemConnectionRequest, uriText);
+            }
+            else
+            {
+                LOG.log(Level.SEVERE, "NearShare is not supported in this device");
+            }
+        } else {
+            LOG.log(Level.SEVERE, "Please Select a Remote System to SendUri");
         }
     }
 
     /**
-     * Send file(s) to the target device using nearshare. This functionality requires the nearshare app to be used as a share target. The
-     * operation starts with
-     * an app such as the photos app. Select a photo and share to the nearshare app.
+     * Pick Files and Send using NearShare, helper function to pick files and send.
      */
-
-    private void sendFile() {
+    private AsyncOperation<NearShareStatus> setupAndBeginSendFileAsync() {
+        AsyncOperation<NearShareStatus> asyncFileTransferOperation = null;
         if ((null != mFiles) && (null != mSelectedRemoteSystem)) {
             RemoteSystemConnectionRequest remoteSystemConnectionRequest = new RemoteSystemConnectionRequest(mSelectedRemoteSystem);
 
             if (mNearShareSender.isNearShareSupported(remoteSystemConnectionRequest)) {
-                AsyncOperation<NearShareStatus> asyncFileTransferOperation = null;
-                ProgressCallback progressCallback = new NearShareProgressCallback();
+
                 CancellationToken cancellationToken = null;
 
                 findViewById(R.id.btnCancel).setEnabled(true);
@@ -252,23 +342,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 // Call the appropriate api based on the number of files shared to the app.
                 if (1 == mFiles.length) {
                     NearShareFileProvider nearShareFileProvider =
-                        NearShareHelper.createNearShareFileFromContentUri(mFiles[0], getApplicationContext());
+                            NearShareHelper.createNearShareFileFromContentUri(mFiles[0], getApplicationContext());
 
                     asyncFileTransferOperation =
-                        mNearShareSender.sendFileAsync(remoteSystemConnectionRequest, nearShareFileProvider, progressCallback);
+                            mNearShareSender.sendFileAsync(remoteSystemConnectionRequest, nearShareFileProvider);
                 } else {
                     NearShareFileProvider[] nearShareFileProviderArray = new NearShareFileProvider[mFiles.length];
 
                     for (int index = 0; index < mFiles.length; ++index) {
                         nearShareFileProviderArray[index] =
-                            NearShareHelper.createNearShareFileFromContentUri(mFiles[index], getApplicationContext());
+                                NearShareHelper.createNearShareFileFromContentUri(mFiles[index], getApplicationContext());
                     }
 
                     asyncFileTransferOperation =
-                        mNearShareSender.sendFilesAsync(remoteSystemConnectionRequest, nearShareFileProviderArray, progressCallback);
-                }
+                            mNearShareSender.sendFilesAsync(remoteSystemConnectionRequest, nearShareFileProviderArray);
 
-                ((Button)findViewById(R.id.btnCancel))
+                }
+            }
+        }
+        return asyncFileTransferOperation;
+    }
+
+    /**
+     * Send file(s) to the target device using nearshare. Select a photo or file and share to the nearshare app.
+     */
+    private void sendFile() {
+        AsyncOperation<NearShareStatus> asyncFileTransferOperation = setupAndBeginSendFileAsync();
+        if ((null != mFiles) && (null != mSelectedRemoteSystem)) {
+            ((Button) findViewById(R.id.btnCancel))
                     .setOnClickListener(new View.OnClickListener() {
                         private AsyncOperation<NearShareStatus> mAsyncOperation;
 
@@ -288,22 +389,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         }
                     }.init(asyncFileTransferOperation));
 
-                asyncFileTransferOperation.whenCompleteAsync(new AsyncOperation.ResultBiConsumer<NearShareStatus, Throwable>() {
-                    @Override
-                    public void accept(NearShareStatus nearShareStatus, Throwable throwable) throws Throwable {
-                        findViewById(R.id.btnCancel).setEnabled(false);
-                        if (null != throwable) {
-                            LOG.log(Level.SEVERE, String.format("Exception during file transfer: %1$s", throwable.getMessage()));
+            asyncFileTransferOperation.whenCompleteAsync(new AsyncOperation.ResultBiConsumer<NearShareStatus, Throwable>() {
+                @Override
+                public void accept(NearShareStatus nearShareStatus, Throwable throwable) throws Throwable {
+                    findViewById(R.id.btnCancel).setEnabled(false);
+                    if (null != throwable) {
+                        LOG.log(Level.SEVERE, String.format("Exception during file transfer: %1$s", throwable.getMessage()));
+                    } else {
+                        if (nearShareStatus == NearShareStatus.COMPLETED) {
+                            LOG.log(Level.INFO, "File transfer completed");
                         } else {
-                            if (nearShareStatus == NearShareStatus.COMPLETED) {
-                                LOG.log(Level.INFO, "File transfer completed");
-                            } else {
-                                LOG.log(Level.SEVERE, "File transfer failed");
-                            }
+                            LOG.log(Level.SEVERE, "File transfer failed");
                         }
                     }
-                });
-            }
+                }
+            });
         }
     }
 
@@ -327,12 +427,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     // region HelperClasses
-
     private class RemoteSystemAddedListener implements EventListener<RemoteSystemWatcher, RemoteSystemAddedEventArgs> {
         @Override
         public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemAddedEventArgs args) {
             final RemoteSystem remoteSystemParam = args.getRemoteSystem();
-
+            // Calls from the OneSDK are not guaranteed to come back on the given (UI) thread
+            // hence explicitly call runOnUiThread
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -354,7 +454,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemRemovedEventArgs args) {
             final RemoteSystem remoteSystemParam = args.getRemoteSystem();
-
+            // Calls from the OneSDK are not guaranteed to come back on the given (UI) thread
+            // hence explicitly call runOnUiThread
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -365,11 +466,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    private class RemoteSystemErrorListener implements EventListener<RemoteSystemWatcher, RemoteSystemWatcherErrorOccurredEventArgs> {
+    private class RemoteSystemWatcherErrorOccurredListener implements EventListener<RemoteSystemWatcher, RemoteSystemWatcherErrorOccurredEventArgs> {
         @Override
         public void onEvent(RemoteSystemWatcher remoteSystemWatcher, RemoteSystemWatcherErrorOccurredEventArgs args) {
-            LOG.log(Level.INFO, String.format("Discovery error: %1$s", args.getError().toString()));
+            LOG.log(Level.SEVERE, String.format("Discovery error: %1$s", args.getError().toString()));
         }
     }
-    // region HelperClasses
+    // endregion HelperClasses
 }

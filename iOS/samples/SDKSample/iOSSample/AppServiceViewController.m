@@ -3,7 +3,8 @@
 //
 
 #import "AppServiceViewController.h"
-#import "AppDataSource.h"
+#import "ConnectedDevicesPlatformManager.h"
+#import "InboundRequestLogger.h"
 #import <Foundation/Foundation.h>
 
 @implementation AppServiceViewController
@@ -12,12 +13,12 @@
 {
     [super viewDidLoad];
 
-    _messages.text = [AppDataSource sharedInstance].inboundRequestLogger.log;
+    _messages.text = [InboundRequestLogger sharedInstance].log;
     if ([_messages.text length] == 0)
     {
         _messages.text = @"No message received yet";
     }
-    [AppDataSource sharedInstance].inboundRequestLogger.delegate = self;
+    [InboundRequestLogger sharedInstance].delegate = self;
 }
 
 #pragma mark - InboundRequestLogger Delegate

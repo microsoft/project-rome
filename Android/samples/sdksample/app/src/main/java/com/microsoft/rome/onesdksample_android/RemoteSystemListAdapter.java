@@ -15,8 +15,6 @@ import android.widget.TextView;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystem;
 import com.microsoft.connecteddevices.remotesystems.RemoteSystemApp;
 
-import java.util.List;
-
 /**
  * Adapter for displaying systems and their applications in an expandable list
  */
@@ -123,14 +121,11 @@ public class RemoteSystemListAdapter extends BaseExpandableListAdapter {
 
         // When a remote application is selected, pass that remote system to the Launch Fragment
         // and navigate to Launch Fragment
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity mainActivity = (MainActivity)mContext;
-                // Set the selected RemoteSystemApp then navigate to that page
-                mainActivity.getLaunchFragment().setRemoteSystemApp(app);
-                mainActivity.navigateToPage(MainActivity.LAUNCH);
-            }
+        convertView.setOnClickListener(v -> {
+            MainActivity mainActivity = (MainActivity)mContext;
+            // Set the selected RemoteSystemApp then navigate to that page
+            mainActivity.getLaunchFragment().setRemoteSystemApp(app);
+            mainActivity.navigateToPage(MainActivity.LAUNCH);
         });
 
         return convertView;

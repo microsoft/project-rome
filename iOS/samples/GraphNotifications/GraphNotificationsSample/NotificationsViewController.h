@@ -4,4 +4,5 @@
 #import "NotificationsManager.h"
 
 @interface NotificationsViewController : UITableViewController
+- (IBAction)refresh;
 @end

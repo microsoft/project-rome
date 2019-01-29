@@ -4,8 +4,8 @@
 
 #import "LaunchAndMessageViewController.h"
 #import "Secrets.h"
-#import <ConnectedDevices/RemoteSystems.Commanding/RemoteSystems.Commanding.h>
-#import <ConnectedDevices/RemoteSystems/MCDRemoteSystemApp.h>
+#import <ConnectedDevicesRemoteSystemsCommanding/ConnectedDevicesRemoteSystemsCommanding.h>
+#import <ConnectedDevicesRemoteSystems/MCDRemoteSystemApp.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
@@ -80,13 +80,14 @@
     MCDAppServiceConnection* connection = nil;
     @synchronized(self)
     {
-        connection = _appServiceConnection;
-        if (!connection)
+        if (!_appServiceConnection)
         {
-            connection = _appServiceConnection = [MCDAppServiceConnection new];
-            connection.appServiceInfo = [MCDAppServiceInfo infoWithName:APP_SERVICE_NAME packageId:PACKAGE_ID];
-            _serviceClosedRegistration = [connection.serviceClosed subscribe:^(__unused MCDAppServiceConnection* connection,
-                MCDAppServiceClosedEventArgs* args) { [self appServiceConnection:connection closedWithStatus:args.status]; }];
+            _appServiceConnection = _appServiceConnection = [MCDAppServiceConnection new];
+            _appServiceConnection.appServiceInfo = [MCDAppServiceInfo infoWithName:APP_SERVICE_NAME packageId:PACKAGE_ID];
+            
+            __weak LaunchAndMessageViewController* weakSelf = self;
+            [_appServiceConnection.serviceClosed subscribe:^(__unused MCDAppServiceConnection* connection,
+                MCDAppServiceClosedEventArgs* args) { [weakSelf appServiceConnection:connection closedWithStatus:args.status]; }];
         }
     }
 
@@ -167,7 +168,7 @@
     return @{
         @"Type" : @"ping",
         @"CreationDate" : [_dateFormatter stringFromDate:[NSDate date]],
-        @"TargetId" : _selectedApplication.identifier
+        @"TargetId" : _selectedApplication.appId
     };
 }
 

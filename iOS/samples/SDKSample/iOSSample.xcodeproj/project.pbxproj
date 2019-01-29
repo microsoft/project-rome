@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		514E375D209D7D5A000FFC17 /* AppServiceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 514E375B209D7D5A000FFC17 /* AppServiceProvider.m */; };
 		514E3763209D9594000FFC17 /* InboundRequestLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 514E3762209D9594000FFC17 /* InboundRequestLogger.m */; };
-		8200D3A82098E2CA00D43FA6 /* NotificationProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8200D3A72098E2CA00D43FA6 /* NotificationProvider.m */; };
 		8200D3AB209A3B3900D43FA6 /* AppServiceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8200D3AA209A3B3900D43FA6 /* AppServiceViewController.m */; };
 		8288D5282069A64100EAABAA /* main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8288D5272069A64000EAABAA /* main.storyboard */; };
 		8288D5692069A6D100EAABAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8288D5382069A6CD00EAABAA /* Assets.xcassets */; };
@@ -18,17 +17,18 @@
 		8288D56C2069A6D100EAABAA /* MainNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8288D53B2069A6CD00EAABAA /* MainNavigationController.m */; };
 		8288D56D2069A6D100EAABAA /* SdkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8288D53C2069A6CD00EAABAA /* SdkViewController.m */; };
 		8288D57B2069A6D100EAABAA /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8288D55A2069A6CD00EAABAA /* Info.plist */; };
-		8288D57C2069A6D100EAABAA /* AppDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 8288D5612069A6CF00EAABAA /* AppDataSource.m */; };
 		8288D57D2069A6D100EAABAA /* RemoteSystemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8288D5622069A6CF00EAABAA /* RemoteSystemViewController.m */; };
 		8288D57E2069A6D100EAABAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8288D5642069A6CF00EAABAA /* AppDelegate.m */; };
 		8288D5802069A6D100EAABAA /* IdentityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8288D5662069A6D000EAABAA /* IdentityViewController.m */; };
 		8288D5832069A72800EAABAA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8288D5822069A72800EAABAA /* main.m */; };
-		8288D5952069A9AA00EAABAA /* MSATokenCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8288D58E2069A9A900EAABAA /* MSATokenCache.m */; };
-		8288D5962069A9AA00EAABAA /* MSATokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8288D5902069A9A900EAABAA /* MSATokenRequest.m */; };
-		8288D5992069A9AA00EAABAA /* MSAAccountProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8288D5932069A9A900EAABAA /* MSAAccountProvider.m */; };
 		8288D59F206AD47A00EAABAA /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8288D59E206AD47A00EAABAA /* Launch Screen.storyboard */; };
+		913BC22F21FB917A00ED6A1C /* AADAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC22A21FB917A00ED6A1C /* AADAccount.m */; };
+		913BC23021FB917A00ED6A1C /* MSAAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC22B21FB917A00ED6A1C /* MSAAccount.m */; };
+		913BC23121FB917A00ED6A1C /* MSATokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC22C21FB917A00ED6A1C /* MSATokenRequest.m */; };
+		913BC23221FB917A00ED6A1C /* MSATokenCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC22D21FB917A00ED6A1C /* MSATokenCache.m */; };
+		91943C7021F14B1100548917 /* ConnectedDevicesPlatformManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 91943C6F21F14B1100548917 /* ConnectedDevicesPlatformManager.m */; };
 		DE544A09209D69E700305AE0 /* LaunchUriProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = DE544A08209D69E700305AE0 /* LaunchUriProvider.m */; };
-		FA08AD9AF324F8DA487BAD8B /* libPods-iOSSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 871CA6245BA8A2DED6871921 /* libPods-iOSSample.a */; };
+		E92438C142A5C14854D43DFD /* Pods_iOSSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0638CBD9D25C49221F36983 /* Pods_iOSSample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,7 +50,6 @@
 		514E3761209D9594000FFC17 /* InboundRequestLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InboundRequestLogger.h; sourceTree = "<group>"; };
 		514E3762209D9594000FFC17 /* InboundRequestLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InboundRequestLogger.m; sourceTree = "<group>"; };
 		5C5CDD988DA7BCECE32F5F3F /* Pods-iOSSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOSSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iOSSample/Pods-iOSSample.debug.xcconfig"; sourceTree = "<group>"; };
-		8200D3A72098E2CA00D43FA6 /* NotificationProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NotificationProvider.m; path = iOSSample/NotificationProvider.m; sourceTree = SOURCE_ROOT; };
 		8200D3A9209A243000D43FA6 /* AppServiceViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppServiceViewController.h; sourceTree = "<group>"; };
 		8200D3AA209A3B3900D43FA6 /* AppServiceViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppServiceViewController.m; sourceTree = "<group>"; };
 		8288D50E2069A61A00EAABAA /* iOSSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOSSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -67,32 +66,29 @@
 		8288D55B2069A6CD00EAABAA /* IdentityViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdentityViewController.h; sourceTree = "<group>"; };
 		8288D55E2069A6CE00EAABAA /* UserActivityViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserActivityViewController.h; sourceTree = "<group>"; };
 		8288D55F2069A6CE00EAABAA /* SdkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SdkViewController.h; sourceTree = "<group>"; };
-		8288D5602069A6CE00EAABAA /* NotificationProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationProvider.h; sourceTree = "<group>"; };
-		8288D5612069A6CF00EAABAA /* AppDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDataSource.m; sourceTree = "<group>"; };
 		8288D5622069A6CF00EAABAA /* RemoteSystemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteSystemViewController.m; sourceTree = "<group>"; };
 		8288D5632069A6CF00EAABAA /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		8288D5642069A6CF00EAABAA /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8288D5662069A6D000EAABAA /* IdentityViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IdentityViewController.m; sourceTree = "<group>"; };
-		8288D5672069A6D000EAABAA /* AppDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDataSource.h; sourceTree = "<group>"; };
 		8288D5822069A72800EAABAA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		8288D5892069A99D00EAABAA /* SampleAccountActionFailureReason.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleAccountActionFailureReason.h; sourceTree = "<group>"; };
-		8288D58A2069A99D00EAABAA /* SingleUserAccountProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SingleUserAccountProvider.h; sourceTree = "<group>"; };
-		8288D58B2069A99D00EAABAA /* AADMSAAccountProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AADMSAAccountProvider.h; sourceTree = "<group>"; };
-		8288D58C2069A99D00EAABAA /* AADAccountProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AADAccountProvider.h; sourceTree = "<group>"; };
-		8288D58D2069A99D00EAABAA /* MSAAccountProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MSAAccountProvider.h; sourceTree = "<group>"; };
-		8288D58E2069A9A900EAABAA /* MSATokenCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenCache.m; sourceTree = "<group>"; };
-		8288D58F2069A9A900EAABAA /* MSATokenRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenRequest.h; sourceTree = "<group>"; };
-		8288D5902069A9A900EAABAA /* MSATokenRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenRequest.m; sourceTree = "<group>"; };
-		8288D5912069A9A900EAABAA /* AADAccountProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AADAccountProvider.m; sourceTree = "<group>"; };
-		8288D5922069A9A900EAABAA /* AADMSAAccountProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AADMSAAccountProvider.m; sourceTree = "<group>"; };
-		8288D5932069A9A900EAABAA /* MSAAccountProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAAccountProvider.m; sourceTree = "<group>"; };
-		8288D5942069A9A900EAABAA /* MSATokenCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenCache.h; sourceTree = "<group>"; };
 		8288D59E206AD47A00EAABAA /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		871CA6245BA8A2DED6871921 /* libPods-iOSSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iOSSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		912F2CD021F79A380094B6A1 /* ConnectedDevicesPlatformManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConnectedDevicesPlatformManager.h; sourceTree = "<group>"; };
+		913BC22321FB917A00ED6A1C /* SignInAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignInAccount.h; sourceTree = "<group>"; };
+		913BC22421FB917A00ED6A1C /* SampleAccountActionFailureReason.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleAccountActionFailureReason.h; sourceTree = "<group>"; };
+		913BC22621FB917A00ED6A1C /* MSAAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAAccount.h; sourceTree = "<group>"; };
+		913BC22721FB917A00ED6A1C /* AADAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AADAccount.h; sourceTree = "<group>"; };
+		913BC22921FB917A00ED6A1C /* MSATokenCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenCache.h; sourceTree = "<group>"; };
+		913BC22A21FB917A00ED6A1C /* AADAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AADAccount.m; sourceTree = "<group>"; };
+		913BC22B21FB917A00ED6A1C /* MSAAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAAccount.m; sourceTree = "<group>"; };
+		913BC22C21FB917A00ED6A1C /* MSATokenRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenRequest.m; sourceTree = "<group>"; };
+		913BC22D21FB917A00ED6A1C /* MSATokenCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSATokenCache.m; sourceTree = "<group>"; };
+		913BC22E21FB917A00ED6A1C /* MSATokenRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenRequest.h; sourceTree = "<group>"; };
 		913EB4A8217E722000A78C79 /* Secrets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Secrets.h; sourceTree = "<group>"; };
+		91943C6F21F14B1100548917 /* ConnectedDevicesPlatformManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConnectedDevicesPlatformManager.m; sourceTree = "<group>"; };
 		CC70B68D1BC172939DC18E64 /* Pods-iOSSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOSSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-iOSSample/Pods-iOSSample.release.xcconfig"; sourceTree = "<group>"; };
 		DE544A07209D69E700305AE0 /* LaunchUriProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchUriProvider.h; sourceTree = "<group>"; };
 		DE544A08209D69E700305AE0 /* LaunchUriProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchUriProvider.m; sourceTree = "<group>"; };
+		E0638CBD9D25C49221F36983 /* Pods_iOSSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iOSSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,7 +96,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA08AD9AF324F8DA487BAD8B /* libPods-iOSSample.a in Frameworks */,
+				E92438C142A5C14854D43DFD /* Pods_iOSSample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,7 +106,7 @@
 		2FA0F9B8E1A5FE221268DAEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				871CA6245BA8A2DED6871921 /* libPods-iOSSample.a */,
+				E0638CBD9D25C49221F36983 /* Pods_iOSSample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -136,11 +132,9 @@
 		8288D5102069A61A00EAABAA /* iOSSample */ = {
 			isa = PBXGroup;
 			children = (
+				913BC22121FB917A00ED6A1C /* SignInHelpers */,
 				514E3755209D0FC9000FFC17 /* iOSSample.entitlements */,
 				8288D5842069A72E00EAABAA /* Supporting Files */,
-				8288D5292069A66A00EAABAA /* Auth Provider */,
-				8288D5672069A6D000EAABAA /* AppDataSource.h */,
-				8288D5612069A6CF00EAABAA /* AppDataSource.m */,
 				8288D5632069A6CF00EAABAA /* AppDelegate.h */,
 				8288D5642069A6CF00EAABAA /* AppDelegate.m */,
 				514E375C209D7D5A000FFC17 /* AppServiceProvider.h */,
@@ -157,8 +151,6 @@
 				DE544A08209D69E700305AE0 /* LaunchUriProvider.m */,
 				8288D5362069A6CC00EAABAA /* MainNavigationController.h */,
 				8288D53B2069A6CD00EAABAA /* MainNavigationController.m */,
-				8288D5602069A6CE00EAABAA /* NotificationProvider.h */,
-				8200D3A72098E2CA00D43FA6 /* NotificationProvider.m */,
 				8288D5372069A6CC00EAABAA /* RemoteSystemViewController.h */,
 				8288D5622069A6CF00EAABAA /* RemoteSystemViewController.m */,
 				8288D55F2069A6CE00EAABAA /* SdkViewController.h */,
@@ -166,19 +158,10 @@
 				8288D55E2069A6CE00EAABAA /* UserActivityViewController.h */,
 				8288D5392069A6CD00EAABAA /* UserActivityViewController.m */,
 				913EB4A8217E722000A78C79 /* Secrets.h */,
+				91943C6F21F14B1100548917 /* ConnectedDevicesPlatformManager.m */,
+				912F2CD021F79A380094B6A1 /* ConnectedDevicesPlatformManager.h */,
 			);
 			path = iOSSample;
-			sourceTree = "<group>";
-		};
-		8288D5292069A66A00EAABAA /* Auth Provider */ = {
-			isa = PBXGroup;
-			children = (
-				8288D59B2069A9D100EAABAA /* MSA */,
-				8288D59A2069A9CA00EAABAA /* AAD */,
-				8288D5892069A99D00EAABAA /* SampleAccountActionFailureReason.h */,
-				8288D58A2069A99D00EAABAA /* SingleUserAccountProvider.h */,
-			);
-			path = "Auth Provider";
 			sourceTree = "<group>";
 		};
 		8288D5842069A72E00EAABAA /* Supporting Files */ = {
@@ -193,28 +176,38 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		8288D59A2069A9CA00EAABAA /* AAD */ = {
+		913BC22121FB917A00ED6A1C /* SignInHelpers */ = {
 			isa = PBXGroup;
 			children = (
-				8288D58C2069A99D00EAABAA /* AADAccountProvider.h */,
-				8288D5912069A9A900EAABAA /* AADAccountProvider.m */,
-				8288D58B2069A99D00EAABAA /* AADMSAAccountProvider.h */,
-				8288D5922069A9A900EAABAA /* AADMSAAccountProvider.m */,
+				913BC22221FB917A00ED6A1C /* include */,
+				913BC22821FB917A00ED6A1C /* src */,
 			);
-			name = AAD;
+			name = SignInHelpers;
+			path = ../../SignInHelpers;
 			sourceTree = "<group>";
 		};
-		8288D59B2069A9D100EAABAA /* MSA */ = {
+		913BC22221FB917A00ED6A1C /* include */ = {
 			isa = PBXGroup;
 			children = (
-				8288D58D2069A99D00EAABAA /* MSAAccountProvider.h */,
-				8288D5932069A9A900EAABAA /* MSAAccountProvider.m */,
-				8288D5942069A9A900EAABAA /* MSATokenCache.h */,
-				8288D58E2069A9A900EAABAA /* MSATokenCache.m */,
-				8288D58F2069A9A900EAABAA /* MSATokenRequest.h */,
-				8288D5902069A9A900EAABAA /* MSATokenRequest.m */,
+				913BC22321FB917A00ED6A1C /* SignInAccount.h */,
+				913BC22421FB917A00ED6A1C /* SampleAccountActionFailureReason.h */,
+				913BC22621FB917A00ED6A1C /* MSAAccount.h */,
+				913BC22721FB917A00ED6A1C /* AADAccount.h */,
 			);
-			name = MSA;
+			path = include;
+			sourceTree = "<group>";
+		};
+		913BC22821FB917A00ED6A1C /* src */ = {
+			isa = PBXGroup;
+			children = (
+				913BC22921FB917A00ED6A1C /* MSATokenCache.h */,
+				913BC22A21FB917A00ED6A1C /* AADAccount.m */,
+				913BC22B21FB917A00ED6A1C /* MSAAccount.m */,
+				913BC22C21FB917A00ED6A1C /* MSATokenRequest.m */,
+				913BC22D21FB917A00ED6A1C /* MSATokenCache.m */,
+				913BC22E21FB917A00ED6A1C /* MSATokenRequest.h */,
+			);
+			path = src;
 			sourceTree = "<group>";
 		};
 		DA0D6DB22790D58322F34C05 /* Pods */ = {
@@ -261,6 +254,9 @@
 					8288D50D2069A61A00EAABAA = {
 						CreatedOnToolsVersion = 9.3;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.Push = {
 								enabled = 1;
 							};
@@ -326,11 +322,15 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-iOSSample/Pods-iOSSample-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/ADAL/ADAL.framework",
 				"${PODS_ROOT}/ProjectRomeSdk/full/ConnectedDevices.framework",
+				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ADAL.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ConnectedDevices.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -346,18 +346,18 @@
 			files = (
 				8288D57E2069A6D100EAABAA /* AppDelegate.m in Sources */,
 				8288D56D2069A6D100EAABAA /* SdkViewController.m in Sources */,
-				8288D57C2069A6D100EAABAA /* AppDataSource.m in Sources */,
 				514E3763209D9594000FFC17 /* InboundRequestLogger.m in Sources */,
-				8200D3A82098E2CA00D43FA6 /* NotificationProvider.m in Sources */,
 				DE544A09209D69E700305AE0 /* LaunchUriProvider.m in Sources */,
+				913BC23021FB917A00ED6A1C /* MSAAccount.m in Sources */,
 				8288D5802069A6D100EAABAA /* IdentityViewController.m in Sources */,
+				913BC23221FB917A00ED6A1C /* MSATokenCache.m in Sources */,
 				8288D57D2069A6D100EAABAA /* RemoteSystemViewController.m in Sources */,
+				913BC23121FB917A00ED6A1C /* MSATokenRequest.m in Sources */,
 				8288D56C2069A6D100EAABAA /* MainNavigationController.m in Sources */,
-				8288D5992069A9AA00EAABAA /* MSAAccountProvider.m in Sources */,
 				514E375D209D7D5A000FFC17 /* AppServiceProvider.m in Sources */,
-				8288D5952069A9AA00EAABAA /* MSATokenCache.m in Sources */,
+				913BC22F21FB917A00ED6A1C /* AADAccount.m in Sources */,
+				91943C7021F14B1100548917 /* ConnectedDevicesPlatformManager.m in Sources */,
 				8288D56B2069A6D100EAABAA /* LaunchAndMessageViewController.m in Sources */,
-				8288D5962069A9AA00EAABAA /* MSATokenRequest.m in Sources */,
 				8288D56A2069A6D100EAABAA /* UserActivityViewController.m in Sources */,
 				8200D3AB209A3B3900D43FA6 /* AppServiceViewController.m in Sources */,
 				8288D5832069A72800EAABAA /* main.m in Sources */,
@@ -399,7 +399,8 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -457,7 +458,8 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -483,8 +485,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iOSSample/iOSSample.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SX87JX3VC9;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 9UFF8D37DM;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -492,9 +495,13 @@
 				);
 				INFOPLIST_FILE = iOSSample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.OneRomanApp;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.OneSDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "Public sample for OneSDK";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -505,8 +512,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iOSSample/iOSSample.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SX87JX3VC9;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 9UFF8D37DM;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -514,9 +522,13 @@
 				);
 				INFOPLIST_FILE = iOSSample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.OneRomanApp;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.OneSDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "Public sample for OneSDK";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

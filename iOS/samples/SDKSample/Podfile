@@ -1,13 +1,33 @@
 # Uncomment the next line to define a global platform for your project
 platform :ios, "10.0"
 workspace 'iOSSample'
+project 'iOSSample.xcodeproj'
 
 target 'iOSSample' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  # use_frameworks!
+  use_frameworks!
 
-	pod 'ProjectRomeSdk'
+  # This is the main ConnectedDevices SDK. It includes all the functionality needed for RemoteSystems and UserData scenarios
+  pod 'ProjectRomeSdk'
+  
+  # Because the ConnectedDevices platform involves many asynchronous calls (getting user tokens, sending messages to remote apps etc.)
+  # it is helpful to have a strategy to sequence all of completions in a sane manner.
+  pod 'PromiseKit'
 
-  # Pods for iOSSample
+  # To help authenticate users, the ADAL library is used
+  pod 'ADAL', '2.6.6'
 
+  # force the sub specs in the array below to use swift version 3.2
+  # https://github.com/mxcl/PromiseKit/issues/722
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        if ['PromiseKit'].include? target.name
+            target.build_configurations.each do |config|
+                config.build_settings['SWIFT_VERSION'] = '4.2'
+            end
+        end
+    end
 end
+end
+
+

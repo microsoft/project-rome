@@ -7,14 +7,13 @@ package com.microsoft.rome.onesdksample_android;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.microsoft.connecteddevices.base.AsyncOperation;
+import com.microsoft.connecteddevices.AsyncOperation;
 import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceConnection;
 import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceConnectionStatus;
 import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceResponse;
@@ -91,11 +90,7 @@ public class LaunchFragment extends BaseFragment {
         launchString = getString(R.string.input_launch_uri_default_value);
 
         Button launchBtn = (Button)rootView.findViewById(R.id.launch_uri_btn);
-        launchBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                onLaunchUriButtonClicked();
-            }
-        });
+        launchBtn.setOnClickListener(v -> onLaunchUriButtonClicked());
         launchBtn.setText("Launch " + launchString);
 
         // Grab the default values for the AppService connection information
@@ -105,31 +100,20 @@ public class LaunchFragment extends BaseFragment {
 
         // Set the on-click event for create new AppService message button
         rootView.findViewById(R.id.appservice_new_btn)
-            .setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    onNewConnectionButtonClicked();
-                }
-            });
+            .setOnClickListener(v -> onNewConnectionButtonClicked());
 
         // Set the on-click event for send AppService message button
         rootView.findViewById(R.id.appservice_message_btn)
-            .setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    onMessageButtonClicked();
-                }
-            });
+            .setOnClickListener(v -> onMessageButtonClicked());
 
         ListView appServiceLogListView = (ListView)rootView.findViewById(R.id.appservice_log);
         // The ScrollView overrides touch inputs over its children. This results in the
         // inability to use a ListView's scroll feature, so once there are more items in
         // the View size, you cannot scroll through them. So we will disable the ScrollView's
         // touch capability over its child ListView.
-        appServiceLogListView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                v.getParent().requestDisallowInterceptTouchEvent(true);
-                return false;
-            }
+        appServiceLogListView.setOnTouchListener((v, event) -> {
+            v.getParent().requestDisallowInterceptTouchEvent(true);
+            return false;
         });
         mLogList = new LogList(this, appServiceLogListView);
 
@@ -170,17 +154,14 @@ public class LaunchFragment extends BaseFragment {
         RemoteLauncher remoteLauncher = new RemoteLauncher();
         AsyncOperation<RemoteLaunchUriStatus> resultOperation =
             remoteLauncher.launchUriAsync(system.getRemoteSystemConnectionRequest(), uri);
-        resultOperation.whenCompleteAsync(new AsyncOperation.ResultBiConsumer<RemoteLaunchUriStatus, Throwable>() {
-            @Override
-            public void accept(RemoteLaunchUriStatus status, Throwable throwable) throws Throwable {
-                if (throwable != null) {
-                    mLogList.logTraffic(String.format("Failed to launch uri [%s] because of exception [%s]", uri, throwable));
+        resultOperation.whenCompleteAsync((status, throwable) -> {
+            if (throwable != null) {
+                mLogList.logTraffic(String.format("Failed to launch uri [%s] because of exception [%s]", uri, throwable));
+            } else {
+                if (status == RemoteLaunchUriStatus.SUCCESS) {
+                    mLogList.logTraffic("Launch URI Success");
                 } else {
-                    if (status == RemoteLaunchUriStatus.SUCCESS) {
-                        mLogList.logTraffic("Launch URI Success");
-                    } else {
-                        mLogList.logTraffic(String.format("Failed to launch uri [%s] because of exception [%s]", uri, status));
-                    }
+                    mLogList.logTraffic(String.format("Failed to launch uri [%s] because of exception [%s]", uri, status));
                 }
             }
         });
@@ -242,24 +223,18 @@ public class LaunchFragment extends BaseFragment {
         NOT_AUTHORIZED(7)
         */
         connection.openRemoteAsync(connectionRequest)
-            .thenAcceptAsync(new AsyncOperation.ResultConsumer<AppServiceConnectionStatus>() {
-                @Override
-                public void accept(AppServiceConnectionStatus appServiceConnectionStatus) throws Throwable {
-                    String title = "Inbound open connection response";
-                    mLogList.logTraffic(title);
+            .thenAcceptAsync(appServiceConnectionStatus -> {
+                String title1 = "Inbound open connection response";
+                mLogList.logTraffic(title1);
 
-                    if (appServiceConnectionStatus != AppServiceConnectionStatus.SUCCESS) {
-                        Log.d("LaunchFragment", "App Service Connection failed: " + appServiceConnectionStatus.toString());
-                        return;
-                    }
+                if (appServiceConnectionStatus != AppServiceConnectionStatus.SUCCESS) {
+                    Log.d("LaunchFragment", "App Service Connection failed: " + appServiceConnectionStatus.toString());
+                    return;
                 }
             })
-            .exceptionally(new AsyncOperation.ResultFunction<Throwable, Void>() {
-                @Override
-                public Void apply(Throwable throwable) throws Throwable {
-                    WriteApiException("AsyncOperation<AppServiceConnectionStatus>.get", throwable);
-                    return null;
-                }
+            .exceptionally(throwable -> {
+                WriteApiException("AsyncOperation<AppServiceConnectionStatus>.get", throwable);
+                return null;
             });
     }
 
@@ -274,21 +249,15 @@ public class LaunchFragment extends BaseFragment {
         final long messageId = mMessageIdAppServices.incrementAndGet();
 
         connection.sendMessageAsync(message)
-            .thenAcceptAsync(new AsyncOperation.ResultConsumer<AppServiceResponse>() {
-                @Override
-                public void accept(AppServiceResponse appServiceResponse) throws Throwable {
-                    String title = "Inbound message response";
-                    mLogList.logTraffic(title);
+            .thenAcceptAsync(appServiceResponse -> {
+                String title = "Inbound message response";
+                mLogList.logTraffic(title);
 
-                    handleAppServiceResponse(appServiceResponse, messageId);
-                }
+                handleAppServiceResponse(appServiceResponse, messageId);
             })
-            .exceptionally(new AsyncOperation.ResultFunction<Throwable, Void>() {
-                @Override
-                public Void apply(Throwable throwable) throws Throwable {
-                    WriteApiException("SendMessageAsync AsyncOperation<AppServiceResponse>.get", throwable);
-                    return null;
-                }
+            .exceptionally(throwable -> {
+                WriteApiException("SendMessageAsync AsyncOperation<AppServiceResponse>.get", throwable);
+                return null;
             });
 
         // Construct the traffic log message and log it

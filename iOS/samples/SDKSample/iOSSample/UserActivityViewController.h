@@ -4,9 +4,9 @@
 
 #pragma once
 
-#import "MSAAccountProvider.h"
-#import <ConnectedDevices/Core/Core.h>
-#import <ConnectedDevices/UserData.UserActivities/UserData.UserActivities.h>
+#import "MSAAccount.h"
+#import <ConnectedDevices/ConnectedDevices.h>
+#import <ConnectedDevicesUserDataUserActivities/ConnectedDevicesUserDataUserActivities.h>
 #import <UIKit/UIKit.h>
 
 @interface UserActivityViewController : UIViewController

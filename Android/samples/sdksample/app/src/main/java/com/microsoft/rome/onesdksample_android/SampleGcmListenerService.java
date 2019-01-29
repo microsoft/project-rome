@@ -8,17 +8,19 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
-import com.microsoft.connecteddevices.core.NotificationReceiver;
+import com.microsoft.connecteddevices.ConnectedDevicesPlatform;
+import com.microsoft.connecteddevices.ConnectedDevicesProcessNotificationOperation;
+
+import java.util.ArrayList;
 
 /**
  * Communicates with Google Cloud Messaging.
  */
 
 public class SampleGcmListenerService extends GcmListenerService {
-    private static final String TAG = "GcmListenerService";
+    private final String TAG = SampleGcmListenerService.class.getName();
 
     /**
-     * Check whether it's a rome notification or not.
      * If it is a rome notification,
      * It will notify the apps with the information in the notification.
      * @param  from  describes message sender.
@@ -26,10 +28,15 @@ public class SampleGcmListenerService extends GcmListenerService {
      */
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        Log.d(TAG, "From: " + from);
+        Log.d(TAG, "GCM listener received data from: " + from);
 
-        if (!NotificationReceiver.Receive(data)) {
-            Log.d(TAG, "GCM client received a message that was not a Rome notification");
-        }
+        // Get a ConnectedDevicesPlatform to give the notification to
+        ConnectedDevicesPlatform platform = ConnectedDevicesManager.getConnectedDevicesManager(getApplicationContext()).getPlatform();
+
+        platform.processNotification(data).waitForCompletionAsync().thenAcceptAsync((Void v) -> {
+            // The notification has finished being processed. The app is ready to
+            // be shutdown or if woken from the background service, this is where
+            // you would shutdown your background service early to be a good citizen.
+        });
     }
 }

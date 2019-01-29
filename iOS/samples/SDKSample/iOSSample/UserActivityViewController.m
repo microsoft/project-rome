@@ -3,9 +3,9 @@
 //
 
 #import "UserActivityViewController.h"
-#import "AppDataSource.h"
-#import <ConnectedDevices/UserData.UserActivities/UserData.UserActivities.h>
-#import <ConnectedDevices/UserData/MCDUserDataFeed.h>
+#import "ConnectedDevicesPlatformManager.h"
+#import <ConnectedDevicesUserDataUserActivities/ConnectedDevicesUserDataUserActivities.h>
+#import <ConnectedDevicesUserData/MCDUserDataFeed.h>
 #import "Secrets.h"
 #import <UIKit/UIKit.h>
 
@@ -23,17 +23,24 @@
     [super viewDidLoad];
 
     // You must be logged in to use UserActivities
-    NSArray<MCDUserAccount*>* accounts = [[AppDataSource sharedInstance].accountProvider getUserAccounts];
-    if (accounts.count > 0)
+    ConnectedDevicesPlatformManager* platformManager = [ConnectedDevicesPlatformManager sharedInstance];
+    NSArray<Account*>* accounts = platformManager.accounts;
+    Account* account = nil;
+    if (accounts.count > 0) {
+        account = [accounts objectAtIndex:[accounts indexOfObjectPassingTest:^BOOL (Account* account, NSUInteger index, BOOL* stop) {
+            return account.state == AccountRegistrationStateInAppCacheAndSdkCache;
+        }]];
+    }
+    
+    // This logic would be better if the UI supported more than one account. Since this is a simple app, just check for one account
+    // that is synced to key off of for UserDataFeed.
+    if (account != nil)
     {
         // Step #1: Get a UserActivity channel, getting the default channel        
         NSLog(@"Creating UserActivityChannel");
-        NSArray<MCDUserAccount*>* accounts = [[AppDataSource sharedInstance].accountProvider getUserAccounts];
-        MCDUserDataFeed* userDataFeed = [MCDUserDataFeed getForAccount:accounts[0]
-                                                                       platform:[AppDataSource sharedInstance].platform
+        MCDUserDataFeed* userDataFeed = [MCDUserDataFeed getForAccount:account.mcdAccount
+                                                                       platform:platformManager.platform
                                                              activitySourceHost:CROSS_PLATFORM_APP_ID];
-        NSArray<id<MCDUserDataFeedSyncScope>>* syncScopes = @[ [MCDUserActivityChannel syncScope] ];
-        [userDataFeed addSyncScopes:syncScopes];
         self.channel = [MCDUserActivityChannel channelWithUserDataFeed:userDataFeed];
     }
     else
