@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.Optional;
 import java.util.Map;
 
 /**
@@ -230,18 +229,15 @@ public class ConnectedDevicesManager {
         // If there is a signed in account in the app's cache, find it exists in the SDK's cache
         if (signInHelper.isSignedIn()) {
             // Check if the account is also present in ConnectedDevicesPlatform.AccountManager.
-            Optional<ConnectedDevicesAccount> sdkCachedAccount = sdkCachedAccounts
-                .stream()
-                .filter(acc -> accountsMatch(signInHelper.getAccount(), acc))
-                .findFirst();
+            ConnectedDevicesAccount sdkCachedAccount = findFirst(sdkCachedAccounts, (acc) -> accountsMatch(signInHelper.getAccount(), acc));
 
             AccountRegistrationState registrationState;
-            if (sdkCachedAccount.isPresent()) {
+            if (sdkCachedAccount != null) {
                 // Account found in the SDK cache, remove it from the list of sdkCachedAccounts. After 
                 // all the appCachedAccounts have been processed any accounts remaining in sdkCachedAccounts
                 // are only in the SDK cache, and should be removed.
                 registrationState = AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE;
-                sdkCachedAccounts.remove(sdkCachedAccount.get());
+                sdkCachedAccounts.remove(sdkCachedAccount);
             } else {
                 // Account not found in the SDK cache. Later when we initialize the Account,
                 // it will be added to the SDK cache and perform registration.
@@ -258,6 +254,29 @@ public class ConnectedDevicesManager {
         }
 
         return returnAccounts;
+    }
+
+    /**
+     * Replacement for the java.util.function.Predicate to support pre Java 8 / API 24.
+     */
+    interface Predicate<T> {
+        public boolean test(T t);
+    }
+
+    /**
+     * Replacement for stream.filter.findFirst to support pre Java 8 / API 24.
+     * @param list List to search
+     * @param predicate Predicate to use against the given list
+     * @return First item matching the given predicate, null if none found
+     */
+    private static <T> T findFirst(List<T> list, Predicate<? super T> predicate) {
+        for (T item : list) {
+            if (predicate.test(item)) {
+                return item;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -335,20 +354,17 @@ public class ConnectedDevicesManager {
         List<String> scopes = request.getScopes();
 
         // Compare the app cached account to find a match in the sdk cached accounts
-        Optional<Account> account = accounts
-            .stream()
-            .filter(acc -> accountsMatch(request.getAccount(), acc.getAccount()))
-            .findFirst();
+        Account account = findFirst(accounts, acc -> accountsMatch(request.getAccount(), acc.getAccount()));
 
         // We always need to complete the request, even if a matching account is not found
-        if (!account.isPresent()) {
+        if (account == null) {
             Log.e(TAG, "Failed to find a SigninHelperAccount matching the given account for the token request");
             request.completeWithErrorMessage("The app could not find a matching ConnectedDevicesAccount to get a token");
             return;
         }
 
         // Complete the request with a token
-        account.get().getAccessTokenAsync(scopes)
+        account.getAccessTokenAsync(scopes)
             .thenAcceptAsync((String token) -> {
                 request.completeWithAccessToken(token);
             }).exceptionally(throwable -> {
@@ -391,14 +407,11 @@ public class ConnectedDevicesManager {
                  // Because the notificaiton registration is expiring, the per account registration work needs to be kicked off again.
                  // This means registering with the NotificationRegistrationManager as well as any sub component work like RemoteSystemAppRegistration.
                 Log.i(TAG, "Notification " + args.getState() + " for account: " + args.getAccount().getId());
-                Optional<Account> account = accounts
-                    .stream()
-                    .filter(acc -> accountsMatch(args.getAccount(), acc.getAccount()))
-                    .findFirst();
+                Account account = findFirst(accounts, acc -> accountsMatch(args.getAccount(), acc.getAccount()));
 
                 // If the account has been prepared for use then re-register the account with SDK
-                if (account.isPresent() && account.get().getRegistrationState() == AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE) {
-                    account.get().registerAccountWithSdkAsync();
+                if (account != null && account.getRegistrationState() == AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE) {
+                    account.registerAccountWithSdkAsync();
                 }
                 break;
             }
