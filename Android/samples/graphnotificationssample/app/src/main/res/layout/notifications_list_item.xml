@@ -1,44 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="30dp" >
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/notification_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
         android:text="" />
 
     <TextView
         android:id="@+id/notification_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/notification_id"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
         android:text="" />
 
     <TextView
         android:id="@+id/notification_useractionstate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/notification_text"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
         android:text="" />
 
-    <Button
-        android:id="@+id/notification_read"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@id/notification_useractionstate"
-        android:layout_alignTop="@+id/notification_useractionstate"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginStart="10dp"
-        android:text="@string/read" />
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/notification_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/read" />
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/notification_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete" />
+    </LinearLayout>
+
+</LinearLayout>

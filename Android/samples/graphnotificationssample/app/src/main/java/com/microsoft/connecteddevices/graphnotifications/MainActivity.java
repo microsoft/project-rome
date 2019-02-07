@@ -21,7 +21,6 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,21 +33,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.microsoft.connecteddevices.AsyncOperation;
-import com.microsoft.connecteddevices.ConnectedDevicesAccount;
-import com.microsoft.connecteddevices.ConnectedDevicesAccountType;
-import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistration;
-import com.microsoft.connecteddevices.EventListener;
-import com.microsoft.connecteddevices.signinhelpers.AADSigninHelperAccount;
-import com.microsoft.connecteddevices.signinhelpers.MSASigninHelperAccount;
-import com.microsoft.connecteddevices.signinhelpers.SigninHelperAccount;
 import com.microsoft.connecteddevices.userdata.UserDataFeed;
-import com.microsoft.connecteddevices.userdata.UserDataFeedSyncScope;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotification;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationChannel;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationReadState;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationReader;
-import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationReaderOptions;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationStatus;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationUpdateResult;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationUserActionState;
@@ -60,7 +49,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class MainActivity extends AppCompatActivity {
@@ -82,17 +70,15 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    private static SigninHelperAccount sMSAHelperAccount;
-    private static SigninHelperAccount sAADHelperAccount;
-    private static ConnectedDevicesAccount sLoggedInAccount;
-    private static ConnectedDevicesNotificationRegistration sNotificationRegistration;
-
+    private static ConnectedDevicesManager mConnectedDevicesManager;
+    private static UserNotificationChannel sChannel;
     private static UserNotificationReader sReader;
-    private static CountDownLatch sLatch;
 
     private static final ArrayList<UserNotification> sNotifications = new ArrayList<>();
 
-    static final String CHANNEL_NAME = "GraphNotificationsChannel001";
+    private static CountDownLatch sLatch;
+
+    private static final String CHANNEL_NAME = "GraphNotificationsChannel001";
     private static final String NOTIFICATION_ID = "ID";
 
     private enum LoginState {
@@ -101,21 +87,16 @@ public class MainActivity extends AppCompatActivity {
         LOGGED_OUT
     }
 
-    private static LoginState sState = LoginState.LOGGED_OUT;
+    private static LoginState mState = LoginState.LOGGED_OUT;
 
-    private static synchronized LoginState getAndUpdateLoginState()
+    private static synchronized LoginState getLoginState()
     {
-        if (sMSAHelperAccount == null || sAADHelperAccount == null || sLoggedInAccount == null) {
-            sState = LoginState.LOGGED_OUT;
-        } else if (sMSAHelperAccount.isSignedIn() && (sLoggedInAccount.getType() == ConnectedDevicesAccountType.MSA)) {
-            sState = LoginState.LOGGED_IN_MSA;
-        } else if (sAADHelperAccount.isSignedIn() && (sLoggedInAccount.getType() == ConnectedDevicesAccountType.AAD)) {
-            sState = LoginState.LOGGED_IN_AAD;
-        } else {
-            sState = LoginState.LOGGED_OUT;
-        }
+        return mState;
+    }
 
-        return sState;
+    private static synchronized void updateLoginState(LoginState state)
+    {
+        mState = state;
     }
 
     @Override
@@ -125,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -140,32 +122,14 @@ public class MainActivity extends AppCompatActivity {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_NAME, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("Graph Notifications Channel");
+            channel.setDescription("GraphNotificationsSample Channel");
             getSystemService(NotificationManager.class).createNotificationChannel(channel);
         }
 
-        if (sMSAHelperAccount == null) {
-            final Map<String, String[]> msaScopeOverrides = new ArrayMap<>();
-            msaScopeOverrides.put("https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp",
-                    new String[] { "https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp",
-                            "https://activity.windows.com/Notifications.ReadWrite.CreatedByApp"});
-            sMSAHelperAccount = new MSASigninHelperAccount(Secrets.MSA_CLIENT_ID, msaScopeOverrides, getApplicationContext());
-        }
-
-        if (sAADHelperAccount == null) {
-            sAADHelperAccount = new AADSigninHelperAccount(Secrets.AAD_CLIENT_ID, Secrets.AAD_REDIRECT_URI, getApplicationContext());
-        }
+        // Create the ConnectedDevicesManager
+        mConnectedDevicesManager = ConnectedDevicesManager.getConnectedDevicesManager((Context)this);
 
         sLatch = new CountDownLatch(1);
-        if (PlatformManager.getInstance().getPlatform() == null) {
-            PlatformManager.getInstance().createPlatform(getApplicationContext());
-        }
-
-        PlatformManager.getInstance().getPlatform().getNotificationRegistrationManager().notificationRegistrationStateChanged().subscribe((connectedDevicesNotificationRegistrationManager, connectedDevicesNotificationRegistrationStateChangedEventArgs) -> {
-            Log.i(TAG, "NotificationRegistrationState changed to " + connectedDevicesNotificationRegistrationStateChangedEventArgs.getState().toString());
-        });
-
-        tryGetNotificationRegistration();
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -184,23 +148,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static void tryGetNotificationRegistration() {
-        if (sNotificationRegistration != null) {
-            Log.i(TAG, "Already have notification registration");
-            return;
-        }
-
-        RomeNotificationReceiver receiver = PlatformManager.getInstance().getNotificationReceiver();
-        if (receiver != null) {
-            receiver.getNotificationRegistrationAsync().whenComplete((connectedDevicesNotificationRegistration, throwable) -> {
-                Log.i(TAG, "Got new notification registration");
-                sNotificationRegistration = connectedDevicesNotificationRegistration;
-            });
-        } else {
-            Log.i(TAG, "No notification receiver!");
-        }
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         String id = intent.getStringExtra(NOTIFICATION_ID);
@@ -212,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
             boolean found = false;
             for (UserNotification notification : sNotifications) {
                 if (notification.getId().equals(id)) {
-                    notification.setUserActionState(UserNotificationUserActionState.ACTIVATED);
+                    notification.setUserActionState(UserNotificationUserActionState.DISMISSED);
                     notification.saveAsync();
                     found = true;
                     break;
@@ -224,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -248,7 +194,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     private static class RunnableManager {
         private static Runnable sNotificationsUpdated;
 
@@ -264,7 +209,6 @@ public class MainActivity extends AppCompatActivity {
     public static class LoginFragment extends Fragment {
         private Button mAadButton;
         private Button mMsaButton;
-        boolean firstCreate = true;
 
         public LoginFragment() {
         }
@@ -274,107 +218,73 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_login, container, false);
+
             mAadButton = rootView.findViewById(R.id.login_aad_button);
+            mAadButton.setOnClickListener(view -> mConnectedDevicesManager.signInAadAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
+                if ((throwable == null) && (success)) {
+                    if (getLoginState() != LoginState.LOGGED_IN_AAD) {
+                        getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_IN_AAD));
+                        MainActivity.setupChannel(getActivity());
+                    } else {
+                        getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_OUT));
+                        mConnectedDevicesManager.logout(getActivity());
+                    }
+                } else {
+                    Log.d(TAG, "AAD login failed!");
+                }
+            }));
+
             mMsaButton = rootView.findViewById(R.id.login_msa_button);
-            LoginState loginState = getAndUpdateLoginState();
-            setState(loginState);
-            if (firstCreate && (loginState != LoginState.LOGGED_OUT)) {
-                firstCreate = false;
-                MainActivity.setupChannel(getActivity());
-            }
+            mMsaButton.setOnClickListener(view -> mConnectedDevicesManager.signInMsaAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
+                if ((throwable == null) && (success)) {
+                    if (getLoginState() != LoginState.LOGGED_IN_AAD) {
+                        getActivity().runOnUiThread(()-> updateView(LoginState.LOGGED_IN_MSA));
+                        MainActivity.setupChannel(getActivity());
+                    } else {
+                        getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_OUT));
+                        mConnectedDevicesManager.logout(getActivity());
+                    }
+                }
+                else {
+                    Log.d(TAG, "MSA login failed!");
+                }
+            }));
+
+            updateView(getLoginState());
 
             return rootView;
         }
 
-        void setState(LoginState loginState) {
-            switch (loginState) {
+        void updateView(LoginState state) {
+            updateLoginState(state);
+
+            switch (state) {
                 case LOGGED_OUT:
                     mAadButton.setEnabled(true);
                     mAadButton.setText(R.string.login_aad);
-                    mAadButton.setOnClickListener(view -> sAADHelperAccount.signIn(getActivity()).whenCompleteAsync((connectedDevicesAccount, throwable) -> {
-                        if ((throwable == null) && (connectedDevicesAccount != null)) {
-                            sLoggedInAccount = connectedDevicesAccount;
-                            PlatformManager.getInstance().getPlatform().getAccountManager().accessTokenRequested().subscribe((accountManager, args)->
-                            {
-                                sAADHelperAccount.getAccessTokenAsync(args.getRequest().getScopes()).whenCompleteAsync((token, t) -> args.getRequest().completeWithAccessToken(token));
-                            });
-
-                            PlatformManager.getInstance().getPlatform().getAccountManager().accessTokenInvalidated().subscribe((connectedDevicesAccountManager, args) -> {
-                                // Don't need to do anything here for now
-                            });
-
-                            PlatformManager.getInstance().getPlatform().start();
-
-                            tryGetNotificationRegistration();
-
-                            PlatformManager.getInstance().getPlatform().getAccountManager().addAccountAsync(sLoggedInAccount).whenCompleteAsync((connectedDevicesAddAccountResult, throwable12) -> PlatformManager.getInstance().getPlatform().getNotificationRegistrationManager().registerForAccountAsync(sLoggedInAccount, sNotificationRegistration).whenCompleteAsync((aBoolean, throwable1) -> {
-                                getActivity().runOnUiThread(()-> setState(getAndUpdateLoginState()));
-                                MainActivity.setupChannel(getActivity());
-                            }));
-
-                        }
-                    }));
-
                     mMsaButton.setEnabled(true);
                     mMsaButton.setText(R.string.login_msa);
-                    mMsaButton.setOnClickListener(view -> sMSAHelperAccount.signIn(getActivity()).whenCompleteAsync((connectedDevicesAccount, throwable) -> {
-                        if (throwable == null && connectedDevicesAccount != null) {
-                            sLoggedInAccount = connectedDevicesAccount;
-                            PlatformManager.getInstance().getPlatform().getAccountManager().accessTokenRequested().subscribe((accountManager, args)-> {
-                                sMSAHelperAccount.getAccessTokenAsync(args.getRequest().getScopes()).whenCompleteAsync((token, t) -> {
-                                    args.getRequest().completeWithAccessToken(token);
-                                });
-                            });
-
-                            PlatformManager.getInstance().getPlatform().getAccountManager().accessTokenInvalidated().subscribe((connectedDevicesAccountManager, args) -> {
-                                // Don't need to do anything here for now
-                            });
-
-                            PlatformManager.getInstance().getPlatform().start();
-
-                            tryGetNotificationRegistration();
-
-                            PlatformManager.getInstance().getPlatform().getAccountManager().addAccountAsync(sLoggedInAccount).whenCompleteAsync((connectedDevicesAddAccountResult, throwable12) -> {
-                                PlatformManager.getInstance().getPlatform().getNotificationRegistrationManager().registerForAccountAsync(sLoggedInAccount, sNotificationRegistration).whenCompleteAsync((aBoolean, throwable1) -> {
-                                    getActivity().runOnUiThread(()-> setState(getAndUpdateLoginState()));
-                                    MainActivity.setupChannel(getActivity());
-                                });
-                            });
-                        }
-                    }));
                     break;
 
                 case LOGGED_IN_AAD:
                     mAadButton.setText(R.string.logout);
-                    mAadButton.setOnClickListener(view -> PlatformManager.getInstance().getPlatform().getAccountManager().removeAccountAsync(sLoggedInAccount).whenCompleteAsync((connectedDevicesRemoveAccountResult, throwable) -> {
-                        sAADHelperAccount.signOut(getActivity()).whenCompleteAsync((connectedDevicesAccount, throwable13) -> {
-                            sLoggedInAccount = null;
-                            getActivity().runOnUiThread(()-> setState(getAndUpdateLoginState()));
-                        });
-                    }));
                     mMsaButton.setEnabled(false);
                     break;
 
                 case LOGGED_IN_MSA:
                     mAadButton.setEnabled(false);
                     mMsaButton.setText(R.string.logout);
-                    mMsaButton.setOnClickListener(view -> PlatformManager.getInstance().getPlatform().getAccountManager().removeAccountAsync(sLoggedInAccount).whenCompleteAsync((connectedDevicesRemoveAccountResult, throwable) -> {
-                        sMSAHelperAccount.signOut(getActivity()).whenCompleteAsync((connectedDevicesAccount, throwable14) -> {
-                            sLoggedInAccount = null;
-                            getActivity().runOnUiThread(()-> setState(getAndUpdateLoginState()));
-                        });
-                    }));
                     break;
             }
         }
     }
 
-    static class NotificationArrayAdapter extends ArrayAdapter<UserNotification> {
+    public static class NotificationArrayAdapter extends ArrayAdapter<UserNotification> {
         private final Activity mActivity;
-        NotificationArrayAdapter(Context context, List<UserNotification> items, Activity activity) {
+
+        public NotificationArrayAdapter(Context context, List<UserNotification> items, Activity activity) {
             super(context, R.layout.notifications_list_item, items);
             mActivity = activity;
         }
@@ -406,13 +316,22 @@ public class MainActivity extends AppCompatActivity {
                     notification.setReadState(UserNotificationReadState.READ);
                     notification.saveAsync().whenCompleteAsync((userNotificationUpdateResult, throwable) -> {
                         if (throwable == null && userNotificationUpdateResult != null && userNotificationUpdateResult.getSucceeded()) {
-                            Log.d(TAG, "Successfully marked notification as read");
+                            Log.d(TAG, "Successfully marked the notification as read");
                         }
                     });
                 });
             } else {
                 readButton.setEnabled(false);
             }
+
+            final Button deleteButton = convertView.findViewById(R.id.notification_delete);
+            deleteButton.setOnClickListener(view -> {
+                sChannel.deleteUserNotificationAsync(notification.getId()).whenCompleteAsync((userNotificationUpdateResult, throwable) -> {
+                    if (throwable == null && userNotificationUpdateResult != null && userNotificationUpdateResult.getSucceeded()) {
+                        Log.d(TAG, "Successfully deleted the notification");
+                    }
+                });
+            });
 
             if (notification.getUserActionState() == UserNotificationUserActionState.NO_INTERACTION) {
                 convertView.setOnClickListener(view -> {
@@ -429,7 +348,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class NotificationsFragment extends Fragment {
-        NotificationArrayAdapter mNotificationArrayAdapter;
+        private NotificationArrayAdapter mNotificationArrayAdapter;
+
         public NotificationsFragment() {
         }
 
@@ -446,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             mNotificationArrayAdapter = new NotificationArrayAdapter(getContext(), sNotifications, getActivity());
             RunnableManager.setNotificationsUpdated(() -> {
-                if (getAndUpdateLoginState() != LoginState.LOGGED_OUT) {
+                if (getLoginState() != LoginState.LOGGED_OUT) {
                     Toast.makeText(getContext(), "Got a new notification update!", Toast.LENGTH_SHORT).show();
                 }
 
@@ -459,6 +379,7 @@ public class MainActivity extends AppCompatActivity {
             return rootView;
         }
     }
+
     public static class LogFragment extends Fragment {
         private View mRootView;
         private TextView mTextView;
@@ -543,10 +464,10 @@ public class MainActivity extends AppCompatActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    private class SectionsPagerAdapter extends FragmentPagerAdapter {
-        LoginFragment mLoginFragment;
-        NotificationsFragment mNotificationFragment;
-        LogFragment mLogFragment;
+    class SectionsPagerAdapter extends FragmentPagerAdapter {
+        private LoginFragment mLoginFragment;
+        private NotificationsFragment mNotificationFragment;
+        private LogFragment mLogFragment;
 
         SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -585,6 +506,7 @@ public class MainActivity extends AppCompatActivity {
             return 3;
         }
     }
+
     static void handleNotifications(final List<UserNotification> userNotifications, final Activity activity) {
         activity.runOnUiThread(() -> {
             synchronized (sNotifications) {
@@ -617,29 +539,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     static void setupChannel(final Activity activity) {
-        if (getAndUpdateLoginState() == LoginState.LOGGED_OUT) {
-            return;
-        }
-
-        UserDataFeed dataFeed = UserDataFeed.getForAccount(sLoggedInAccount, PlatformManager.getInstance().getPlatform(), Secrets.APP_HOST_NAME);
+        UserDataFeed dataFeed = UserDataFeed.getForAccount(mConnectedDevicesManager.getSignedInAccount().getAccount(), mConnectedDevicesManager.getPlatform(), Secrets.APP_HOST_NAME);
         dataFeed.subscribeToSyncScopesAsync(Arrays.asList(UserNotificationChannel.getSyncScope())).whenCompleteAsync((success, throwable) -> {
             if (success) {
                 dataFeed.startSync();
-                UserNotificationChannel channel = new UserNotificationChannel(dataFeed);
-                UserNotificationReaderOptions options = new UserNotificationReaderOptions();
-                sReader = channel.createReaderWithOptions(options);
+
+                sChannel = new UserNotificationChannel(dataFeed);
+
+                sReader = sChannel.createReader();
                 sReader.readBatchAsync(Long.MAX_VALUE).thenAccept(userNotifications -> {
                     handleNotifications(userNotifications, activity);
                     if (sLatch.getCount() == 1) {
                         sLatch.countDown();
                     }
                 });
-
                 sReader.dataChanged().subscribe((userNotificationReader, aVoid) -> userNotificationReader.readBatchAsync(Long.MAX_VALUE).thenAccept(userNotifications -> {
                     handleNotifications(userNotifications, activity);
                 }));
             } else {
-                activity.runOnUiThread(() -> Toast.makeText(activity.getApplicationContext(), "Failed to subscribe to sync scopes", Toast.LENGTH_SHORT));
+                activity.runOnUiThread(() -> Toast.makeText(activity.getApplicationContext(), "Failed to setup USerDataFeed for notifications", Toast.LENGTH_SHORT));
             }
         });
     }
