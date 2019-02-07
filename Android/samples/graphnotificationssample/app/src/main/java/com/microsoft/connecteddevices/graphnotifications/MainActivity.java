@@ -1,3 +1,7 @@
+//
+//  Copyright (c) Microsoft Corporation. All rights reserved.
+//
+
 package com.microsoft.connecteddevices.graphnotifications;
 
 import android.app.Activity;
