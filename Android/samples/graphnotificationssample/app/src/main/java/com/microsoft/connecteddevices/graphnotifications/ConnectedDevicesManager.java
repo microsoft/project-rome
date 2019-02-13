@@ -4,7 +4,6 @@
 
 package com.microsoft.connecteddevices.graphnotifications;
 
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.util.ArrayMap;
@@ -28,11 +27,8 @@ import com.microsoft.connecteddevices.signinhelpers.AADSigninHelperAccount;
 import com.microsoft.connecteddevices.signinhelpers.MSASigninHelperAccount;
 import com.microsoft.connecteddevices.signinhelpers.SigninHelperAccount;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.Map;
 
 /**
@@ -209,7 +205,7 @@ public class ConnectedDevicesManager {
         registration.setAppId(Secrets.FCM_SENDER_ID);
         registration.setAppDisplayName("GraphNotificationsSample");
 
-        Log.i(TAG, "Completing the GcmNotificationReceiver operation with token: " + token);
+        Log.i(TAG, "Completing the RomeNotificationReceiver operation with token: " + token);
 
         // For each prepared account, register for notifications
         for (Account account : mAccounts) {

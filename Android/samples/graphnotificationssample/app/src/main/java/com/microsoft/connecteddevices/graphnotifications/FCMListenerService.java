@@ -8,11 +8,11 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.microsoft.connecteddevices.ConnectedDevicesPlatform;
-
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import com.microsoft.connecteddevices.ConnectedDevicesPlatform;
 
 import java.util.Map;
 
@@ -21,11 +21,10 @@ import java.util.Map;
  */
 public class FCMListenerService extends FirebaseMessagingService {
     private static final String TAG = "FCMListenerService";
-
     private static final String RegistrationComplete = "registrationComplete";
     private static final String TOKEN = "TOKEN";
 
-    private static String s_previousToken = null;
+    private static String sPreviousToken = "";
 
     @Override
     public void onCreate() {
@@ -40,27 +39,30 @@ public class FCMListenerService extends FirebaseMessagingService {
     }
 
     /**
-     * Check whether it's a rome notification or not.
+     * Check whether it's a Rome notification or not.
      * If it is a rome notification,
      * It will notify the apps with the information in the notification.
      * @param  message  FCM class for messaging with a from a data field.
      */
     @Override
     public void onMessageReceived(RemoteMessage message) {
-        Log.d(TAG, "From: " + message.getFrom());
+        Log.d(TAG, "FCM notification received from: " + message.getFrom());
         Map data = message.getData();
-        ConnectedDevicesPlatform platform = ConnectedDevicesManager.getConnectedDevicesManager(getApplicationContext()).getPlatform();
-        platform.processNotification(data);
+        try {
+            ConnectedDevicesPlatform platform = ConnectedDevicesManager.getConnectedDevicesManager(getApplicationContext()).getPlatform();
+            platform.processNotification(data);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to process FCM notification" + e.getMessage());
+        }
     }
 
     @Override
     public void onNewToken(String token) {
-        if (token != null && !token.equals(s_previousToken)) {
-            s_previousToken = token;
+        if (token != null && !token.equals(sPreviousToken)) {
+            sPreviousToken = token;
             Intent registrationComplete = new Intent(RegistrationComplete);
             registrationComplete.putExtra(TOKEN, token);
             LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
         }
     }
-
 }

@@ -10,6 +10,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -33,6 +34,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.microsoft.connecteddevices.ConnectedDevicesAccountType;
 import com.microsoft.connecteddevices.userdata.UserDataFeed;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotification;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationChannel;
@@ -48,6 +50,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EventObject;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -70,104 +73,46 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    private static ConnectedDevicesManager mConnectedDevicesManager;
-    private static UserNotificationChannel sChannel;
-    private static UserNotificationReader sReader;
-
-    private static final ArrayList<UserNotification> sNotifications = new ArrayList<>();
+    static ConnectedDevicesManager sConnectedDevicesManager;
+    static UserNotificationsManager sNotificationsManager;
+    static final ArrayList<UserNotification> sActiveNotifications = new ArrayList<>();
 
     private static CountDownLatch sLatch;
-
-    private static final String CHANNEL_NAME = "GraphNotificationsChannel001";
-    private static final String NOTIFICATION_ID = "ID";
-
-    private enum LoginState {
-        LOGGED_IN_MSA,
-        LOGGED_IN_AAD,
-        LOGGED_OUT
-    }
-
-    private static LoginState mState = LoginState.LOGGED_OUT;
-
-    private static synchronized LoginState getLoginState()
-    {
-        return mState;
-    }
-
-    private static synchronized void updateLoginState(LoginState state)
-    {
-        mState = state;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Set up the tool bar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
+        // Set up the tabs with adapter to manage the fragments
+        TabLayout tabLayout = findViewById(R.id.tabs);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        TabLayout tabLayout = findViewById(R.id.tabs);
-
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_NAME, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("GraphNotificationsSample Channel");
-            getSystemService(NotificationManager.class).createNotificationChannel(channel);
-        }
-
         // Create the ConnectedDevicesManager
-        mConnectedDevicesManager = ConnectedDevicesManager.getConnectedDevicesManager((Context)this);
+        sConnectedDevicesManager = ConnectedDevicesManager.getConnectedDevicesManager(this);
 
         sLatch = new CountDownLatch(1);
 
         Intent intent = getIntent();
         if (intent != null) {
-            final String id = intent.getStringExtra(NOTIFICATION_ID);
-            if (id != null && id.equals("")) {
+            final String id = intent.getStringExtra(UserNotificationsManager.NOTIFICATION_ID);
+            if (id != null && !id.isEmpty()) {
                 new Thread(() -> {
                     try {
                         sLatch.await();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
-                    dismissNotification(id);
+                    activateNotification(id);
                 }).start();
-            }
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        String id = intent.getStringExtra(NOTIFICATION_ID);
-        dismissNotification(id);
-    }
-
-    private void dismissNotification(String id) {
-        synchronized (sNotifications) {
-            boolean found = false;
-            for (UserNotification notification : sNotifications) {
-                if (notification.getId().equals(id)) {
-                    notification.setUserActionState(UserNotificationUserActionState.DISMISSED);
-                    notification.saveAsync();
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                Log.w(TAG, "Attempted to dismiss missing notification!");
             }
         }
     }
@@ -186,23 +131,78 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        // Request a feed sync, all channels will get updated
         if (id == R.id.action_refresh) {
-            return true;
+            sNotificationsManager.refresh();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private static class RunnableManager {
-        private static Runnable sNotificationsUpdated;
+    @Override
+    protected void onNewIntent(Intent intent) {
+        String id = intent.getStringExtra(UserNotificationsManager.NOTIFICATION_ID);
+        activateNotification(id);
+    }
+
+    private void activateNotification(String id) {
+        synchronized (sNotificationsManager) {
+            boolean found = false;
+            for (UserNotification notification : sActiveNotifications) {
+                if (notification.getId().equals(id)) {
+                    sNotificationsManager.activate(notification);
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                Log.w(TAG, "Attempted to dismiss notification!");
+            }
+        }
+    }
+
+    static class RunnableManager {
+        private static Runnable sNotificationsUpdated = null;
 
         static void setNotificationsUpdated(Runnable runnable) {
             sNotificationsUpdated = runnable;
         }
 
-        static Runnable getNotificationsUpdated() {
-            return sNotificationsUpdated;
+        static void runNotificationsUpdated() {
+            if (sNotificationsUpdated != null) {
+                sNotificationsUpdated.run();
+            }
+        }
+    }
+
+    static void setupNotificationsManager(final Activity activity) {
+        if (sConnectedDevicesManager.getSignedInAccount() != null) {
+            Log.d(TAG, "Setup Notifications manager");
+            sNotificationsManager = sConnectedDevicesManager.getSignedInAccount().getNotificationsManager();
+            sNotificationsManager.addNotificationsUpdatedEventListener(args -> {
+                Log.d(TAG, "Notifications available!");
+
+                if (sNotificationsManager.HasNewNotifications()) {
+                    activity.runOnUiThread(() -> {
+                        Toast.makeText(activity, "Got new notifications", Toast.LENGTH_SHORT).show();
+                    });
+                }
+
+                sActiveNotifications.clear();
+                sActiveNotifications.addAll(sNotificationsManager.HistoricalNotifications());
+
+                if (sLatch.getCount() == 1) {
+                    sLatch.countDown();
+                }
+
+                RunnableManager.runNotificationsUpdated();
+            });
+            sNotificationsManager.refresh();
+        } else {
+            activity.runOnUiThread(() -> {
+                Toast.makeText(activity, "No signed-in account found!", Toast.LENGTH_SHORT).show();
+            });
         }
     }
 
@@ -210,11 +210,15 @@ public class MainActivity extends AppCompatActivity {
         private Button mAadButton;
         private Button mMsaButton;
 
-        public LoginFragment() {
+        enum LoginState {
+            LOGGED_IN_MSA,
+            LOGGED_IN_AAD,
+            LOGGED_OUT
         }
 
-        public static LoginFragment newInstance() {
-            return new LoginFragment();
+        private LoginState mState = LoginState.LOGGED_OUT;
+
+        public LoginFragment() {
         }
 
         @Override
@@ -222,14 +226,15 @@ public class MainActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_login, container, false);
 
             mAadButton = rootView.findViewById(R.id.login_aad_button);
-            mAadButton.setOnClickListener(view -> mConnectedDevicesManager.signInAadAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
+            mAadButton.setOnClickListener(view -> sConnectedDevicesManager.signInAadAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
                 if ((throwable == null) && (success)) {
                     if (getLoginState() != LoginState.LOGGED_IN_AAD) {
                         getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_IN_AAD));
-                        MainActivity.setupChannel(getActivity());
+                        setupNotificationsManager(getActivity());
                     } else {
                         getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_OUT));
-                        mConnectedDevicesManager.logout(getActivity());
+                        sConnectedDevicesManager.logout(getActivity());
+                        sNotificationsManager = null;
                     }
                 } else {
                     Log.d(TAG, "AAD login failed!");
@@ -237,14 +242,15 @@ public class MainActivity extends AppCompatActivity {
             }));
 
             mMsaButton = rootView.findViewById(R.id.login_msa_button);
-            mMsaButton.setOnClickListener(view -> mConnectedDevicesManager.signInMsaAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
+            mMsaButton.setOnClickListener(view -> sConnectedDevicesManager.signInMsaAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
                 if ((throwable == null) && (success)) {
                     if (getLoginState() != LoginState.LOGGED_IN_AAD) {
                         getActivity().runOnUiThread(()-> updateView(LoginState.LOGGED_IN_MSA));
-                        MainActivity.setupChannel(getActivity());
+                        setupNotificationsManager(getActivity());
                     } else {
                         getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_OUT));
-                        mConnectedDevicesManager.logout(getActivity());
+                        sConnectedDevicesManager.logout(getActivity());
+                        sNotificationsManager = null;
                     }
                 }
                 else {
@@ -252,9 +258,24 @@ public class MainActivity extends AppCompatActivity {
                 }
             }));
 
-            updateView(getLoginState());
+            LoginState currentState = LoginState.LOGGED_OUT;
+            if (sConnectedDevicesManager.getSignedInAccount() != null) {
+                currentState = sConnectedDevicesManager.getSignedInAccount().getAccount().getType() == ConnectedDevicesAccountType.AAD ? LoginState.LOGGED_IN_AAD : LoginState.LOGGED_IN_MSA;
+                setupNotificationsManager(getActivity());
+            }
+            updateView(currentState);
 
             return rootView;
+        }
+
+        synchronized LoginState getLoginState()
+        {
+            return mState;
+        }
+
+        synchronized void updateLoginState(LoginState state)
+        {
+            mState = state;
         }
 
         void updateView(LoginState state) {
@@ -281,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static class NotificationArrayAdapter extends ArrayAdapter<UserNotification> {
+    static class NotificationArrayAdapter extends ArrayAdapter<UserNotification> {
         private final Activity mActivity;
 
         public NotificationArrayAdapter(Context context, List<UserNotification> items, Activity activity) {
@@ -291,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            final UserNotification notification = sNotifications.get(position);
+            final UserNotification notification = sActiveNotifications.get(position);
 
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.notifications_list_item, parent, false);
@@ -301,43 +322,32 @@ public class MainActivity extends AppCompatActivity {
             idView.setText(notification.getId());
 
             TextView textView = convertView.findViewById(R.id.notification_text);
-            String content = notification.getContent();
-            textView.setText(content);
+            textView.setText(notification.getContent());
 
             TextView userActionStateView = convertView.findViewById(R.id.notification_useractionstate);
-            userActionStateView.setText((notification.getUserActionState() == UserNotificationUserActionState.NO_INTERACTION)
-                    ? "NO_INTERACTION" : "ACTIVATED");
+            userActionStateView.setText(notification.getUserActionState().toString());
 
             final Button readButton = convertView.findViewById(R.id.notification_read);
             if (notification.getReadState() == UserNotificationReadState.UNREAD) {
+                idView.setTextColor(Color.GREEN);
                 readButton.setEnabled(true);
                 readButton.setOnClickListener(view -> {
                     readButton.setEnabled(false);
-                    notification.setReadState(UserNotificationReadState.READ);
-                    notification.saveAsync().whenCompleteAsync((userNotificationUpdateResult, throwable) -> {
-                        if (throwable == null && userNotificationUpdateResult != null && userNotificationUpdateResult.getSucceeded()) {
-                            Log.d(TAG, "Successfully marked the notification as read");
-                        }
-                    });
+                    sNotificationsManager.markRead(notification);
                 });
             } else {
+                idView.setTextColor(Color.RED);
                 readButton.setEnabled(false);
             }
 
             final Button deleteButton = convertView.findViewById(R.id.notification_delete);
             deleteButton.setOnClickListener(view -> {
-                sChannel.deleteUserNotificationAsync(notification.getId()).whenCompleteAsync((userNotificationUpdateResult, throwable) -> {
-                    if (throwable == null && userNotificationUpdateResult != null && userNotificationUpdateResult.getSucceeded()) {
-                        Log.d(TAG, "Successfully deleted the notification");
-                    }
-                });
+                sNotificationsManager.delete(notification);
             });
 
             if (notification.getUserActionState() == UserNotificationUserActionState.NO_INTERACTION) {
                 convertView.setOnClickListener(view -> {
-                    clearNotification(mActivity, notification.getId());
-                    notification.setUserActionState(UserNotificationUserActionState.ACTIVATED);
-                    notification.saveAsync();
+                    sNotificationsManager.activate(notification);
                 });
             } else {
                 convertView.setOnClickListener(null);
@@ -353,24 +363,15 @@ public class MainActivity extends AppCompatActivity {
         public NotificationsFragment() {
         }
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static NotificationsFragment newInstance() {
-            return new NotificationsFragment();
-        }
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            mNotificationArrayAdapter = new NotificationArrayAdapter(getContext(), sNotifications, getActivity());
-            RunnableManager.setNotificationsUpdated(() -> {
-                if (getLoginState() != LoginState.LOGGED_OUT) {
-                    Toast.makeText(getContext(), "Got a new notification update!", Toast.LENGTH_SHORT).show();
-                }
+            mNotificationArrayAdapter = new NotificationArrayAdapter(getContext(), sActiveNotifications, getActivity());
 
-                mNotificationArrayAdapter.notifyDataSetChanged();
+            RunnableManager.setNotificationsUpdated(() -> {
+                getActivity().runOnUiThread(() -> {
+                    mNotificationArrayAdapter.notifyDataSetChanged();
+                });
             });
 
             View rootView = inflater.inflate(R.layout.fragment_notifications, container, false);
@@ -389,10 +390,6 @@ public class MainActivity extends AppCompatActivity {
         boolean mStopReading = false;
 
         public LogFragment() {}
-
-        public static LogFragment newInstance() {
-            return new LogFragment();
-        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -469,7 +466,7 @@ public class MainActivity extends AppCompatActivity {
         private NotificationsFragment mNotificationFragment;
         private LogFragment mLogFragment;
 
-        SectionsPagerAdapter(FragmentManager fm) {
+        public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -479,19 +476,19 @@ public class MainActivity extends AppCompatActivity {
             {
                 case 0:
                     if (mLoginFragment == null) {
-                        mLoginFragment = LoginFragment.newInstance();
+                        mLoginFragment = new LoginFragment();
                     }
 
                     return mLoginFragment;
                 case 1:
                     if (mNotificationFragment == null) {
-                        mNotificationFragment = NotificationsFragment.newInstance();
+                        mNotificationFragment = new NotificationsFragment();
                     }
 
                     return mNotificationFragment;
                 case 2:
                     if  (mLogFragment == null) {
-                        mLogFragment = LogFragment.newInstance();
+                        mLogFragment = new LogFragment();
                     }
 
                     return mLogFragment;
@@ -506,81 +503,4 @@ public class MainActivity extends AppCompatActivity {
             return 3;
         }
     }
-
-    static void handleNotifications(final List<UserNotification> userNotifications, final Activity activity) {
-        activity.runOnUiThread(() -> {
-            synchronized (sNotifications) {
-                for (final UserNotification notification : userNotifications) {
-                    for (int i = 0; i < sNotifications.size(); i++) {
-                        if (sNotifications.get(i).getId().equals(notification.getId())) {
-                            sNotifications.remove(i);
-                            break;
-                        }
-                    }
-
-                    if (notification.getStatus() == UserNotificationStatus.ACTIVE) {
-                        sNotifications.add(0, notification);
-
-                        if (notification.getUserActionState() == UserNotificationUserActionState.NO_INTERACTION && notification.getReadState() == UserNotificationReadState.UNREAD) {
-                            addNotification(activity, notification.getContent(), notification.getId());
-                        } else {
-                            clearNotification(activity, notification.getId());
-                        }
-                    } else {
-                        clearNotification(activity, notification.getId());
-                    }
-                }
-
-                if (RunnableManager.getNotificationsUpdated() != null) {
-                    RunnableManager.getNotificationsUpdated().run();
-                }
-            }
-        });
-    }
-
-    static void setupChannel(final Activity activity) {
-        UserDataFeed dataFeed = UserDataFeed.getForAccount(mConnectedDevicesManager.getSignedInAccount().getAccount(), mConnectedDevicesManager.getPlatform(), Secrets.APP_HOST_NAME);
-        dataFeed.subscribeToSyncScopesAsync(Arrays.asList(UserNotificationChannel.getSyncScope())).whenCompleteAsync((success, throwable) -> {
-            if (success) {
-                dataFeed.startSync();
-
-                sChannel = new UserNotificationChannel(dataFeed);
-
-                sReader = sChannel.createReader();
-                sReader.readBatchAsync(Long.MAX_VALUE).thenAccept(userNotifications -> {
-                    handleNotifications(userNotifications, activity);
-                    if (sLatch.getCount() == 1) {
-                        sLatch.countDown();
-                    }
-                });
-                sReader.dataChanged().subscribe((userNotificationReader, aVoid) -> userNotificationReader.readBatchAsync(Long.MAX_VALUE).thenAccept(userNotifications -> {
-                    handleNotifications(userNotifications, activity);
-                }));
-            } else {
-                activity.runOnUiThread(() -> Toast.makeText(activity.getApplicationContext(), "Failed to setup USerDataFeed for notifications", Toast.LENGTH_SHORT));
-            }
-        });
-    }
-
-    static void addNotification(Activity activity, String message, String notificationId) {
-        Intent intent = new Intent(activity, MainActivity.class);
-        intent.putExtra(NOTIFICATION_ID, notificationId);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(activity, MainActivity.CHANNEL_NAME)
-                .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setContentTitle("New MSGraph Notification!")
-                .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent);
-
-        NotificationManagerCompat.from(activity).notify(notificationId.hashCode(), builder.build());
-    }
-
-    static void clearNotification(Activity activity, String notificationId) {
-        ((NotificationManager)activity.getSystemService(NOTIFICATION_SERVICE)).cancel(notificationId.hashCode());
-    }
-
 }

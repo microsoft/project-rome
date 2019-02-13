@@ -35,8 +35,8 @@
             android:id="@+id/notification_read"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/read" />
-
+            android:text="@string/read"
+            android:enabled="false"/>
         <Button
             android:id="@+id/notification_delete"
             android:layout_width="wrap_content"

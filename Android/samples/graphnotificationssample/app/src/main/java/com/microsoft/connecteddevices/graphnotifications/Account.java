@@ -38,6 +38,7 @@ public class Account {
     private ConnectedDevicesAccount mAccount;
     private AccountRegistrationState mState;
     private ConnectedDevicesPlatform mPlatform;
+    private UserNotificationsManager mNotificationsManager;
     // endregion
 
     // region Constructors
@@ -89,6 +90,7 @@ public class Account {
         switch (mState) {
             // Scenario 1
             case IN_APP_CACHE_AND_SDK_CACHE:
+                mNotificationsManager = new UserNotificationsManager(context, mAccount, mPlatform);
                 return registerAccountWithSdkAsync();
             // Scenario 2
             case IN_APP_CACHE_ONLY: {
@@ -102,6 +104,7 @@ public class Account {
 
                     // Set the registration state of this account as in both app and sdk cache
                     mState = AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE;
+                    mNotificationsManager = new UserNotificationsManager(context, mAccount, mPlatform);
                     return registerAccountWithSdkAsync();
                 });
             }
@@ -140,7 +143,7 @@ public class Account {
                         Log.i(TAG, "Successfully performed notification registration for account:" + mAccount.getId());
                     }
 
-                    return AsyncOperation.completedFuture(success);
+                    return mNotificationsManager.registerForAccountAsync();
                 });
         });
     }
@@ -165,7 +168,6 @@ public class Account {
 
     /**
      * Get the ConnectedDevicesAccount
-     * @return account
      */
     public ConnectedDevicesAccount getAccount() {
         return mAccount;
@@ -173,11 +175,15 @@ public class Account {
 
     /**
      * Get the AccountRegistrationState
-     * @return account
      */
     public AccountRegistrationState getRegistrationState() {
         return mState;
     }
+
+    /**
+     * Get the UserNotificationsManager
+     */
+    public UserNotificationsManager getNotificationsManager() { return mNotificationsManager; }
     // endregion
 
     // region private instance methods
