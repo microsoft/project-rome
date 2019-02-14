@@ -147,6 +147,30 @@ public class UserNotificationsManager {
         }
     }
 
+    /**
+     * Replacement for the java.util.function.Predicate to support pre Java 8 / API 24.
+     */
+    interface Predicate<T> {
+        public boolean test(T t);
+    }
+
+    /**
+     * Replacement for list.removeIf to support pre Java 8 / API 24.
+     * @param list List to search
+     * @param predicate Predicate to use against the given list
+     * @return True if removed item matching the given predicate, false if none found
+     */
+    private static <T> boolean removeIf(List<T> list, Predicate<? super T> predicate) {
+        for (T item : list) {
+            if (predicate.test(item)) {
+                list.remove(item);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void readFromCache(final UserNotificationReader reader)
     {
         Log.d(TAG, "Read notifications from cache");
@@ -154,7 +178,7 @@ public class UserNotificationsManager {
             synchronized (this) {
                 for (final UserNotification notification : notifications) {
                     if (notification.getStatus() == UserNotificationStatus.ACTIVE) {
-                        mNewNotifications.removeIf(item -> notification.getId().equals(item.getId()));
+                        removeIf(mNewNotifications, item -> notification.getId().equals(item.getId()));
 
                         if (notification.getUserActionState() == UserNotificationUserActionState.NO_INTERACTION) {
                             mNewNotifications.add(notification);
@@ -166,11 +190,11 @@ public class UserNotificationsManager {
                             clearNotification(mContext.getApplicationContext(), notification.getId());
                         }
 
-                        mHistoricalNotifications.removeIf(item -> notification.getId().equals(item.getId()));
+                        removeIf(mHistoricalNotifications, item -> notification.getId().equals(item.getId()));
                         mHistoricalNotifications.add(0, notification);
                     } else {
-                        mNewNotifications.removeIf(item -> notification.getId().equals(item.getId()));
-                        mHistoricalNotifications.removeIf(item -> notification.getId().equals(item.getId()));
+                        removeIf(mNewNotifications, item -> notification.getId().equals(item.getId()));
+                        removeIf(mHistoricalNotifications, item -> notification.getId().equals(item.getId()));
                         clearNotification(mContext.getApplicationContext(), notification.getId());
                     }
                 }

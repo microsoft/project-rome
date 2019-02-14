@@ -223,7 +223,7 @@ public class ConnectedDevicesManager {
 
         // The two cases of receiving a new notification token are:
         // 1. A notification registration is asked for and now it is available. In this case there is a pending promise that was made
-        //    at the time of requesting the information. It now needs completed.
+        //    at the time of requesting the information. It now needs to be completed.
         // 2. The account is already registered but for whatever reason the registration changes (GCM/FCM gives the app a new token)
         //
         // In order to most cleanly handle both cases set the new notification information and then trigger a re registration of all accounts
