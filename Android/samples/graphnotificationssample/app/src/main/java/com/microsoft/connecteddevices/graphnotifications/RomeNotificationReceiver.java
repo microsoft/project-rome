@@ -13,59 +13,37 @@ import android.util.Log;
 
 import com.microsoft.connecteddevices.AsyncOperation;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistration;
-import com.microsoft.connecteddevices.ConnectedDevicesNotificationType;
-import com.microsoft.connecteddevices.EventListener;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RomeNotificationReceiver extends BroadcastReceiver {
     private static final String TAG = RomeNotificationReceiver.class.getName();
-    private Map<Long, EventListener<RomeNotificationReceiver, ConnectedDevicesNotificationRegistration>> mListenerMap;
-    private Long mNextListenerId = 0L;
-    private ConnectedDevicesNotificationRegistration mNotificationRegistration;
-    private AsyncOperation<ConnectedDevicesNotificationRegistration> mAsync;
-    private Context mContext;
     private static final String RegistrationComplete = "registrationComplete";
 
-    RomeNotificationReceiver(Context context) {
-        mListenerMap = new HashMap<>();
-        mContext = context;
+    private static AsyncOperation<ConnectedDevicesNotificationRegistration> sNotificationRegistrationOperation;
 
+    private Context mContext;
+
+    RomeNotificationReceiver(Context context) {
+        mContext = context;
         registerFCMBroadcastReceiver();
     }
 
-    /**
-     * This function returns Notification Registration after it completes async operation.
-     * @return Notification Registration.
-     */
-    public synchronized AsyncOperation<ConnectedDevicesNotificationRegistration> getNotificationRegistrationAsync() {
-        if (mAsync == null) {
-            mAsync = new AsyncOperation<>();
+    public static synchronized void setNotificationRegistration(ConnectedDevicesNotificationRegistration registration) {
+        // Create the registration operation if it has not been requested already
+        if (sNotificationRegistrationOperation == null) {
+            sNotificationRegistrationOperation = new AsyncOperation<>();
         }
-        if (mNotificationRegistration != null) {
-            mAsync.complete(mNotificationRegistration);
-        }
-        return mAsync;
+
+        // Complete the operation with the registration, to be fetched later
+        sNotificationRegistrationOperation.complete(registration);
     }
 
-    /**
-     * This function adds new event listener to notification provider.
-     * @param  listener  the EventListener.
-     * @return id        next event listener id.
-     */
-    public synchronized long addNotificationProviderChangedListener(
-        EventListener<RomeNotificationReceiver, ConnectedDevicesNotificationRegistration> listener) {
-        mListenerMap.put(mNextListenerId, listener);
-        return mNextListenerId++;
-    }
+    public static synchronized AsyncOperation<ConnectedDevicesNotificationRegistration> getNotificationRegistrationAsync() {
+        // Create the registration operation if it the registration has not been received yet
+        if (sNotificationRegistrationOperation == null) {
+            sNotificationRegistrationOperation = new AsyncOperation<>();
+        }
 
-    /**
-     * This function removes the event listener.
-     * @param  id  the id corresponds to the event listener that would be removed.
-     */
-    public synchronized void removeNotificationProviderChangedListener(long id) {
-        mListenerMap.remove(id);
+        return sNotificationRegistrationOperation;
     }
 
     /**
@@ -75,47 +53,30 @@ public class RomeNotificationReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        String token = null;
         String action = intent.getAction();
+        Log.i(TAG, "Broadcast received: " + action);
 
-        Log.i("Receiver", "Broadcast received: " + action);
-
+        String token = null;
         if (action.equals(RegistrationComplete)) {
             token = intent.getExtras().getString("TOKEN");
         }
 
-        if (token == null) {
-            Log.e("GraphNotifications",
-                "Got notification that FCM had been registered, but token is null. Was app ID set in FCMRegistrationIntentService?");
+        if (token == null || token.isEmpty()) {
+            Log.e(TAG, "RomeNotificationReceiver gained a token however it is null/empty, check FCMRegistrationIntentService");
+        } else {
+            Log.i(TAG, "RomeNotificationReceiver gained a token: " + token);
+            ConnectedDevicesManager.getConnectedDevicesManager(context).setNotificationRegistration(token);
         }
 
-        synchronized (this) {
-            mNotificationRegistration = new ConnectedDevicesNotificationRegistration();
-            mNotificationRegistration.setType(ConnectedDevicesNotificationType.FCM);
-            mNotificationRegistration.setToken(token);
-            mNotificationRegistration.setAppId(Secrets.FCM_SENDER_ID);
-            mNotificationRegistration.setAppDisplayName("OneRomanApp");
-
-            if (mAsync == null) {
-                mAsync = new AsyncOperation<>();
-            }
-            mAsync.complete(mNotificationRegistration);
-            mAsync = new AsyncOperation<>();
-
-            for (EventListener<RomeNotificationReceiver, ConnectedDevicesNotificationRegistration> event : mListenerMap.values()) {
-                event.onEvent(this, mNotificationRegistration);
-            }
-
-            Log.e(TAG, "Successfully completed FCM registration");
-        }
+        mContext.startService(new Intent(mContext, FCMListenerService.class));
     }
+
     /**
         * This function is called to start FCM registration service.
         * Start FCMRegistrationIntentService to register with FCM.
         */
-    private void startService() {
-        Log.e(TAG, "Starting FCMListenerService");
-        Intent registrationIntentService = new Intent(mContext, FCMListenerService.class);
+    private void startFCMRegistrationIntentService() {
+        Intent registrationIntentService = new Intent(mContext, FCMRegistrationIntentService.class);
         mContext.startService(registrationIntentService);
     }
 
@@ -124,6 +85,6 @@ public class RomeNotificationReceiver extends BroadcastReceiver {
      */
     private void registerFCMBroadcastReceiver() {
         LocalBroadcastManager.getInstance(mContext).registerReceiver(this, new IntentFilter(RegistrationComplete));
-        startService();
+        startFCMRegistrationIntentService();
     }
 }

@@ -8,5 +8,6 @@
     <string name="login_aad">Login with AAD</string>
     <string name="login_msa">Login with MSA</string>
     <string name="logout">Log Out</string>
-    <string name="read">Read</string>
+    <string name="read">Mark Read</string>
+    <string name="delete">Delete</string>
 </resources>
