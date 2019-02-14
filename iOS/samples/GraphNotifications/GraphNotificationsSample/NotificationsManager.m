@@ -1,8 +1,11 @@
+//
+//  Copyright (c) Microsoft Corporation. All rights reserved.
+//
+
 #import "NotificationsManager.h"
 #import "Secrets.h"
 #import "AppDelegate.h"
 #import <UserNotifications/UserNotifications.h>
-
 
 static NotificationsManager* s_manager;
 

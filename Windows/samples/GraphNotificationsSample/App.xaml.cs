@@ -81,7 +81,7 @@ namespace SDKTemplate
 
             if (ConnectedDevicesManager == null)
             {
-                Logger.Instance.LogMessage($"Setup AccountsProvider and NotificationsProvider");
+                Logger.Instance.LogMessage($"Setup ConnectedDevicesManager");
                 ConnectedDevicesManager = new ConnectedDevicesManager();
             }
 
@@ -165,16 +165,14 @@ namespace SDKTemplate
             {
                 var rawNotification = args.TaskInstance.TriggerDetails as RawNotification;
                 Logger.Instance.LogMessage($"RawNotification received {rawNotification.Content}");
+
+                if (ConnectedDevicesManager == null)
+                {
+                    Logger.Instance.LogMessage($"Setup ConnectedDevicesManager");
+                    ConnectedDevicesManager = new ConnectedDevicesManager();
+                }
+
                 await ConnectedDevicesManager.ReceiveNotificationAsync(rawNotification.Content);
-
-                // HACK: Crack the push body to extract the notificationId
-                // var result = JsonConvert.DeserializeObject<RawNotificationPayload>(rawNotification.Content);
-                // var notificationId = result.activities != null && result.activities.Count > 0 ? result.activities[0].id : "Graph Notifications";
-                // var toast = ConnectedDevicesManager.BuildToastNotification(notificationId, "New notification");
-                // var toastNotifier = Windows.UI.Notifications.ToastNotificationManager.CreateToastNotifier();
-                // toastNotifier.Show(toast);
-
-                await Task.Delay(TimeSpan.FromSeconds(15));
             }
 
             Logger.Instance.LogMessage($"Task completed");

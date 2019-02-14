@@ -1,9 +1,5 @@
 //
-//  AppDelegate.h
-//  GraphNotifications
-//
-//  Created by Allen Ballway on 8/23/18.
-//  Copyright © 2018 Microsoft. All rights reserved.
+//  Copyright (c) Microsoft Corporation. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
