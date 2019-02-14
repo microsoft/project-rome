@@ -15,13 +15,13 @@ import java.io.IOException;
 
 public class FCMRegistrationIntentService extends IntentService {
     private static final String TAG = FCMRegistrationIntentService.class.getName();
-    private static final String RegistrationComplete = "registrationComplete";
+    private static final String REGISTRATION_COMPLETE = "registrationComplete";
     private static final String TOKEN = "TOKEN";
-    private static final String IntentServiceName = "FCMRegIntentService";
+    private static final String INTENT_NAME = "FCMRegIntentService";
     private static final String FCM_SENDER_ID = Secrets.FCM_SENDER_ID;
 
     public FCMRegistrationIntentService() {
-        super(IntentServiceName);
+        super(INTENT_NAME);
     }
 
     public FCMRegistrationIntentService(String name) {
@@ -41,7 +41,7 @@ public class FCMRegistrationIntentService extends IntentService {
                 Log.e(TAG, "Failed to get FCM registration token " + e.getMessage());
             }
 
-            Intent registrationComplete = new Intent(RegistrationComplete);
+            Intent registrationComplete = new Intent(REGISTRATION_COMPLETE);
             registrationComplete.putExtra(TOKEN, token);
             LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
         }

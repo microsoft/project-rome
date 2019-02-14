@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class FCMListenerService extends FirebaseMessagingService {
     private static final String TAG = "FCMListenerService";
-    private static final String RegistrationComplete = "registrationComplete";
+    private static final String REGISTRATION_COMPLETE = "registrationComplete";
     private static final String TOKEN = "TOKEN";
 
     private static String sPreviousToken = "";
@@ -60,7 +60,7 @@ public class FCMListenerService extends FirebaseMessagingService {
     public void onNewToken(String token) {
         if (token != null && !token.equals(sPreviousToken)) {
             sPreviousToken = token;
-            Intent registrationComplete = new Intent(RegistrationComplete);
+            Intent registrationComplete = new Intent(REGISTRATION_COMPLETE);
             registrationComplete.putExtra(TOKEN, token);
             LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
         }
