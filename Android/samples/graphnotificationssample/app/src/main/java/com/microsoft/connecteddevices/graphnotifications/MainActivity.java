@@ -34,6 +34,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.microsoft.connecteddevices.ConnectedDevicesAccount;
 import com.microsoft.connecteddevices.ConnectedDevicesAccountType;
 import com.microsoft.connecteddevices.userdata.UserDataFeed;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotification;
@@ -133,7 +134,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Request a feed sync, all channels will get updated
         if (id == R.id.action_refresh) {
-            sNotificationsManager.refresh();
+            if (sNotificationsManager != null){
+                sNotificationsManager.refresh();
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -146,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void activateNotification(String id) {
-        synchronized (sNotificationsManager) {
+        if (sNotificationsManager != null){
             boolean found = false;
             for (UserNotification notification : sActiveNotifications) {
                 if (notification.getId().equals(id)) {
@@ -226,37 +229,45 @@ public class MainActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_login, container, false);
 
             mAadButton = rootView.findViewById(R.id.login_aad_button);
-            mAadButton.setOnClickListener(view -> sConnectedDevicesManager.signInAadAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
-                if ((throwable == null) && (success)) {
-                    if (getLoginState() != LoginState.LOGGED_IN_AAD) {
-                        getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_IN_AAD));
-                        setupNotificationsManager(getActivity());
-                    } else {
-                        getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_OUT));
-                        sConnectedDevicesManager.logout(getActivity());
-                        sNotificationsManager = null;
-                    }
+            mAadButton.setOnClickListener(view -> {
+                if (getLoginState() != LoginState.LOGGED_IN_AAD) {
+                    sConnectedDevicesManager.signInAadAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
+                        if ((throwable == null) && (success)) {
+                            getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_IN_AAD));
+                            setupNotificationsManager(getActivity());
+
+                        } else {
+                            Log.e(TAG, "AAD login failed!");
+                        }
+                    });
                 } else {
-                    Log.d(TAG, "AAD login failed!");
+                    getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_OUT));
+                    sConnectedDevicesManager.logout(getActivity());
+                    sNotificationsManager = null;
+                    sActiveNotifications.clear();
+                    RunnableManager.runNotificationsUpdated();
                 }
-            }));
+            });
 
             mMsaButton = rootView.findViewById(R.id.login_msa_button);
-            mMsaButton.setOnClickListener(view -> sConnectedDevicesManager.signInMsaAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
-                if ((throwable == null) && (success)) {
-                    if (getLoginState() != LoginState.LOGGED_IN_AAD) {
-                        getActivity().runOnUiThread(()-> updateView(LoginState.LOGGED_IN_MSA));
-                        setupNotificationsManager(getActivity());
-                    } else {
-                        getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_OUT));
-                        sConnectedDevicesManager.logout(getActivity());
-                        sNotificationsManager = null;
-                    }
+            mMsaButton.setOnClickListener(view -> {
+                if (getLoginState() != LoginState.LOGGED_IN_MSA) {
+                    sConnectedDevicesManager.signInMsaAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
+                        if ((throwable == null) && (success)) {
+                            getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_IN_MSA));
+                            setupNotificationsManager(getActivity());
+                        } else {
+                            Log.e(TAG, "MSA login failed!");
+                        }
+                    });
+                } else {
+                    getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_OUT));
+                    sConnectedDevicesManager.logout(getActivity());
+                    sNotificationsManager = null;
+                    sActiveNotifications.clear();
+                    RunnableManager.runNotificationsUpdated();
                 }
-                else {
-                    Log.d(TAG, "MSA login failed!");
-                }
-            }));
+            });
 
             LoginState currentState = LoginState.LOGGED_OUT;
             if (sConnectedDevicesManager.getSignedInAccount() != null) {
@@ -318,13 +329,13 @@ public class MainActivity extends AppCompatActivity {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.notifications_list_item, parent, false);
             }
 
-            TextView idView = convertView.findViewById(R.id.notification_id);
+            final TextView idView = convertView.findViewById(R.id.notification_id);
             idView.setText(notification.getId());
 
-            TextView textView = convertView.findViewById(R.id.notification_text);
-            textView.setText(notification.getContent());
+            final TextView contentView = convertView.findViewById(R.id.notification_content);
+            contentView.setText(notification.getContent());
 
-            TextView userActionStateView = convertView.findViewById(R.id.notification_useractionstate);
+            final TextView userActionStateView = convertView.findViewById(R.id.notification_useractionstate);
             userActionStateView.setText(notification.getUserActionState().toString());
 
             final Button readButton = convertView.findViewById(R.id.notification_read);

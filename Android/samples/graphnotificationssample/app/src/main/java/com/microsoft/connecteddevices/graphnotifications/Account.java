@@ -116,6 +116,7 @@ public class Account {
                 return AsyncOperation.completedFuture(false);
             default:
                 // This account could not be prepared
+                Log.e(TAG, "Failed to prepare account " + mAccount.getId() + " due to unknown state!");
                 return AsyncOperation.completedFuture(false);
         }
     }
@@ -136,11 +137,11 @@ public class Account {
         return RomeNotificationReceiver.getNotificationRegistrationAsync().thenComposeAsync((ConnectedDevicesNotificationRegistration notificationRegistration) -> {
             // Perform the registration using the NotificationRegistration
             return mPlatform.getNotificationRegistrationManager().registerForAccountAsync(mAccount, notificationRegistration)
-                .thenComposeAsync((Boolean success) -> {
-                    if (!success) {
-                        Log.e(TAG, "Failed to perform notification registration for account: " + mAccount.getId());
+                .thenComposeAsync((success) -> {
+                    if (success) {
+                        Log.i(TAG, "Successfully registered account " + mAccount.getId() + " for cloud notifications");
                     } else {
-                        Log.i(TAG, "Successfully performed notification registration for account:" + mAccount.getId());
+                        Log.e(TAG, "Failed to register account " + mAccount.getId() + " for cloud notifications!");
                     }
 
                     return mNotificationsManager.registerForAccountAsync();

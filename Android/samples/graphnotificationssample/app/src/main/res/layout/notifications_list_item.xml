@@ -12,7 +12,7 @@
         android:text="" />
 
     <TextView
-        android:id="@+id/notification_text"
+        android:id="@+id/notification_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
