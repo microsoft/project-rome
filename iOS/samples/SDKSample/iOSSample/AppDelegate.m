@@ -85,7 +85,7 @@
         // may be for an account that isn't fully set up yet. This is more likely to happen when the app is launched as a result of the notification so there
         // isn't much time to start the platform before needing to process the notification.
         [AnyPromise promiseWithAdapterBlock:^(PMKAdapter _Nonnull adapter) {
-            [self.platform processNotificationAsync:notification completion:^(NSError* error)
+            [_platformManager.platform processNotificationAsync:notification completion:^(NSError* error)
             {
             adapter(nil, error);
             }];
