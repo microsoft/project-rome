@@ -12,6 +12,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import com.microsoft.connecteddevices.ConnectedDevicesNotification;
 import com.microsoft.connecteddevices.ConnectedDevicesPlatform;
 
 import java.util.Map;
@@ -48,11 +49,18 @@ public class FCMListenerService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage message) {
         Log.d(TAG, "FCM notification received from: " + message.getFrom());
         Map data = message.getData();
-        try {
-            ConnectedDevicesPlatform platform = ConnectedDevicesManager.getConnectedDevicesManager(getApplicationContext()).getPlatform();
-            platform.processNotification(data);
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to process FCM notification" + e.getMessage());
+        ConnectedDevicesNotification notification = ConnectedDevicesNotification.tryParse(data);
+
+        if (notification != null) {
+            try {
+                ConnectedDevicesPlatform platform = ConnectedDevicesManager.getConnectedDevicesManager(getApplicationContext()).getPlatform();
+
+                // NOTE: it may be useful to attach completion to this async in order to know when the notification is done being processed.
+                // This would be a good time to stop a background service or otherwise cleanup.
+                platform.processNotificationAsync(notification);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to process FCM notification" + e.getMessage());
+            }
         }
     }
 

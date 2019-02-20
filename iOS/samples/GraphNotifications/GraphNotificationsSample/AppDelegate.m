@@ -105,7 +105,15 @@ void uncaughtExceptionHandler(NSException* uncaughtException)
     else
     {
         // app run in background and received the push notification, app is launched by user tapping the alert view
-        [self.platform processNotification:userInfo];
+        MCDConnectedDevicesNotification* notification = [MCDConnectedDevicesNotification tryParse:userInfo];
+        if (notification != nil)
+        {
+            [self.platform processNotificationAsync:notification completion:^(NSError* error __unused)
+            {
+                // NOTE: it may be useful to attach completion to this async in order to know when the notification is done being processed.
+                // This would be a good time to stop a background service or otherwise cleanup.
+            }];
+        }
     }
     return YES;
 }
@@ -182,10 +190,14 @@ didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings*)notifi
     [userInfo enumerateKeysAndObjectsUsingBlock:^(
                                                   id _Nonnull key, id _Nonnull obj, __unused BOOL* _Nonnull stop) { NSLog(@"%@: %@", key, obj); }];
 
-    MCDConnectedDevicesProcessNotificationOperation* operation = [self.platform processNotification:userInfo];
-    if (!operation.connectedDevicesNotification)
+    MCDConnectedDevicesNotification* notification = [MCDConnectedDevicesNotification tryParse:userInfo];
+    if (notification != nil)
     {
-        NSLog(@"GraphNotifications Received notification was not for Rome");
+        [self.platform processNotificationAsync:notification completion:^(NSError* error __unused)
+        {
+            // NOTE: it may be useful to attach completion to this async in order to know when the notification is done being processed.
+            // This would be a good time to stop a background service or otherwise cleanup.
+        }];
     }
 }
 

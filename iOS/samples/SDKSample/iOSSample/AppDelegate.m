@@ -35,7 +35,9 @@
         // Once all accounts that are in good standing have their subcomponents initialized, its safe to pump the notification information into the platform. Before that point, a notification
         // may be for an account that isn't fully set up yet. This is more likely to happen when the app is launched as a result of the notification so there
         // isn't much time to start the platform before needing to process the notification.
-        [_platformManager.platform processNotification:notificationInfo];
+        [_platformManager.platform processNotificationAsync:notificationInfo completion:^(NSError* error __unused){
+
+        }];
     }
 
     return YES;
@@ -75,20 +77,26 @@
     NSLog(@"Received remote notification...");
     [notificationInfo enumerateKeysAndObjectsUsingBlock:^(
         id _Nonnull key, id _Nonnull obj, __unused BOOL* _Nonnull stop) { NSLog(@"%@: %@", key, obj); }];
-    
-    // Once all accounts that are in good standing have their subcomponents initialized, its safe to pump the notification information into the platform. Before that point, a notification
-    // may be for an account that isn't fully set up yet. This is more likely to happen when the app is launched as a result of the notification so there
-    // isn't much time to start the platform before needing to process the notification.
-    MCDConnectedDevicesProcessNotificationOperation* processOperation = [_platformManager.platform processNotification:notificationInfo];
-    [AnyPromise promiseWithAdapterBlock:^(PMKAdapter _Nonnull adapter) {
-        [processOperation waitForCompletionAsync:^(NSError* error){
+
+    MCDConnectedDevicesNotification* notification = [MCDConnectedDevicesNotification tryParse:notificationInfo];
+    if (notification != nil)
+    {
+        // Once all accounts that are in good standing have their subcomponents initialized, its safe to pump the notification information into the platform. Before that point, a notification
+        // may be for an account that isn't fully set up yet. This is more likely to happen when the app is launched as a result of the notification so there
+        // isn't much time to start the platform before needing to process the notification.
+        [AnyPromise promiseWithAdapterBlock:^(PMKAdapter _Nonnull adapter) {
+            [self.platform processNotificationAsync:notification completion:^(NSError* error)
+            {
             adapter(nil, error);
-        }];
-    }].then(^{
-        completionHandler(UIBackgroundFetchResultNewData);
-    }).catch(^{
+            }];
+        }].then(^{
+            completionHandler(UIBackgroundFetchResultNewData);
+        }).catch(^{
+            completionHandler(UIBackgroundFetchResultNoData);
+        });
+    } else {
         completionHandler(UIBackgroundFetchResultNoData);
-    });
+    }
 }
 
 

@@ -249,7 +249,11 @@ namespace SDKTemplate
 
         public async Task ReceiveNotificationAsync(string content)
         {
-            await m_platform.ProcessNotification(content).WaitForCompletionAsync();
+            ConnectedDevicesNotification notification = ConnectedDevicesNotification.TryParse(content);
+            if (notification != null)
+            {
+                await m_platform.ProcessNotificationAsync(notification);
+            }
         }
 
         public async Task RefreshAsync()
