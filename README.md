@@ -2,7 +2,7 @@
 
 [Project Rome](https://developer.microsoft.com/en-us/windows/project-rome) is Microsoft's cross-device experiences platform. Project Rome frees your app from running on a specific device, enabling a cross-device, user centric experience.
 
-On this site you will find samples of Project Rome. 
+On this site you will find sample applications that showcase the features of Project Rome. 
 
 Visit the [Project Rome landing page](https://developer.microsoft.com/en-us/windows/project-rome) for more general information about Project Rome.
 
