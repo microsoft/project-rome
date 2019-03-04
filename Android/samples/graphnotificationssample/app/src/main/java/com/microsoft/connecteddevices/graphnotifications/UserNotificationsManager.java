@@ -66,10 +66,10 @@ public class UserNotificationsManager {
 
     public AsyncOperation<Boolean> registerForAccountAsync()
     {
-        return mFeed.subscribeToSyncScopesAsync(Arrays.asList(UserNotificationChannel.getSyncScope())).thenComposeAsync((success) -> {
+        return mFeed.subscribeToSyncScopesAsync(Arrays.asList(UserNotificationChannel.getSyncScope())).thenApplyAsync((success) -> {
             mFeed.startSync();
             readFromCache(mReader);
-            return AsyncOperation.completedFuture(success);
+            return success;
         });
     }
 

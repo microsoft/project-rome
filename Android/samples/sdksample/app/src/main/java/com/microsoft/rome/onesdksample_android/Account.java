@@ -12,6 +12,8 @@ import android.util.Log;
 
 import com.microsoft.connecteddevices.ConnectedDevicesAccessTokenRequest;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistration;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationResult;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationStatus;
 import com.microsoft.connecteddevices.ConnectedDevicesAccount;
 import com.microsoft.connecteddevices.ConnectedDevicesAccountManager;
 import com.microsoft.connecteddevices.ConnectedDevicesAddAccountResult;
@@ -24,6 +26,8 @@ import com.microsoft.connecteddevices.remotesystems.commanding.AppServiceProvide
 import com.microsoft.connecteddevices.remotesystems.commanding.LaunchUriProvider;
 import com.microsoft.connecteddevices.signinhelpers.SigninHelperAccount;
 import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppRegistration;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppRegistrationPublishResult;
+import com.microsoft.connecteddevices.remotesystems.commanding.RemoteSystemAppRegistrationPublishStatus;
 import com.microsoft.connecteddevices.AsyncOperation;
 import com.microsoft.connecteddevices.ConnectedDevicesAccount;
 
@@ -149,18 +153,22 @@ public class Account {
         // Grab the shared GCM/FCM notification token from this app's BroadcastReceiver
         return GcmNotificationReceiver.getNotificationRegistrationAsync().thenComposeAsync((ConnectedDevicesNotificationRegistration notificationRegistration) -> {
             // Perform the registration using the NotificationRegistration
-            return mPlatform.getNotificationRegistrationManager().registerForAccountAsync(mAccount, notificationRegistration)
-                .thenComposeAsync((Boolean success) -> {
-                    if (!success) {
+            return mPlatform.getNotificationRegistrationManager().registerAsync(mAccount, notificationRegistration)
+                .thenComposeAsync((ConnectedDevicesNotificationRegistrationResult result) -> {
+                    // It would be a good idea for apps to take a look at the different statuses here and perhaps attempt some sort of remediation.
+                    // For example, web failure may indicate that a web service was temporarily in a bad state and retries may be successful.
+                    if (result.getStatus() != ConnectedDevicesNotificationRegistrationStatus.SUCCESS) {
                         Log.e(TAG, "Failed to perform notification registration for account: " + mAccount.getId());
-                        return AsyncOperation.completedFuture(success);
+                        return AsyncOperation.completedFuture(false);
                     }
 
                     Log.i(TAG, "Successfully performed notification registration for account:" + mAccount.getId());
                     // Perform the relay SDK registration by saving the RemoteSystemAppRegistration object
-                    return mRegistration.saveAsync().thenComposeAsync((Boolean saveSuccess) -> {
-                        Log.v(TAG, "RemoteSystemHostRegistration was saved with success: " + saveSuccess);
-                        return AsyncOperation.completedFuture(saveSuccess);
+                    return mRegistration.publishAsync().thenApplyAsync((RemoteSystemAppRegistrationPublishResult publishResult) -> {
+                        // It would be a good idea for apps to take a look at the different statuses here and perhaps attempt some sort of remediation.
+                        // For example, no network may mean that the app should retry once connectivity is re-established.
+                        Log.v(TAG, "RemoteSystemHostRegistration was published with result: " + result.getStatus().toString());
+                        return publishResult.getStatus() == RemoteSystemAppRegistrationPublishStatus.SUCCESS;
                     });
                 });
         });

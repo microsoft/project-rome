@@ -12,7 +12,7 @@
 @property (strong, nonatomic) MCDConnectedDevicesPlatform* platform;
 - (void)initializePlatform;
 - (void)startPlatform;
-- (void)registerNotificationsForAccount:(MCDConnectedDevicesAccount*)account callback:(void(^)(BOOL,NSError*))callback;
+- (void)registerNotificationsForAccount:(MCDConnectedDevicesAccount*)account callback:(void(^)(MCDConnectedDevicesNotificationRegistrationResult*,NSError*))callback;
 
 
 @end

@@ -63,7 +63,7 @@ static NotificationsManager* s_manager;
                 // Don't use `setAccount:` here or we'll end up in an infinite loop :(
                 self->_account = account;
                 NSLog(@"GraphNotifications Registering notifications for account %@", account.accountId);
-                [delegate registerNotificationsForAccount:account callback:^(__unused BOOL result, __unused NSError* error)
+                [delegate registerNotificationsForAccount:account callback:^(__unused MCDConnectedDevicesNotificationRegistrationResult* result, __unused NSError* error)
                 {
                     NSLog(@"GraphNotifications Initializing UserDataFeed!");
                     MCDUserDataFeed* dataFeed;

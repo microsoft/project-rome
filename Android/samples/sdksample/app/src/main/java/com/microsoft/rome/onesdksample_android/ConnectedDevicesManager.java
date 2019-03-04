@@ -17,6 +17,8 @@ import com.microsoft.connecteddevices.ConnectedDevicesAccessTokenInvalidatedEven
 import com.microsoft.connecteddevices.ConnectedDevicesAccount;
 import com.microsoft.connecteddevices.ConnectedDevicesAccountManager;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistration;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationResult;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationStatus;
 import com.microsoft.connecteddevices.ConnectedDevicesAccountType;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationType;
 import com.microsoft.connecteddevices.ConnectedDevicesAddAccountResult;
@@ -91,7 +93,7 @@ public class ConnectedDevicesManager {
         // and remove stale accounts from the ConnectedDevicesPlatform AccountManager. The AsyncOperation associated
         // with all of this asynchronous work need not be waited on as any sub component work will be accomplished
         // in the synchronous portion of the call. If your app needs to sequence when other apps can see this app's registration
-        // (i.e. when RemoteSystemAppRegistration SaveAsync completes) then it would be useful to use the AsyncOperation returned by
+        // (i.e. when RemoteSystemAppRegistration PublishAsync completes) then it would be useful to use the AsyncOperation returned by
         // prepareAccountsAsync
         prepareAccounts(deserializedAccounts, context);
     }
@@ -162,11 +164,16 @@ public class ConnectedDevicesManager {
 
         // For each prepared account, register for notifications
         for (Account account : mAccounts) {
-            registrationManager.registerForAccountAsync(account.getAccount(), registration)
-                .whenCompleteAsync((Boolean success, Throwable throwable) -> {
+            registrationManager.registerAsync(account.getAccount(), registration)
+                .whenCompleteAsync((ConnectedDevicesNotificationRegistrationResult result, Throwable throwable) -> {
+                    // It would be a good idea for apps to take a look at the different statuses here and perhaps attempt some sort of remediation.
+                    // For example, web failure may indicate that a web service was temporarily in a bad state and retries may be successful.
+                    // NOTE: this approach was chosen rather than using exceptions to help separate "expected" / "retry-able" errors from real 
+                    // exceptions. This is similar to the checked vs unchecked exception disctinction except that Async operations don't support
+                    // checked exceptions.
                     if (throwable != null) {
                         Log.e(TAG, "RegistrationManager registration encountered " + throwable);
-                    } else if (!success) {
+                    } else if (result.getStatus() != ConnectedDevicesNotificationRegistrationStatus.SUCCESS) {
                         Log.e(TAG, "Failed to perform notification registration for given account.");
                     } else {
                         Log.i(TAG, "Successfully performed notification registration for given account");

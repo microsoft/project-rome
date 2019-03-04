@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistration;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationResult;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationStatus;
 import com.microsoft.connecteddevices.ConnectedDevicesAccount;
 import com.microsoft.connecteddevices.ConnectedDevicesAddAccountResult;
 import com.microsoft.connecteddevices.ConnectedDevicesAccountAddedStatus;
@@ -38,7 +40,7 @@ public class Account {
     private ConnectedDevicesAccount mAccount;
     private AccountRegistrationState mState;
     private ConnectedDevicesPlatform mPlatform;
-    private UserNotificationsManager mNotificationsManager;
+    private UserNotificationsManager mUserNotificationsManager;
     // endregion
 
     // region Constructors
@@ -90,7 +92,7 @@ public class Account {
         switch (mState) {
             // Scenario 1
             case IN_APP_CACHE_AND_SDK_CACHE:
-                mNotificationsManager = new UserNotificationsManager(context, mAccount, mPlatform);
+                mUserNotificationsManager = new UserNotificationsManager(context, mAccount, mPlatform);
                 return registerAccountWithSdkAsync();
             // Scenario 2
             case IN_APP_CACHE_ONLY: {
@@ -104,7 +106,7 @@ public class Account {
 
                     // Set the registration state of this account as in both app and sdk cache
                     mState = AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE;
-                    mNotificationsManager = new UserNotificationsManager(context, mAccount, mPlatform);
+                    mUserNotificationsManager = new UserNotificationsManager(context, mAccount, mPlatform);
                     return registerAccountWithSdkAsync();
                 });
             }
@@ -136,15 +138,19 @@ public class Account {
         // Grab the shared GCM/FCM notification token from this app's BroadcastReceiver
         return RomeNotificationReceiver.getNotificationRegistrationAsync().thenComposeAsync((ConnectedDevicesNotificationRegistration notificationRegistration) -> {
             // Perform the registration using the NotificationRegistration
-            return mPlatform.getNotificationRegistrationManager().registerForAccountAsync(mAccount, notificationRegistration)
-                .thenComposeAsync((success) -> {
-                    if (success) {
+            return mPlatform.getNotificationRegistrationManager().registerAsync(mAccount, notificationRegistration)
+                .thenComposeAsync((result) -> {
+                    if (result.getStatus() == ConnectedDevicesNotificationRegistrationStatus.SUCCESS) {
                         Log.i(TAG, "Successfully registered account " + mAccount.getId() + " for cloud notifications");
                     } else {
+                        // It would be a good idea for apps to take a look at the different statuses here and perhaps attempt some sort of remediation.
+                        // For example, token request failed could mean that the user needs to sign in again. An app could prompt the user for this action 
+                        // and retry the operation afterwards.
                         Log.e(TAG, "Failed to register account " + mAccount.getId() + " for cloud notifications!");
+                        return AsyncOperation.completedFuture(false);
                     }
 
-                    return mNotificationsManager.registerForAccountAsync();
+                    return mUserNotificationsManager.registerForAccountAsync();
                 });
         });
     }
@@ -184,7 +190,7 @@ public class Account {
     /**
      * Get the UserNotificationsManager
      */
-    public UserNotificationsManager getNotificationsManager() { return mNotificationsManager; }
+    public UserNotificationsManager getNotificationsManager() { return mUserNotificationsManager; }
     // endregion
 
     // region private instance methods

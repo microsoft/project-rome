@@ -13,7 +13,7 @@ void uncaughtExceptionHandler(NSException* uncaughtException)
 @interface AppDelegate ()
 @property (nonatomic) MCDConnectedDevicesNotificationRegistration* notificationRegistration;
 @property (nonatomic) MCDConnectedDevicesAccount* pendingAccount;
-@property (nonatomic) void (^pendingCallback)(BOOL,NSError*);
+@property (nonatomic) void (^pendingCallback)(MCDConnectedDevicesNotificationRegistrationResult*,NSError*);
 - (void)createNotificationRegistrationWithToken:(NSString* _Nonnull)deviceToken;
 @end
 
@@ -32,14 +32,14 @@ void uncaughtExceptionHandler(NSException* uncaughtException)
     [self.platform start];
 }
 
-- (void)registerNotificationsForAccount:(MCDConnectedDevicesAccount*)account callback:(void(^)(BOOL,NSError*))callback
+- (void)registerNotificationsForAccount:(MCDConnectedDevicesAccount*)account callback:(void(^)(MCDConnectedDevicesNotificationRegistrationResult* ,NSError*))callback
 {
     @try
     {
         if (self.notificationRegistration)
         {
             NSLog(@"GraphNotifications Registering notifications with registration with token %@ and appId %@", self.notificationRegistration.token, self.notificationRegistration.appId);
-            [self.platform.notificationRegistrationManager registerForAccountAsync:account registration:self.notificationRegistration callback:callback];
+            [self.platform.notificationRegistrationManager registerAsync:account registration:self.notificationRegistration completion:callback];
             self.pendingAccount = nil;
             self.pendingCallback = nil;
             NSLog(@"GraphNotifications Successfully registered notification");

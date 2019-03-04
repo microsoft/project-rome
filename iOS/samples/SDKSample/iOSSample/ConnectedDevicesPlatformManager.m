@@ -188,19 +188,29 @@
 
     return [self.apnsManager getNotificationRegistrationAsync:self].then(^(MCDConnectedDevicesNotificationRegistration* registration) {
         NSLog(@"Registering APNS with ConnectedDevicesPlatform");
-        return [AnyPromise promiseWithBooleanAdapterBlock:^(PMKBooleanAdapter _Nonnull adapter) {
-            [self.platform.notificationRegistrationManager registerForAccountAsync:self.mcdAccount registration:registration callback:adapter];
+        return [AnyPromise promiseWithAdapterBlock:^(PMKAdapter _Nonnull adapter) {
+            [self.platform.notificationRegistrationManager registerAsync:self.mcdAccount registration:registration completion:adapter];
         }];
-    }).then(^ {
-        // Do operations that require notification registration now. Like saving the RemoteSystemAppRegistration or saving UserDataFeed sync scopes
+    }).then(^(MCDConnectedDevicesNotificationRegistrationResult* result) {
+
+        // It would be a good idea for apps to take a look at the different statuses here and perhaps attempt some sort of remediation.
+        // For example, web failure may indicate that a web service was temporarily in a bad state and retries may be successful.
+        // 
+        // NOTE: this approach was chosen rather than using NSError values to help separate "expected" / "retry-able" errors from real 
+        // errors / exceptions and keep the error-channel logic clean and simple.
+        if (result.status != MCDConnectedDevicesNotificationRegistrationStatusSuccess) {
+            return [AnyPromise promiseWithValue:[NSError errorWithDomain:@"RegistrationError" code:result.status userInfo:nil]];
+        }
+
+        // Do operations that require notification registration now. Like publishing the RemoteSystemAppRegistration or saving UserDataFeed sync scopes
         // Until the RemoteSystemAppRegistration is successfully saved, any outgoing communication to remote apps may
         // not receive responses as the remote app will not necessarily know who it is communicating with.
         MCDRemoteSystemAppRegistration* registration =
         [MCDRemoteSystemAppRegistration getForAccount:self.mcdAccount platform:self.platform];
         
-        [registration saveAsync:^(BOOL completed, NSError* error) {
+        [registration publishAsync:^(MCDRemoteSystemAppRegistrationPublishResult* publishResult, NSError* error) {
             // A more complete sample would properly gate any outbound communication until this point.
-            if (!completed || error)
+            if (error || (publishResult.status != MCDRemoteSystemAppRegistrationPublishStatusSuccess))
             {
                 NSLog(@"Failed to register remote system");
             }
@@ -221,6 +231,11 @@
                                         callback:^(BOOL success __unused, NSError* _Nullable error __unused) {
                                             // Based on your app's needs this could be a good place to start syncing down activity feeds etc. 
                                         }];
+
+        // This sample simply kicks off registration of the UserDataFeed and RemoteSystemAppRegistration but does not return a meaningful promise
+        // here to gate other operations on completion on either / both of these steps. This is more scenario dependent on what operations the app cares
+        // about.
+        return [AnyPromise promiseWithValue:nil];
     });
 }
 
@@ -377,7 +392,7 @@
         // and remove stale accounts from the ConnectedDevicesPlatform AccountManager. The promise associated
         // with all of this asynchronous work need not be waited on as any sub component work will be accomplished
         // in the synchronous portion of the call. If your app needs to sequence when other apps can see this app's registration
-        // (i.e. when RemoteSystemAppRegistration SaveAsync completes) then it would be useful to use the promise returned by
+        // (i.e. when RemoteSystemAppRegistration PublishAsync completes) then it would be useful to use the promise returned by
         // prepareAccountsAsync
         self.accountsPromise = [self prepareAccountsAsync];
     }

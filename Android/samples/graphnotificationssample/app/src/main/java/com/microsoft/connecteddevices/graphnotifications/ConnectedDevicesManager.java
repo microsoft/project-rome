@@ -18,10 +18,12 @@ import com.microsoft.connecteddevices.ConnectedDevicesAccountManager;
 import com.microsoft.connecteddevices.ConnectedDevicesAccountType;
 import com.microsoft.connecteddevices.ConnectedDevicesAddAccountResult;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistration;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationResult;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationStateChangedEventArgs;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationType;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationManager;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationState;
+import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistrationStatus;
 import com.microsoft.connecteddevices.ConnectedDevicesPlatform;
 import com.microsoft.connecteddevices.signinhelpers.AADSigninHelperAccount;
 import com.microsoft.connecteddevices.signinhelpers.MSASigninHelperAccount;
@@ -83,7 +85,7 @@ public class ConnectedDevicesManager {
         // and remove stale accounts from the ConnectedDevicesPlatform AccountManager. The AsyncOperation associated
         // with all of this asynchronous work need not be waited on as any sub component work will be accomplished
         // in the synchronous portion of the call. If your app needs to sequence when other apps can see this app's registration
-        // (i.e. when RemoteSystemAppRegistration SaveAsync completes) then it would be useful to use the AsyncOperation returned by
+        // (i.e. when RemoteSystemAppRegistration PublishAsync completes) then it would be useful to use the AsyncOperation returned by
         // prepareAccountsAsync
         prepareAccounts(deserializedAccounts, context);
     }
@@ -169,9 +171,9 @@ public class ConnectedDevicesManager {
         mAccounts.remove(accountToRemove);
 
         // Now log out this account
-        return accountToRemove.logoutAsync(activity).thenComposeAsync((ConnectedDevicesAccount account) -> {
+        return accountToRemove.logoutAsync(activity).thenApplyAsync((ConnectedDevicesAccount account) -> {
             Log.i(TAG, "Successfully signed out account: " + account.getId());
-            return AsyncOperation.completedFuture(true);
+            return true;
         });
     }
 
@@ -209,11 +211,14 @@ public class ConnectedDevicesManager {
 
         // For each prepared account, register for notifications
         for (final Account account : mAccounts) {
-            registrationManager.registerForAccountAsync(account.getAccount(), registration)
-                    .whenCompleteAsync((Boolean success, Throwable throwable) -> {
+            registrationManager.registerAsync(account.getAccount(), registration)
+                    .whenCompleteAsync((ConnectedDevicesNotificationRegistrationResult result, Throwable throwable) -> {
                         if (throwable != null) {
-                            Log.e(TAG, "Exception encountered in registerForAccountAsync", throwable);
-                        } else if (!success) {
+                            Log.e(TAG, "Exception encountered in registerAsync", throwable);
+                        } else if (result.getStatus() != ConnectedDevicesNotificationRegistrationStatus.SUCCESS) {
+                            // It would be a good idea for apps to take a look at the different statuses here and perhaps attempt some sort of remediation.
+                            // For example, no network is an expected, and perhaps unavoidable eventuality in mobile development. An app could choose to show
+                            // a warning banner about reduced functionality and retry the operation once connectivity is re-established.
                             Log.e(TAG, "Failed to register account " + account.getAccount().getId() + " for cloud notifications!");
                         } else {
                             Log.i(TAG, "Successfully registered account " + account.getAccount().getId() + " for cloud notifications");
@@ -356,7 +361,7 @@ public class ConnectedDevicesManager {
         mAccounts.add(account);
 
         // Prepare the account, removing it from the list of accounts if it failed
-        return account.prepareAccountAsync(context).thenComposeAsync((success) -> {
+        return account.prepareAccountAsync(context).thenApplyAsync((success) -> {
             // If an exception is raised or we gracefully fail to prepare the account, remove it
             if (success) {
                 Log.i(TAG, "Account: " + account.getAccount().getId() + " is ready-to-go");
@@ -366,7 +371,7 @@ public class ConnectedDevicesManager {
             }
 
             // Return the success of the account preparation
-            return AsyncOperation.completedFuture(success);
+            return success;
         }).exceptionally((Throwable throwable) -> {
             mAccounts.remove(account);
             Log.e(TAG, "Account: " + account.getAccount().getId() + " is not ready, removed from the list of ready-to-go accounts as an exception was encountered", throwable);

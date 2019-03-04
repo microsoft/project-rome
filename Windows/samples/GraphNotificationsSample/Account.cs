@@ -297,9 +297,17 @@ namespace SDKTemplate
             registration.Type = ConnectedDevicesNotificationType.WNS;
             registration.Token = channel.Uri;
             var account = new ConnectedDevicesAccount(Id, Type);
-            await m_platform.NotificationRegistrationManager.RegisterForAccountAsync(account, registration);
+            var registerResult = await m_platform.NotificationRegistrationManager.RegisterAsync(account, registration);
 
-            await UserNotifications.RegisterAccountWithSdkAsync();
+            // It would be a good idea for apps to take a look at the different statuses here and perhaps attempt some sort of remediation.
+            // For example, web failure may indicate that a web service was temporarily in a bad state and retries may be successful.
+            // 
+            // NOTE: this approach was chosen rather than using exceptions to help separate "expected" / "retry-able" errors from real 
+            // exceptions and keep the error-channel logic clean and simple.
+            if (registerResult.Status == ConnectedDevicesNotificationRegistrationStatus.Success)
+            {
+                await UserNotifications.RegisterAccountWithSdkAsync();
+            }
         }
 
         public async Task LogoutAsync()
