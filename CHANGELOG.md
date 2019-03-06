@@ -1,3 +1,20 @@
+## 1.1.0
+
+
+### Added (1 change)
+
+- Added ConnectedDevicesPlatformSettings.
+
+
+### Changed (1 change)
+
+- Change ProgressCallback parameters for NearShareSender to instead return AsyncOperationWithProgress objects.
+
+
+### Fixed (1 change)
+
+- Fix ProcessNotification not being able to be called until RemoteSystemAppRegistration SaveAsync has started.
+
 ## 1.0.0
 
 
@@ -60,4 +77,3 @@
 ### Removed (1 change)
 
 - Remove UserNotificationReaderOptions constructors except for default.
-
