@@ -67,7 +67,7 @@ import static android.content.Intent.ACTION_SEND;
 import static android.content.Intent.ACTION_SEND_MULTIPLE;
 
 /*
- * Wrapper to hold the Rome ConnectedDevicesAccount and RemoteSystemWatcher,
+ * Wrapper to hold the ConnectedDevicesAccount and RemoteSystemWatcher,
  * as well as additional information required for NearShare.
  * Verification:
  *      1. Discovery: Launch the NearShare App and select check box "Spatially Proximal"

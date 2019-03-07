@@ -145,7 +145,7 @@ public class LaunchFragment extends BaseFragment {
     }
 
     /**
-     * Responsible for calling into the Rome API to launch the given URI and provides
+     * Responsible for calling into the RemoteSystems API to launch the given URI and provides
      * the logic to handle the RemoteLaunchUriStatus response.
      * @param uri URI to launch
      * @param system The RemoteSystemAppWrapper target for the launch URI request

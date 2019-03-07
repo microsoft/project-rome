@@ -76,7 +76,7 @@ abstract class BaseFragment extends Fragment {
     }
 
     /**
-     * A shared format to handle all exceptions thrown by the Rome API.
+     * A shared format to handle all exceptions thrown by ConnectedDevices APIs.
      * @param api Function/Class name called which threw
      * @param e The throwable exception object
      */

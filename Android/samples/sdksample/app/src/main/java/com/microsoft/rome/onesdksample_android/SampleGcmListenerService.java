@@ -21,7 +21,7 @@ public class SampleGcmListenerService extends GcmListenerService {
     private final String TAG = SampleGcmListenerService.class.getName();
 
     /**
-     * If it is a rome notification,
+     * If it is a ConnectedDevices notification,
      * It will notify the apps with the information in the notification.
      * @param  from  describes message sender.
      * @param  data  message data as String key/value pairs.

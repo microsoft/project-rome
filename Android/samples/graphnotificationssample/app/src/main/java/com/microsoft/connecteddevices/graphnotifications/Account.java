@@ -74,7 +74,7 @@ public class Account {
     // region public instance methods
     /**
      * Perform all actions required to have this account signed in, added to the
-     * ConnectedDevicesPlatform.AccountManager and registered with the Rome platform.
+     * ConnectedDevicesPlatform.AccountManager and registered with the platform.
      * @param context Application context
      * @return The async result for this operation
      */
