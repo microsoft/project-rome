@@ -32,12 +32,20 @@
     }
     else
     {
+        MCDConnectedDevicesNotification* notification = [MCDConnectedDevicesNotification tryParse:notificationInfo];
         // Once all accounts that are in good standing have their subcomponents initialized, its safe to pump the notification information into the platform. Before that point, a notification
         // may be for an account that isn't fully set up yet. This is more likely to happen when the app is launched as a result of the notification so there
         // isn't much time to start the platform before needing to process the notification.
-        [_platformManager.platform processNotificationAsync:notificationInfo completion:^(NSError* error __unused){
-
-        }];
+        if (notification != nil)
+        {
+            [_platformManager.platform processNotificationAsync:notification completion:^(NSError * _Nullable error) {
+                // After processNotificationAsync completes the SDK has processed the notification.
+                // In the case of a launch from a visual notification this app has no additional work to do. Your app may have more steps here.
+            }];
+        } else {
+            NSLog(@"Notification was not a ConnectedDevices notification, not processing notification");
+            return YES;
+        }
     }
 
     return YES;

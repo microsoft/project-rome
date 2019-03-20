@@ -226,7 +226,7 @@
                                                               platform:self.platform
                                                     activitySourceHost:CROSS_PLATFORM_APP_ID];
 
-        NSArray<id<MCDUserDataFeedSyncScope>>* syncScopes = @[ [MCDUserActivityChannel syncScope] ];
+        NSArray<MCDUserDataFeedSyncScope*>* syncScopes = @[ [MCDUserActivityChannel syncScope] ];
         [userDataFeed subscribeToSyncScopesAsync:syncScopes
                                         callback:^(BOOL success __unused, NSError* _Nullable error __unused) {
                                             // Based on your app's needs this could be a good place to start syncing down activity feeds etc. 
