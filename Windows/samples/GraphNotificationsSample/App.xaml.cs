@@ -174,7 +174,7 @@ namespace SDKTemplate
 
                 await ConnectedDevicesManager.ReceiveNotificationAsync(rawNotification.Content);
             }
-
+            m_deferral.Complete();
             Logger.Instance.LogMessage($"Task completed");
         }
     }
