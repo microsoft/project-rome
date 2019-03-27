@@ -3,15 +3,29 @@ platform :ios, "10.0"
 workspace 'GraphNotificationsSample'
 
 target 'GraphNotificationsSample' do
-  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  # use_frameworks!
-
+    # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+    use_frameworks!
+    
     # This is the main ConnectedDevices SDK. It includes all the functionality needed for RemoteSystems and UserData scenarios
     pod 'ProjectRomeSdk'
     
+    # Because the ConnectedDevices platform involves many asynchronous calls (getting user tokens, sending messages to remote apps etc.)
+    # it is helpful to have a strategy to sequence all of the completions in an organized manner. https://blog.hellojs.org/asynchronous-javascript-from-callback-hell-to-async-and-await-9b9ceb63c8e8
+    pod 'PromiseKit'
     pod 'AdaptiveCards'
+    
+    # To help authenticate users, the ADAL library is used
     pod 'ADAL', '2.6.6'
-
-  # Pods for GraphNotificationsSample
-
+    
+    # force the sub specs in the array below to use swift version 3.2
+    # https://github.com/mxcl/PromiseKit/issues/722
+    post_install do |installer| 
+        installer.pods_project.targets.each do |target|
+            if ['PromiseKit'].include? target.name
+                target.build_configurations.each do |config|
+                    config.build_settings['SWIFT_VERSION'] = '4.2'
+                end
+            end
+        end
+    end
 end

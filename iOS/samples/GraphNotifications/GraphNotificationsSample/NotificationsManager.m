@@ -17,8 +17,6 @@ static NotificationsManager* s_manager;
 }
 
 
-- (instancetype)initWithPlatform:(MCDConnectedDevicesPlatform*)platform;
-
 @property (nonatomic) NSMutableDictionary<NSNumber*, void(^)(void)>* listenerMap;
 @property (nonatomic) MCDConnectedDevicesPlatform* platform;
 @property (nonatomic) MCDUserNotificationChannel* channel;
@@ -27,98 +25,32 @@ static NotificationsManager* s_manager;
 @end
 
 @implementation NotificationsManager
-- (instancetype)initWithPlatform:(MCDConnectedDevicesPlatform*)platform
+- (instancetype)initWithPlatformManager:(ConnectedDevicesPlatformManager*)platformManager
 {
     if (self = [super init])
     {
         _notifications = [NSMutableArray array];
         _listenerValue = 0;
         _listenerMap = [NSMutableDictionary dictionary];
-        _platform = platform;
+        _platform = platformManager.platform;
         _platformStarted = NO;
+        MCDUserDataFeed* _userDataFeed = [MCDUserDataFeed getForAccount:platformManager.accounts[0].mcdAccount
+                                                              platform:self.platform
+                                                    activitySourceHost:MSA_CLIENT_ID];
+        [_userDataFeed startSync];
+        self.channel = [MCDUserNotificationChannel channelWithUserDataFeed:_userDataFeed];
+        self.reader = [self.channel createReader];
+        _readerSubscription = [self.reader.dataChanged subscribe:^(__unused MCDUserNotificationReader* source, __unused MCDUserNotificationReaderDataChangedEventArgs* args){
+            {
+                NSLog(@"GraphNotifications Got an update!");
+            };
+            
+        }];
+        [self forceRead];
     }
-
     return self;
 }
 
-- (void)setAccount:(MCDConnectedDevicesAccount*)account
-{
-    @synchronized (self)
-    {
-        if (account)
-        {
-            NSLog(@"GraphNotifications Updating NotificationsManager with account %@", account.accountId);
-            AppDelegate* delegate = (AppDelegate*)([UIApplication sharedApplication].delegate);
-
-            if (!self.platformStarted)
-            {
-                NSLog(@"GraphNotifications Starting Platform!");
-                [delegate startPlatform];
-                self.platformStarted = YES;
-            }
-
-            NSLog(@"GraphNotifications Adding account to platform");
-            [self.platform.accountManager addAccountAsync:account callback:^(__unused MCDConnectedDevicesAddAccountResult* result, __unused NSError* error)
-            {
-                // Don't use `setAccount:` here or we'll end up in an infinite loop :(
-                self->_account = account;
-                NSLog(@"GraphNotifications Registering notifications for account %@", account.accountId);
-                [delegate registerNotificationsForAccount:account callback:^(__unused MCDConnectedDevicesNotificationRegistrationResult* result, __unused NSError* error)
-                {
-                    NSLog(@"GraphNotifications Initializing UserDataFeed!");
-                    MCDUserDataFeed* dataFeed;
-                    @try
-                    {
-                        dataFeed = [MCDUserDataFeed getForAccount:account platform:self.platform activitySourceHost:APP_HOST_NAME];
-                    }
-                    @catch (NSException* e)
-                    {
-                        NSLog(@"GraphNotifications Failed to initialize UserDataFeed with %@", e.description);
-                        return;
-                    }
-
-                    NSLog(@"GraphNotifications Susbcribing for sync scopes async!");
-                    [dataFeed subscribeToSyncScopesAsync:@[[MCDUserNotificationChannel syncScope]] callback:^(__unused BOOL result, __unused NSError * error)
-                    {
-                        @synchronized (self)
-                        {
-                            NSLog(@"GraphNotifications Initializing channel and reader");
-                            [dataFeed startSync];
-                            self.channel = [MCDUserNotificationChannel channelWithUserDataFeed:dataFeed];
-                            self.reader = [self.channel createReader];
-
-                            __weak typeof(self) weakSelf = self;
-                            _readerSubscription = [self.reader.dataChanged subscribe:^(__unused MCDUserNotificationReader* source, __unused MCDUserNotificationReaderDataChangedEventArgs* args)
-                            {
-                                NSLog(@"GraphNotifications Got an update!");
-                                [weakSelf forceRead];
-                            }];
-
-                            [self forceRead];
-                        }
-                    }];
-                }];
-            }];
-        } else if (self.platformStarted)
-        {
-            [self.platform.accountManager removeAccountAsync:account callback:^(__unused MCDConnectedDevicesRemoveAccountResult* result, NSError* error)
-            {
-                @synchronized (self)
-                {
-                    if (error)
-                    {
-                        NSLog(@"GraphNotifications failed to remove account from platform with error %@", error.description);
-                    }
-
-                    // Don't use `setAccount:` here or we'll end up in an infinite loop :(
-                    self->_account = nil;
-                    self.channel = nil;
-                    self.reader = nil;
-                }
-            }];
-        }
-    };
-}
 
 - (void)forceRead
 {
@@ -182,19 +114,6 @@ static NotificationsManager* s_manager;
         {
             NSLog(@"GraphNotifications Dismiss notification with result %d error %@", result.succeeded, err);
         }];
-    }
-}
-
-+ (instancetype)startWithPlatform:(MCDConnectedDevicesPlatform*)platform
-{
-    @synchronized (self)
-    {
-        if (s_manager == nil)
-        {
-            s_manager = [[self alloc] initWithPlatform:platform];
-        }
-
-        return s_manager;
     }
 }
 

@@ -8,17 +8,18 @@
 #import <ConnectedDevices/ConnectedDevices.h>
 #import <ConnectedDevicesUserData/ConnectedDevicesUserData.h>
 #import <ConnectedDevicesUserDataUserNotifications/ConnectedDevicesUserDataUserNotifications.h>
+#import "ConnectedDevicesPlatformManager.h"
 #import "AADAccount.h"
 #import "MSAAccount.h"
 
 @interface NotificationsManager : NSObject
-+ (instancetype)startWithPlatform:(MCDConnectedDevicesPlatform*)platform;
 
 + (instancetype)sharedInstance;
 
 @property (nonatomic, readonly) NSArray<MCDUserNotification*>* notifications;
 @property (nonatomic) MCDConnectedDevicesAccount* account;
 
+- (instancetype)initWithPlatformManager:(ConnectedDevicesPlatformManager*)platform;
 - (NSInteger)addNotificationsChangedListener:(void(^)(void))listener;
 - (void)removeListener:(NSInteger)token;
 - (void)forceRead;

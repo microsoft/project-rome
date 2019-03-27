@@ -16,11 +16,12 @@
 		00823372212F114B0055F6E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00823370212F114B0055F6E4 /* LaunchScreen.storyboard */; };
 		00823375212F114B0055F6E4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 00823374212F114B0055F6E4 /* main.m */; };
 		00D6D060213720E5008E5E33 /* NotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D6D05F213720E5008E5E33 /* NotificationsViewController.m */; };
-		86E3681E27114147F58BE403 /* libPods-GraphNotificationsSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06928972061C754C239718DC /* libPods-GraphNotificationsSample.a */; };
+		232485673C6C2171E330D4C6 /* Pods_GraphNotificationsSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11DF974EC8752FA5D016C967 /* Pods_GraphNotificationsSample.framework */; };
 		913BC24121FBCC1600ED6A1C /* AADAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC23C21FBCC1600ED6A1C /* AADAccount.m */; };
 		913BC24221FBCC1600ED6A1C /* MSAAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC23D21FBCC1600ED6A1C /* MSAAccount.m */; };
 		913BC24321FBCC1600ED6A1C /* MSATokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC23E21FBCC1600ED6A1C /* MSATokenRequest.m */; };
 		913BC24421FBCC1600ED6A1C /* MSATokenCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 913BC23F21FBCC1600ED6A1C /* MSATokenCache.m */; };
+		AE84B6AA2230885D008297E0 /* ConnectedDevicesPlatformManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AE84B6A92230885D008297E0 /* ConnectedDevicesPlatformManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,7 +42,7 @@
 		00D6D05E21372041008E5E33 /* NotificationsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationsViewController.h; sourceTree = "<group>"; };
 		00D6D05F213720E5008E5E33 /* NotificationsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationsViewController.m; sourceTree = "<group>"; };
 		00D6D0642138519C008E5E33 /* GraphNotificationsSample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GraphNotificationsSample.entitlements; sourceTree = "<group>"; };
-		06928972061C754C239718DC /* libPods-GraphNotificationsSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GraphNotificationsSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		11DF974EC8752FA5D016C967 /* Pods_GraphNotificationsSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GraphNotificationsSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		63E3FBAFA254E6B80A8DA76E /* Pods-GraphNotifications.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GraphNotifications.release.xcconfig"; path = "Pods/Target Support Files/Pods-GraphNotifications/Pods-GraphNotifications.release.xcconfig"; sourceTree = "<group>"; };
 		913BC23521FBCC1600ED6A1C /* SignInAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignInAccount.h; sourceTree = "<group>"; };
 		913BC23621FBCC1600ED6A1C /* SampleAccountActionFailureReason.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleAccountActionFailureReason.h; sourceTree = "<group>"; };
@@ -55,6 +56,8 @@
 		913BC24021FBCC1600ED6A1C /* MSATokenRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSATokenRequest.h; sourceTree = "<group>"; };
 		913EB4AA217E75C700A78C79 /* Secrets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Secrets.h; sourceTree = "<group>"; };
 		9B6312F300B55978A0074729 /* libPods-GraphNotifications.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GraphNotifications.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE84B6A92230885D008297E0 /* ConnectedDevicesPlatformManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConnectedDevicesPlatformManager.m; sourceTree = "<group>"; };
+		AE84B6AB22308962008297E0 /* ConnectedDevicesPlatformManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConnectedDevicesPlatformManager.h; sourceTree = "<group>"; };
 		D94FF25B740D15AF01A2530D /* Pods-GraphNotificationsSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GraphNotificationsSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-GraphNotificationsSample/Pods-GraphNotificationsSample.release.xcconfig"; sourceTree = "<group>"; };
 		E9737A60E31BEADDB7BDC7BE /* Pods-GraphNotificationsSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GraphNotificationsSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GraphNotificationsSample/Pods-GraphNotificationsSample.debug.xcconfig"; sourceTree = "<group>"; };
 		FFB1B176FF8985E5AD4B88D1 /* Pods-GraphNotifications.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GraphNotifications.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GraphNotifications/Pods-GraphNotifications.debug.xcconfig"; sourceTree = "<group>"; };
@@ -65,7 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86E3681E27114147F58BE403 /* libPods-GraphNotificationsSample.a in Frameworks */,
+				232485673C6C2171E330D4C6 /* Pods_GraphNotificationsSample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -111,6 +114,8 @@
 				00D6D05E21372041008E5E33 /* NotificationsViewController.h */,
 				00D6D05F213720E5008E5E33 /* NotificationsViewController.m */,
 				913EB4AA217E75C700A78C79 /* Secrets.h */,
+				AE84B6A92230885D008297E0 /* ConnectedDevicesPlatformManager.m */,
+				AE84B6AB22308962008297E0 /* ConnectedDevicesPlatformManager.h */,
 			);
 			path = GraphNotificationsSample;
 			sourceTree = "<group>";
@@ -119,7 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				9B6312F300B55978A0074729 /* libPods-GraphNotifications.a */,
-				06928972061C754C239718DC /* libPods-GraphNotificationsSample.a */,
+				11DF974EC8752FA5D016C967 /* Pods_GraphNotificationsSample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -202,6 +207,7 @@
 				TargetAttributes = {
 					0082335B212F114B0055F6E4 = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 1010;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -253,13 +259,17 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-GraphNotificationsSample/Pods-GraphNotificationsSample-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/ADAL/ADAL.framework",
 				"${PODS_ROOT}/AdaptiveCards/AdaptiveCards.framework",
 				"${PODS_ROOT}/ProjectRomeSdk/full/ConnectedDevices.framework",
+				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ADAL.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AdaptiveCards.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ConnectedDevices.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -299,6 +309,7 @@
 				00D6D060213720E5008E5E33 /* NotificationsViewController.m in Sources */,
 				913BC24221FBCC1600ED6A1C /* MSAAccount.m in Sources */,
 				00823367212F114B0055F6E4 /* LoginViewController.m in Sources */,
+				AE84B6AA2230885D008297E0 /* ConnectedDevicesPlatformManager.m in Sources */,
 				00823361212F114B0055F6E4 /* AppDelegate.m in Sources */,
 				913BC24321FBCC1600ED6A1C /* MSATokenRequest.m in Sources */,
 			);
@@ -436,19 +447,24 @@
 			baseConfigurationReference = E9737A60E31BEADDB7BDC7BE /* Pods-GraphNotificationsSample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GraphNotificationsSample/GraphNotificationsSample.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 9UFF8D37DM;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GraphNotificationsSample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.connecteddevices.graphnotificationsample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "ba3afbc5-30e6-4150-9eb9-d8967de4ce9b";
-				PROVISIONING_PROFILE_SPECIFIER = "GN Adhoc";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "ADHOC Graph Notifications";
+				SWIFT_OBJC_BRIDGING_HEADER = "GraphNotificationsSample-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -458,6 +474,7 @@
 			baseConfigurationReference = D94FF25B740D15AF01A2530D /* Pods-GraphNotificationsSample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GraphNotificationsSample/GraphNotificationsSample.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
@@ -465,12 +482,15 @@
 				DEVELOPMENT_TEAM = 9UFF8D37DM;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GraphNotificationsSample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.microsoft.connecteddevices.graphnotificationsample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "ba3afbc5-30e6-4150-9eb9-d8967de4ce9b";
-				PROVISIONING_PROFILE_SPECIFIER = "GN Adhoc";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "ADHOC Graph Notifications";
+				SWIFT_OBJC_BRIDGING_HEADER = "GraphNotificationsSample-Bridging-Header.h";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

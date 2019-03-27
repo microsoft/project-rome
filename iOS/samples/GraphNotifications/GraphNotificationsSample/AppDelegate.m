@@ -4,7 +4,7 @@
 
 #import "AppDelegate.h"
 #import "NotificationsManager.h"
-
+#import "ConnectedDevicesPlatformManager.h"
 void uncaughtExceptionHandler(NSException* uncaughtException)
 {
     NSLog(@"Uncaught exception: %@", uncaughtException.description);
@@ -17,45 +17,19 @@ void uncaughtExceptionHandler(NSException* uncaughtException)
 - (void)createNotificationRegistrationWithToken:(NSString* _Nonnull)deviceToken;
 @end
 
-@implementation AppDelegate
+@implementation AppDelegate{
+    ConnectedDevicesPlatformManager* _platformManager;
+}
 
 - (void)initializePlatform
 {
-    if (!self.platform)
+    if (!_platformManager)
     {
-        self.platform = [MCDConnectedDevicesPlatform new];
+        _platformManager = [ConnectedDevicesPlatformManager sharedInstance];
     }
 }
 
-- (void)startPlatform
-{
-    [self.platform start];
-}
 
-- (void)registerNotificationsForAccount:(MCDConnectedDevicesAccount*)account callback:(void(^)(MCDConnectedDevicesNotificationRegistrationResult* ,NSError*))callback
-{
-    @try
-    {
-        if (self.notificationRegistration)
-        {
-            NSLog(@"GraphNotifications Registering notifications with registration with token %@ and appId %@", self.notificationRegistration.token, self.notificationRegistration.appId);
-            [self.platform.notificationRegistrationManager registerAsync:account registration:self.notificationRegistration completion:callback];
-            self.pendingAccount = nil;
-            self.pendingCallback = nil;
-            NSLog(@"GraphNotifications Successfully registered notification");
-        }
-        else
-        {
-            NSLog(@"GraphNotifications Do not have notification registration yet, pending registration for account %@", account.accountId);
-            self.pendingAccount = account;
-            self.pendingCallback = callback;
-        }
-    }
-    @catch(NSException* e)
-    {
-        NSLog(@"GraphNotifications Failed to register with %@", e.description);
-    }
-}
 
 - (void)createNotificationRegistrationWithToken:(NSString* _Nonnull)deviceToken
 {
@@ -65,18 +39,15 @@ void uncaughtExceptionHandler(NSException* uncaughtException)
     _notificationRegistration.appDisplayName = (NSString*)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
     _notificationRegistration.token = deviceToken;
     NSLog(@"GraphNotifications Successfully created notification registration!");
-    if (self.pendingAccount)
-    {
-        [self registerNotificationsForAccount:self.pendingAccount callback:self.pendingCallback];
-    }
+    NSLog(@"platformManager info %@", _platformManager);
+    [_platformManager setNotificationRegistration: _notificationRegistration];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
     [self initializePlatform];
-    [NotificationsManager startWithPlatform:self.platform];
-    [self.platform.notificationRegistrationManager.notificationRegistrationStateChanged subscribe:^(__unused MCDConnectedDevicesNotificationRegistrationManager * _Nonnull manager, MCDConnectedDevicesNotificationRegistrationStateChangedEventArgs * _Nonnull args)
+    [_platformManager.platform.notificationRegistrationManager.notificationRegistrationStateChanged subscribe:^(__unused MCDConnectedDevicesNotificationRegistrationManager * _Nonnull manager, MCDConnectedDevicesNotificationRegistrationStateChangedEventArgs * _Nonnull args)
     {
         NSLog(@"GraphNotifications NotificationRegistrationState changed to %ld", args.state);
         if ((args.state == MCDConnectedDevicesNotificationRegistrationStateExpired) || (args.state == MCDConnectedDevicesNotificationRegistrationStateExpiring))
@@ -183,21 +154,29 @@ didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings*)notifi
     }
 }
 
-- (void)application:(__unused UIApplication*)application didReceiveRemoteNotification:(nonnull NSDictionary*)userInfo
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notificationInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
     // app run in foreground and received the push notification, pump notification into CDPPlatform
     NSLog(@"GraphNotifications Received remote notification...");
-    [userInfo enumerateKeysAndObjectsUsingBlock:^(
-                                                  id _Nonnull key, id _Nonnull obj, __unused BOOL* _Nonnull stop) { NSLog(@"%@: %@", key, obj); }];
-
-    MCDConnectedDevicesNotification* notification = [MCDConnectedDevicesNotification tryParse:userInfo];
+    [notificationInfo enumerateKeysAndObjectsUsingBlock:^( id _Nonnull key, id _Nonnull obj, __unused BOOL* _Nonnull stop) { NSLog(@"%@: %@", key, obj); }];
+    MCDConnectedDevicesNotification* notification = [MCDConnectedDevicesNotification tryParse:notificationInfo];
     if (notification != nil)
     {
-        [self.platform processNotificationAsync:notification completion:^(NSError* error __unused)
-        {
-            // NOTE: it may be useful to attach completion to this async in order to know when the notification is done being processed.
-            // This would be a good time to stop a background service or otherwise cleanup.
-        }];
+        // Once all accounts that are in good standing have their subcomponents initialized, its safe to pump the notification information into the platform. Before that point, a notification
+        // may be for an account that isn't fully set up yet. This is more likely to happen when the app is launched as a result of the notification so there
+        // isn't much time to start the platform before needing to process the notification.
+        [AnyPromise promiseWithAdapterBlock:^(PMKAdapter _Nonnull adapter) {
+            [_platformManager.platform processNotificationAsync:notification completion:^(NSError* error)
+             {
+                 adapter(nil, error);
+             }];
+        }].then(^{
+            completionHandler(UIBackgroundFetchResultNewData);
+        }).catch(^{
+            completionHandler(UIBackgroundFetchResultNoData);
+        });
+    } else {
+        completionHandler(UIBackgroundFetchResultNoData);
     }
 }
 
