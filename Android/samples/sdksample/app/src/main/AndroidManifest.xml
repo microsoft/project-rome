@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!-- MainActivity -->
         <activity android:name=".MainActivity" android:screenOrientation="userPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,34 +18,18 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND">
+        <!-- FCM -->
+        <service android:name=".SampleFCMListenerService" android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-
-                <category android:name="com.microsoft.rome.onesdksample_android" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name=".SampleGcmListenerService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".SampleInstanceIdListenerService"
-            android:exported="false">
+        <service android:name=".SampleFCMInstanceIdListenerService" android:exported="true">
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceId" />
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".RegistrationIntentService"
-            android:exported="false" />
+        <service android:name=".FCMRegistrationIntentService" android:exported="false" />
     </application>
 
 </manifest>

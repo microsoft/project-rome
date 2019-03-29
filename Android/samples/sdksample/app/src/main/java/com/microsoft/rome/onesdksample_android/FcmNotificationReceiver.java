@@ -15,19 +15,19 @@ import com.microsoft.connecteddevices.AsyncOperation;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationRegistration;
 import com.microsoft.connecteddevices.ConnectedDevicesNotificationType;
 
-public class GcmNotificationReceiver extends BroadcastReceiver {
+public class FcmNotificationReceiver extends BroadcastReceiver {
     // region Member Variables
-    private static final String TAG = GcmNotificationReceiver.class.getName();
+    private static final String TAG = FcmNotificationReceiver.class.getName();
     private static final String RegistrationComplete = "registrationComplete";
 
     private Context mContext;
     private static AsyncOperation<ConnectedDevicesNotificationRegistration> sNotificationRegistrationOperation; 
     // endregion
 
-    GcmNotificationReceiver(Context context) {
+    FcmNotificationReceiver(Context context) {
         mContext = context;
 
-        registerGcmBroadcastReceiver();
+        registerFcmBroadcastReceiver();
     }
 
     /**
@@ -73,32 +73,32 @@ public class GcmNotificationReceiver extends BroadcastReceiver {
         }
 
         if (token == null) {
-            Log.e(TAG, "Got notification that GCM had been registered, but token is null. Was app ID set in GcmRegistrationIntentService?");
+            Log.e(TAG, "Got notification that GCM had been registered, but token is null. Was app ID set in FcmRegistrationIntentService?");
         } else if (token.isEmpty()) {
-            Log.e(TAG, "GcmNotificationReceiver gained the a token however it was empty");
+            Log.e(TAG, "FcmNotificationReceiver gained the a token however it was empty");
         } else {
-            Log.i(TAG, "GcmNotificationReceiver gained the token: " + token);
+            Log.i(TAG, "FcmNotificationReceiver gained the token: " + token);
 
             ConnectedDevicesManager.getConnectedDevicesManager(context).setNotificationRegistration(token);
         }
 
-        mContext.startService(new Intent(mContext, SampleGcmListenerService.class));
+        mContext.startService(new Intent(mContext, SampleFCMListenerService.class));
     }
 
     /**
      * This function is called to start GCM registration service.
      * Start GCMRegistrationIntentService to register with GCM.
      */
-    private void startGcmRegistrationIntentService() {
-        Intent registrationIntentService = new Intent(mContext, RegistrationIntentService.class);
+    private void startFcmRegistrationIntentService() {
+        Intent registrationIntentService = new Intent(mContext, FCMRegistrationIntentService.class);
         mContext.startService(registrationIntentService);
     }
 
     /**
      * This function is called to register GCM.
      */
-    private void registerGcmBroadcastReceiver() {
+    private void registerFcmBroadcastReceiver() {
         LocalBroadcastManager.getInstance(mContext).registerReceiver(this, new IntentFilter(RegistrationComplete));
-        startGcmRegistrationIntentService();
+        startFcmRegistrationIntentService();
     }
 }

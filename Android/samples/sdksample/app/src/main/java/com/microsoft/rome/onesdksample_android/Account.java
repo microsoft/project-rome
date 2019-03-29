@@ -151,7 +151,7 @@ public class Account {
         }
 
         // Grab the shared GCM/FCM notification token from this app's BroadcastReceiver
-        return GcmNotificationReceiver.getNotificationRegistrationAsync().thenComposeAsync((ConnectedDevicesNotificationRegistration notificationRegistration) -> {
+        return FcmNotificationReceiver.getNotificationRegistrationAsync().thenComposeAsync((ConnectedDevicesNotificationRegistration notificationRegistration) -> {
             // Perform the registration using the NotificationRegistration
             return mPlatform.getNotificationRegistrationManager().registerAsync(mAccount, notificationRegistration)
                 .thenComposeAsync((ConnectedDevicesNotificationRegistrationResult result) -> {

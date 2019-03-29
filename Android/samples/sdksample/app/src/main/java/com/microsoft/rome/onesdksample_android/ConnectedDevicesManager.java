@@ -50,7 +50,7 @@ public class ConnectedDevicesManager {
     private String currentAccountId;
     private List<Account> mAccounts;
 
-    private GcmNotificationReceiver mNotificationReceiver;
+    private FcmNotificationReceiver mNotificationReceiver;
     private ConnectedDevicesPlatform mPlatform;
     private static ConnectedDevicesManager sConnectedDevicesManager;
     // endregion
@@ -65,7 +65,7 @@ public class ConnectedDevicesManager {
         mAccounts = new ArrayList<Account>();
         
         // Create the NotificationReceiver
-        mNotificationReceiver = new GcmNotificationReceiver(context);
+        mNotificationReceiver = new FcmNotificationReceiver(context);
 
         // Create Platform
         mPlatform = new ConnectedDevicesPlatform(context);
@@ -160,7 +160,7 @@ public class ConnectedDevicesManager {
         registration.setAppId(Secrets.GCM_SENDER_ID);
         registration.setAppDisplayName("OneSDK Sample");
 
-        Log.i(TAG, "Completing the GcmNotificationReceiver operation with token: " + token);
+        Log.i(TAG, "Completing the FcmNotificationReceiver operation with token: " + token);
 
         // For each prepared account, register for notifications
         for (Account account : mAccounts) {
@@ -188,7 +188,7 @@ public class ConnectedDevicesManager {
         //
         // In order to most cleany handle both cases set the new notification information and then trigger a re registration of all accounts
         // that are in good standing.
-        GcmNotificationReceiver.setNotificationRegistration(registration);
+        FcmNotificationReceiver.setNotificationRegistration(registration);
 
         // For all the accounts which have been prepared successfully, perform Relay SDK registration
         for (Account account : mAccounts) {
