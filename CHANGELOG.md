@@ -1,3 +1,16 @@
+## 1.2.0
+
+
+### Deprecated (2 changes)
+
+- Add improved async methods for APIs that could hit web endpoints. Deprecate old versions that only returned success/fail.
+- Add new mechanism to be able to check up front if a notification is intended for the ConnectedDevicesPlatform. Deprecate old notification processing.
+
+
+### Fixed (1 change)
+
+- Update UserDataFeedSyncScope to be a class instead of an interface.
+
 ## 1.1.0
 
 
@@ -77,3 +90,4 @@
 ### Removed (1 change)
 
 - Remove UserNotificationReaderOptions constructors except for default.
+
