@@ -225,7 +225,9 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
         (id) kSecClass          : (id) kSecClassGenericPassword,
         (id) kSecAttrGeneric    : parent.clientId,
         (id) kSecMatchLimit     : (id) kSecMatchLimitOne, // Only match one keychain item
-        (id) kSecReturnData     : @YES                    // Return the data itself rather than a ref
+        (id) kSecReturnData     : @YES,                   // Return the data itself rather than a ref
+        (id) kSecAttrService    : @"MSAAccount",
+        (id) kSecAttrAccount    : parent.clientId
     };
     // clang-format on
 
@@ -310,7 +312,9 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
     // clang-format off
     NSDictionary* keychainSearchQuery = @{
         (id) kSecClass          : (id) kSecClassGenericPassword,
-        (id) kSecAttrGeneric    : self.parent.clientId
+        (id) kSecAttrGeneric    : self.parent.clientId,
+        (id) kSecAttrService    : @"MSAAccount",
+        (id) kSecAttrAccount    : self.parent.clientId
     };
     // clang-format on
 
@@ -493,7 +497,9 @@ static const NSTimeInterval MsaAccessTokenCloseToExpiryInterval = 5 * 60;
     // clang-format off
     NSDictionary* keychainDeleteQuery = @{
         (id) kSecClass          : (id) kSecClassGenericPassword,
-        (id) kSecAttrGeneric    : _clientId
+        (id) kSecAttrGeneric    : _clientId,
+        (id) kSecAttrService    : @"MSAAccount",
+        (id) kSecAttrAccount    : _clientId
     };
     // clang-format on
 

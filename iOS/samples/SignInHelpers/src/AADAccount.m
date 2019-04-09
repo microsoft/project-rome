@@ -78,6 +78,8 @@ static NSString* const AADAccountProviderErrorDomain = @"AADAccount";
 
             if (_tokenCacheItem)
             {
+                mcdAccount = [[MCDConnectedDevicesAccount alloc] initWithAccountId:_tokenCacheItem.userInformation.uniqueId
+                                                                              type:MCDConnectedDevicesAccountTypeAAD];
                 NSLog(@"Loaded previous AADAccountProvider session, starting as signed in.");
             }
             else

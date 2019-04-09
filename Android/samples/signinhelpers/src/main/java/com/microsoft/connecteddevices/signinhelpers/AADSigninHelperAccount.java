@@ -112,7 +112,7 @@ public final class AADSigninHelperAccount implements SigninHelperAccount {
     @Override
     public synchronized AsyncOperation<ConnectedDevicesAccount> signIn(final Activity currentActivity) throws IllegalStateException {
         if (isSignedIn()) {
-            throw new IllegalStateException("AADSigninHelperAccount: Already signed in!");
+            return AsyncOperation.completedFuture(mAccount);
         }
 
         final AsyncOperation<ConnectedDevicesAccount> signInOperation = new AsyncOperation<>();
@@ -191,7 +191,7 @@ public final class AADSigninHelperAccount implements SigninHelperAccount {
         final AsyncOperation<String> getAccessTokenOperation = new AsyncOperation<>();
         final String scope = scopes.get(0);
 
-        // acquireTokenSilent(scope, new AcquireTokenHandler(scope, getAccessTokenOperation));
+        acquireTokenSilent(scope, new AcquireTokenHandler(scope, getAccessTokenOperation));
         return getAccessTokenOperation;
     }
 

@@ -12,9 +12,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Keep;
 import android.text.TextUtils;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -22,6 +24,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.microsoft.connecteddevices.AsyncOperation;
+import com.microsoft.connecteddevices.EventListener;
 import com.microsoft.connecteddevices.ConnectedDevicesAccount;
 import com.microsoft.connecteddevices.ConnectedDevicesAccountType;
 
@@ -89,13 +92,13 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
     // CDP's SDK currently requires authorization for all features, otherwise platform initialization will fail.
     // As such, the user must sign in/consent for the following scopes. This may change to become more modular in the future.
     private static final List<String> KNOWN_SCOPES = Arrays.asList("wl.offline_access", // read and update user info at any time
-            "ccs.ReadWrite",                                                                // device commanding scope
-            "dds.read",                                                                     // device discovery scope (discover other devices)
-            "dds.register",                                                    // device discovery scope (allow discovering this device)
-            "wns.connect",                                                     // push notification scope
-            "asimovrome.telemetry",                                            // asimov token scope
-            "https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp" // default useractivities scope
-            );
+        "ccs.ReadWrite",                                                                // device commanding scope
+        "dds.read",                                                                     // device discovery scope (discover other devices)
+        "dds.register",                                                    // device discovery scope (allow discovering this device)
+        "wns.connect",                                                     // push notification scope
+        "asimovrome.telemetry",                                            // asimov token scope
+        "https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp" // default useractivities scope
+        );
 
     // OAuth URLs
     private static final String REDIRECT_URL = "https://login.live.com/oauth20_desktop.srf";
@@ -130,14 +133,9 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
         });
 
         if (mTokenCache.loadSavedRefreshToken()) {
-            // Note: It is important to provide the correct account ID for the signed in account in the current session.
             String id = mTokenCache.readSavedAccountId();
-            if (!id.isEmpty()) {
-                Log.i(TAG, "Loaded previous session for MSASigninHelperAccount: " + id + ". Starting as signed in.");
-                mAccount = new ConnectedDevicesAccount(id, ConnectedDevicesAccountType.MSA);
-            } else {
-                Log.w(TAG, "There exists a previous session of this app, however no ID exists. This is likely an upgrade of an older MSASigninHelperAccount version.");
-            }
+            Log.i(TAG, "Loaded previous session for MSASigninHelperAccount: " + id + ". Starting as signed in.");
+            mAccount = new ConnectedDevicesAccount(id, ConnectedDevicesAccountType.MSA);
         } else {
             Log.i(TAG, "No previous session could be loaded for MSASigninHelperAccount. Starting as signed out.");
         }
@@ -155,7 +153,8 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
             return AsyncOperation.completedFuture(mAccount);
         }
 
-        final String signInUrl = AUTHORIZE_URL + "?redirect_uri=" + REDIRECT_URL + "&response_type=code&client_id=" + mClientId + "&scope=" + TextUtils.join("+", getAuthScopes(KNOWN_SCOPES));
+        final String signInUrl = AUTHORIZE_URL + "?redirect_uri=" + REDIRECT_URL + "&response_type=code&client_id=" + mClientId +
+                                 "&scope=" + TextUtils.join("+", getAuthScopes(KNOWN_SCOPES));
         final AsyncOperation<String> authCodeOperation = new AsyncOperation<>();
         final AsyncOperation<ConnectedDevicesAccount> signInOperation = new AsyncOperation<>();
 
@@ -200,12 +199,19 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
         }
 
         authCodeOperation // chain after successfully fetching the authcode (does not execute if authCodeOperation completed exceptionally)
-                .thenComposeAsync((AsyncOperation.ResultFunction<String, AsyncOperation<MSATokenRequest.Result>>) authCode -> MSATokenRequest.requestAsync(mClientId, MSATokenRequest.GrantType.CODE, null, REDIRECT_URL, authCode))
-                .thenAcceptAsync((AsyncOperation.ResultConsumer<MSATokenRequest.Result>) result -> {
+            .thenComposeAsync(new AsyncOperation.ResultFunction<String, AsyncOperation<MSATokenRequest.Result>>() {
+                @Override
+                public AsyncOperation<MSATokenRequest.Result> apply(String authCode) {
+                    return MSATokenRequest.requestAsync(mClientId, MSATokenRequest.GrantType.CODE, null, REDIRECT_URL, authCode);
+                }
+            })
+            .thenAcceptAsync(new AsyncOperation.ResultConsumer<MSATokenRequest.Result>() {
+                @Override
+                public void accept(MSATokenRequest.Result result) {
                     if (result.getStatus() == MSATokenRequest.Result.Status.SUCCESS) {
                         if (result.getRefreshToken() == null) {
                             signInOperation.completeExceptionally(
-                                    new Exception("Unexpected: refresh token is null despite succeeding in refresh."));
+                                new Exception("Unexpected: refresh token is null despite succeeding in refresh."));
                         }
 
                         Log.i(TAG, "Successfully fetched refresh token.");
@@ -221,11 +227,15 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
                         Log.e(TAG, "Failed to fetch refresh token using auth code.");
                         signInOperation.completeExceptionally(new Exception("Failed to fetch refresh token using auth code."));
                     }
-                })
-                .exceptionally(throwable -> {
+                }
+            })
+            .exceptionally(new AsyncOperation.ResultFunction<Throwable, Void>() {
+                @Override
+                public Void apply(Throwable throwable) throws Throwable {
                     signInOperation.completeExceptionally(throwable);
                     return null;
-                });
+                }
+            });
 
         dialog.show();
         dialog.setCancelable(true);
@@ -285,13 +295,16 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
     public synchronized AsyncOperation<String> getAccessTokenAsync(final List<String> scopes) {
         final String scope = TextUtils.join(" ", getAuthScopes(scopes));
 
-        return mTokenCache.getAccessTokenAsync(scope).thenComposeAsync((AsyncOperation.ResultFunction<String, AsyncOperation<String>>) accessToken -> {
-            if (accessToken != null) {
-                // Token already exists in the cache, can early return
-                return AsyncOperation.completedFuture(accessToken);
-            } else {
-                // Token does not yet exist in the cache, need to request a new one
-                return requestNewAccessTokenAsync(scope);
+        return mTokenCache.getAccessTokenAsync(scope).thenComposeAsync(new AsyncOperation.ResultFunction<String, AsyncOperation<String>>() {
+            @Override
+            public AsyncOperation<String> apply(String accessToken) {
+                if (accessToken != null) {
+                    // Token already exists in the cache, can early return
+                    return AsyncOperation.completedFuture(accessToken);
+                } else {
+                    // Token does not yet exist in the cache, need to request a new one
+                    return requestNewAccessTokenAsync(scope);
+                }
             }
         });
     }
@@ -332,7 +345,13 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
                 cookieManager.removeAllCookie();
                 CookieSyncManager.getInstance().sync();
             } else {
-                cookieManager.removeAllCookies(value -> cookieManager.flush());
+                cookieManager.removeAllCookies(new ValueCallback<Boolean>() {
+                    @Override
+                    @TargetApi(21)
+                    public void onReceiveValue(Boolean value) {
+                        cookieManager.flush();
+                    }
+                });
             }
 
             // Complete the operation with the removed account
@@ -359,7 +378,7 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
 
             if ((error != null) || (code == null) || (code.length() <= 0)) {
                 authCodeOperation.completeExceptionally(
-                        new Exception((error != null) ? error : "Failed to authenticate with unknown error"));
+                    new Exception((error != null) ? error : "Failed to authenticate with unknown error"));
             } else {
                 authCodeOperation.complete(code);
             }
@@ -413,19 +432,27 @@ public final class MSASigninHelperAccount implements SigninHelperAccount {
     private AsyncOperation<String> requestNewAccessTokenAsync(final String scope) {
         // Need the refresh token first, then can use it to request an access token
         return mTokenCache.getRefreshTokenAsync()
-                .thenComposeAsync((AsyncOperation.ResultFunction<String, AsyncOperation<MSATokenRequest.Result>>) refreshToken -> MSATokenRequest.requestAsync(mClientId, MSATokenRequest.GrantType.REFRESH, scope, null, refreshToken))
-                .thenApplyAsync((AsyncOperation.ResultFunction<MSATokenRequest.Result, String>) result -> {
+            .thenComposeAsync(new AsyncOperation.ResultFunction<String, AsyncOperation<MSATokenRequest.Result>>() {
+                @Override
+                public AsyncOperation<MSATokenRequest.Result> apply(String refreshToken) {
+                    return MSATokenRequest.requestAsync(mClientId, MSATokenRequest.GrantType.REFRESH, scope, null, refreshToken);
+                }
+            })
+            .thenApplyAsync(new AsyncOperation.ResultFunction<MSATokenRequest.Result, String>() {
+                @Override
+                public String apply(MSATokenRequest.Result result) throws Throwable {
                     switch (result.getStatus()) {
-                        case SUCCESS:
-                            Log.i(TAG, "Successfully fetched access token.");
-                            String token = result.getAccessToken();
-                            mTokenCache.setAccessToken(token, scope, result.getExpiresIn());
-                            return token;
-                        case TRANSIENT_FAILURE: throw new IOException("Requesting new access token failed temporarily, please try again.");
-                        default: // PERMANENT_FAILURE
-                            throw new IOException("Permanent error occurred while fetching access token.");
+                    case SUCCESS:
+                        Log.i(TAG, "Successfully fetched access token.");
+                        String token = result.getAccessToken();
+                        mTokenCache.setAccessToken(token, scope, result.getExpiresIn());
+                        return token;
+                    case TRANSIENT_FAILURE: throw new IOException("Requesting new access token failed temporarily, please try again.");
+                    default: // PERMANENT_FAILURE
+                        throw new IOException("Permanent error occurred while fetching access token.");
                     }
-                });
+                }
+            });
     }
     // endregion
 }
