@@ -444,22 +444,23 @@
     });
 }
 
-- (void)setNotificationRegistration:(NSString*)tokenString {
+- (void)setNotificationRegistration:(NSString*)deviceToken {
+    MCDConnectedDevicesNotificationRegistration* notificationRegistration = [[MCDConnectedDevicesNotificationRegistration alloc] init];
+    notificationRegistration.type = MCDNotificationTypeAPN;
+    notificationRegistration.appId = [[NSBundle mainBundle] bundleIdentifier];
+    notificationRegistration.appDisplayName = (NSString*)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    notificationRegistration.token = deviceToken;
     
-    MCDConnectedDevicesNotificationRegistration* registration = [MCDConnectedDevicesNotificationRegistration new];
+    NSLog(@"GraphNotifications Successfully created notification registration!");
     
     if ([[UIApplication sharedApplication] isRegisteredForRemoteNotifications])
     {
-        registration.type = MCDNotificationTypeAPN;
+        notificationRegistration.type = MCDNotificationTypeAPN;
     }
     else
     {
-        registration.type = MCDNotificationTypePolling;
+        notificationRegistration.type = MCDNotificationTypePolling;
     }
-    
-    registration.appId = [[NSBundle mainBundle] bundleIdentifier];
-    registration.appDisplayName = (NSString*)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-    registration.token = tokenString;
     
     // The two cases of receiving a new notification token are:
     // 1. A notification registration is asked for and now it is available. In this case there is a pending promise that was made
@@ -468,8 +469,7 @@
     //
     // In order to most cleany handle both cases set the new notification information and then trigger a re registration of all accounts
     // that are in good standing.
-    [self.apnsManager setNotificationRegistration:registration accounts:self.accounts];
+    [self.apnsManager setNotificationRegistration:notificationRegistration accounts:self.accounts];
 }
-
 
 @end

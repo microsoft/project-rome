@@ -60,7 +60,7 @@ typedef NS_ENUM(NSInteger, AccountRegistrationState) {
 - (AnyPromise*)signInMsaAsync;
 - (AnyPromise*)signOutAsync:(Account*)account;
 - (NSMutableArray<Account*>*)deserializeAccounts;
-- (void)setNotificationRegistration:(MCDConnectedDevicesNotificationRegistration*)registration;
+- (void)setNotificationRegistration:(NSString*)deviceToken;
 @end
 
 #endif /* ConnectedDevicesPlatformManager_h */

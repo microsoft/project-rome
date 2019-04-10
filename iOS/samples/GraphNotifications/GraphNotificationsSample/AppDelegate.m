@@ -29,20 +29,6 @@ void uncaughtExceptionHandler(NSException* uncaughtException)
     }
 }
 
-
-
-- (void)createNotificationRegistrationWithToken:(NSString* _Nonnull)deviceToken
-{
-    _notificationRegistration = [[MCDConnectedDevicesNotificationRegistration alloc] init];
-    _notificationRegistration.type = MCDNotificationTypeAPN;
-    _notificationRegistration.appId = [[NSBundle mainBundle] bundleIdentifier];
-    _notificationRegistration.appDisplayName = (NSString*)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-    _notificationRegistration.token = deviceToken;
-    NSLog(@"GraphNotifications Successfully created notification registration!");
-    NSLog(@"platformManager info %@", _platformManager);
-    [_platformManager setNotificationRegistration: _notificationRegistration];
-}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
@@ -146,7 +132,7 @@ didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings*)notifi
 
     @try
     {
-        [self createNotificationRegistrationWithToken:deviceTokenStr];
+        [_platformManager setNotificationRegistration: deviceTokenStr];
     }
     @catch (NSException* exception)
     {
