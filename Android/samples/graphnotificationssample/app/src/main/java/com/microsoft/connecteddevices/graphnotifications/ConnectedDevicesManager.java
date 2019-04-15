@@ -6,6 +6,7 @@ package com.microsoft.connecteddevices.graphnotifications;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.ArrayMap;
 import android.util.Log;
 
@@ -246,6 +247,22 @@ public class ConnectedDevicesManager {
     // endregion
 
     // region private instance methods
+    @Nullable
+    private SigninHelperAccount getSignedInHelperAccount(Context context) {
+        // Prefer MSA
+        final SigninHelperAccount msaAccount = new MSASigninHelperAccount(Secrets.MSA_CLIENT_ID, new ArrayMap<String, String[]>(), context);
+        if (msaAccount.isSignedIn()) {
+            return msaAccount;
+        }
+        // Try AAD
+        final SigninHelperAccount aadAccount = new AADSigninHelperAccount(Secrets.AAD_CLIENT_ID, Secrets.AAD_REDIRECT_URI, context);
+        if (aadAccount.isSignedIn()) {
+            return aadAccount;
+        }
+        // No signed in account exists
+        return null;
+    }
+
     /**
      * Pull the accounts from our app's cache and synchronize the list with the 
      * apps cached by ConnectedDevicesPlatform.AccountManager.
@@ -253,37 +270,37 @@ public class ConnectedDevicesManager {
      * @return List of accounts from the app and SDK's cache
      */
     private List<Account> deserializeAccounts(Context context) {
+        List<Account> returnAccounts = new ArrayList<Account>();
+
         // Since our helper lib can only cache 1 app at a time, we create sign-in helper,
-        // which does user account and access token management for us. Takes three parameters:
-        // a client id for msa, a map of requested auto scopes to override, and the context
-        SigninHelperAccount signInHelper = new MSASigninHelperAccount(Secrets.MSA_CLIENT_ID, new ArrayMap<String, String[]>(), context);
+        // which does user account and access token management for us.
+        final SigninHelperAccount appCachedAccount = getSignedInHelperAccount(context);
+        if (appCachedAccount == null) {
+            // early return if there is no signed-in account
+            return returnAccounts;
+        }
 
         // Get all of the ConnectedDevicesPlatform's added accounts
         List<ConnectedDevicesAccount> sdkCachedAccounts = mPlatform.getAccountManager().getAccounts();
 
-        List<Account> returnAccounts = new ArrayList<Account>();
+        // Check if the account is also present in ConnectedDevicesPlatform.AccountManager.
+        ConnectedDevicesAccount sdkCachedAccount = findFirst(sdkCachedAccounts, account -> accountsMatch(appCachedAccount.getAccount(), account));
 
-        // If there is a signed in account in the app's cache, find it exists in the SDK's cache
-        if (signInHelper.isSignedIn()) {
-            // Check if the account is also present in ConnectedDevicesPlatform.AccountManager.
-            ConnectedDevicesAccount sdkCachedAccount = findFirst(sdkCachedAccounts, account -> accountsMatch(signInHelper.getAccount(), account));
-
-            AccountRegistrationState registrationState;
-            if (sdkCachedAccount != null) {
-                // Account found in the SDK cache, remove it from the list of sdkCachedAccounts. After 
-                // all the appCachedAccounts have been processed any accounts remaining in sdkCachedAccounts
-                // are only in the SDK cache, and should be removed.
-                registrationState = AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE;
-                sdkCachedAccounts.remove(sdkCachedAccount);
-            } else {
-                // Account not found in the SDK cache. Later when we initialize the Account,
-                // it will be added to the SDK cache and perform registration.
-                registrationState = AccountRegistrationState.IN_APP_CACHE_ONLY;
-            }
-
-            // Add the app's cached account with the correct registration state
-            returnAccounts.add(new Account(signInHelper, registrationState, mPlatform));
+        AccountRegistrationState registrationState;
+        if (sdkCachedAccount != null) {
+            // Account found in the SDK cache, remove it from the list of sdkCachedAccounts. After
+            // all the appCachedAccounts have been processed any accounts remaining in sdkCachedAccounts
+            // are only in the SDK cache, and should be removed.
+            registrationState = AccountRegistrationState.IN_APP_CACHE_AND_SDK_CACHE;
+            sdkCachedAccounts.remove(sdkCachedAccount);
+        } else {
+            // Account not found in the SDK cache. Later when we initialize the Account,
+            // it will be added to the SDK cache and perform registration.
+            registrationState = AccountRegistrationState.IN_APP_CACHE_ONLY;
         }
+
+        // Add the app's cached account with the correct registration state
+        returnAccounts.add(new Account(appCachedAccount, registrationState, mPlatform));
 
         // Add all the accounts which exist only in the SDK
         for (ConnectedDevicesAccount account : sdkCachedAccounts) {

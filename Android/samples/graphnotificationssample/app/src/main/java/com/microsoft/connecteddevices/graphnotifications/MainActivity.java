@@ -407,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             mRootView = inflater.inflate(R.layout.fragment_log, container, false);
             mTextView = mRootView.findViewById(R.id.log_text);
-            mLogFile = new File(getActivity().getApplicationContext().getExternalFilesDir(null), "CDPTraces.log");
+            mLogFile = new File(getActivity().getApplicationContext().getFilesDir(), "CDPTraces.log");
             try {
                 mReader = new FileReader(mLogFile);
             } catch (FileNotFoundException e) {
