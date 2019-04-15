@@ -118,6 +118,7 @@
     </Compile>
     <Compile Include="Account.cs" />
     <Compile Include="Secrets.cs" />
+    <Compile Include="UserNotificationsManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
