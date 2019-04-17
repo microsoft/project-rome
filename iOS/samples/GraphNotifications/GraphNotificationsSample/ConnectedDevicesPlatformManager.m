@@ -3,11 +3,10 @@
 //
 
 #import "ConnectedDevicesPlatformManager.h"
-#import <ConnectedDevicesUserData/ConnectedDevicesUserData.h>
-#import <ConnectedDevicesUserDataUserActivities/ConnectedDevicesUserDataUserActivities.h>
-
-#import "MSAAccount.h"
 #import "Secrets.h"
+
+// Known list of MSA scopes for this sample
+static NSDictionary<NSString*, NSArray<NSString*>*>* s_msaScopeOverrides;
 
 @implementation APNSManager {
     NSMutableDictionary<NSString*, PMKAdapter>* _pendingOperationBlocks;
@@ -39,7 +38,7 @@
     }
 }
 
-- (void)setNotificationRegistration:(MCDConnectedDevicesNotificationRegistration*)registration accounts:(NSArray<Account*>*)accounts{
+- (void)setNotificationRegistration:(MCDConnectedDevicesNotificationRegistration*)registration accounts:(NSArray<Account*>*)accounts {
     NSMutableDictionary<NSString*, PMKAdapter>* pendingOperationBlocksToComplete;
     BOOL needsUpdating = NO;
     @synchronized (self) {
@@ -76,6 +75,7 @@
 
 @interface Account () {
     MSAAccount* _msaAccount;
+    AADAccount* _aadAccount;
 }
 
 - (void)clearSubcomponents;
@@ -103,6 +103,21 @@
         }
         
         self.mcdAccount = _msaAccount.mcdAccount;
+        self.platform = platform;
+        self.apnsManager = apnsManager;
+    }
+    
+    return self;
+}
+
+- (instancetype)initWithAADAccount:(AADAccount *)aadAccount platform:(MCDConnectedDevicesPlatform*)platform apnsManager:(APNSManager*)apnsManager {
+    if (self = [super init]) {
+        _aadAccount = aadAccount;
+        if (!_aadAccount.isSignedIn) {
+            return nil;
+        }
+        
+        self.mcdAccount = _aadAccount.mcdAccount;
         self.platform = platform;
         self.apnsManager = apnsManager;
     }
@@ -178,7 +193,6 @@
 
 - (AnyPromise*)registerWithSdkAsync
 {
-    
     if (self.state != AccountRegistrationStateInAppCacheAndSdkCache) {
         return [AnyPromise promiseWithValue:[NSError errorWithDomain:@"AccountException" code:0 userInfo:nil]];
     }
@@ -199,18 +213,9 @@
             return [AnyPromise promiseWithValue:[NSError errorWithDomain:@"RegistrationError" code:result.status userInfo:nil]];
         }
         
-        // Do operations that require notification registration now. Like saving UserDataFeed sync scopes.
-        MCDUserDataFeed* userDataFeed = [MCDUserDataFeed getForAccount:self.mcdAccount
-                                                              platform:self.platform
-                                                    activitySourceHost:APP_HOST_NAME];
+        // Initialize the UserNotification manager for this account
+        _notificationsManager = [[NotificationsManager alloc] initWithAccount:self.mcdAccount platform:self.platform];
         
-        // For UserDataFeed, adjust the sync scopes so that the types the app cares about synced down. Until this completes, the app will not
-        // get data of the desired type (UserActivities vs UserNotifications) and will not receive notifications when the data changes.
-        NSArray<MCDUserDataFeedSyncScope*>* syncScopes = @[ [MCDUserActivityChannel syncScope] ];
-        [userDataFeed subscribeToSyncScopesAsync:syncScopes
-                                        callback:^(BOOL success __unused, NSError* _Nullable error __unused) {
-                                            // Based on your app's needs this could be a good place to start syncing down activity feeds etc.
-                                        }];
         // This sample simply kicks off registration of the UserDataFeed but does not return a meaningful promise
         // here to gate other operations on completion on this step. This is more scenario dependent on what operations the app cares
         // about.
@@ -218,8 +223,7 @@
     });
 }
 
-- (AnyPromise*)signOutAsync
-{
+- (AnyPromise*)signOutAsync {
     // First remove the account out from the ConnectedDevices SDK. The SDK may call back for access tokens to perform
     // unregistration with services
     [self clearSubcomponents];
@@ -229,28 +233,36 @@
         // After its gone from the sdk, it is safe to sign out from the token library and clean up the account list.
         self.state = AccountRegistrationStateInAppCacheOnly;
         return [AnyPromise promiseWithAdapterBlock:^(PMKAdapter _Nonnull adapter) {
-            [_msaAccount signOutWithCompletionCallback:adapter];
+            if (_msaAccount != nil) {
+                [_msaAccount signOutWithCompletionCallback:adapter];
+                _msaAccount = nil;
+            } else {
+                [_aadAccount signOutWithCompletionCallback:adapter];
+                _aadAccount = nil;
+            }
         }];
     });
 }
 
 - (void)initializeSubcomponents {
     // Do initial per account immediate initialization work. Like getting and handling a UserDataFeed.
-    MCDUserDataFeed* userDataFeed = [MCDUserDataFeed getForAccount:self.mcdAccount
-                                                          platform:self.platform
-                                                activitySourceHost:APP_HOST_NAME];
-    [userDataFeed.syncStatusChanged subscribe:^(MCDUserDataFeed* _Nonnull sender, MCDUserDataFeedSyncStatusChangedEventArgs* _Nonnull __unused args) {
-        NSLog(@"SyncStatus is %ld", (long)sender.syncStatus);
-    }];
+    // Do operations that require notification registration now.
 }
 
 - (void)clearSubcomponents {
     // If your app needs to stop using a sub component for some reason, this would be a good place to reset a user data feed for instance.
+    _notificationsManager = nil;
 }
 
 - (AnyPromise*)getAccessTokenAsync:(NSArray<NSString*>*)scopes {
     return [AnyPromise promiseWithAdapterBlock:^(PMKAdapter _Nonnull adapter) {
-        [_msaAccount getAccessTokenForUserAccountIdAsync:self.mcdAccount.accountId scopes:scopes completion:adapter];
+        if (_msaAccount != nil) {
+            [_msaAccount getAccessTokenForUserAccountIdAsync:self.mcdAccount.accountId scopes:scopes completion:adapter];
+        } else if (_aadAccount != nil) {
+            [_aadAccount getAccessTokenForUserAccountIdAsync:self.mcdAccount.accountId scopes:scopes completion:adapter];
+        } else {
+            NSLog(@"Token requested by platform for unknown account");
+        }
     }];
 }
 
@@ -267,7 +279,12 @@
     static dispatch_once_t onceToken;
     static ConnectedDevicesPlatformManager* sharedInstance;
     
-    dispatch_once(&onceToken, ^{ sharedInstance = [[ConnectedDevicesPlatformManager alloc] init]; });
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[ConnectedDevicesPlatformManager alloc] init];
+        s_msaScopeOverrides = @{@"https://activity.windows.com/UserActivity.ReadWrite.CreatedByApp"
+                                : @[@"https://activity.windows.com/Notifications.ReadWrite.CreatedByApp"]
+                                };
+    });
     return sharedInstance;
 }
 
@@ -276,8 +293,9 @@
         self.accounts = [NSMutableArray new];
         self.apnsManager = [APNSManager new];
         
-        // Construct and initialize a platform. All we are doing here is hooking up event handlers before
-        // calling ConnectedDevicesPlatform Start. After Start is called events may begin to fire.
+        // Construct and initialize an instance of MCDConnectedDevicesPlatform.
+        // We are hooking up event handlers before calling ConnectedDevicesPlatform Start.
+        // After Start is called events may begin to fire.
         self.platform = [MCDConnectedDevicesPlatform new];
         
         __weak ConnectedDevicesPlatformManager* weakSelf = self;
@@ -363,18 +381,32 @@
     return self;
 }
 
+- (NotificationsManager*)notificationsManager {
+    // Since the sample is setup for single account, return the first account's notifications manager
+    return self.accounts[0].notificationsManager;
+}
+
 - (NSMutableArray<Account*>*)deserializeAccounts {
-    // Add all cached accounts from the platform.
+    // List of known accounts
+    NSMutableArray<Account*>* accountList = [NSMutableArray new];
+    
+    // Get the accounts cached in the SDK.
     NSMutableArray<MCDConnectedDevicesAccount*>* sdkCachedAccounts = [NSMutableArray arrayWithArray:self.platform.accountManager.accounts];
     
-    // Ideally the token library would support multiple app cached accounts; If this is nil then there is no account the app knows about.
-    Account* appCachedAccount = [[Account alloc] initWithMSAAccount:[[MSAAccount alloc] initWithClientId:MSA_CLIENT_ID scopeOverrides:@{}] platform:self.platform apnsManager:self.apnsManager];
+    // Get the account cached by the app (First MSA, then AAD)
+    Account* appCachedAccount = [[Account alloc] initWithMSAAccount:[[MSAAccount alloc] initWithClientId:MSA_CLIENT_ID
+      scopeOverrides:s_msaScopeOverrides] platform:self.platform apnsManager:self.apnsManager];
+    if (appCachedAccount == nil) {
+        appCachedAccount = [[Account alloc] initWithAADAccount:[[AADAccount alloc] initWithClientId:AAD_CLIENT_ID
+            redirectUri:[NSURL URLWithString:AAD_REDIRECT_URI]] platform:self.platform apnsManager:self.apnsManager];
+    }
     
-    NSMutableArray<Account*>* accountList = [NSMutableArray new];
+    // Cross-check the app-cached account with SDK-cached accounts
     if (appCachedAccount != nil) {
         MCDConnectedDevicesAccount* matchingAccount = nil;
         for (MCDConnectedDevicesAccount* account in sdkCachedAccounts) {
-            if ([appCachedAccount.mcdAccount.accountId isEqualToString:account.accountId] && appCachedAccount.mcdAccount.type == account.type) {
+            if ([appCachedAccount.mcdAccount.accountId isEqualToString:account.accountId]
+                    && appCachedAccount.mcdAccount.type == account.type) {
                 matchingAccount = account;
                 break;
             }
@@ -390,9 +422,10 @@
         [accountList addObject:appCachedAccount];
     }
     
-    // Add the remaining SDK only accounts (these need to be removed from the SDK)
+    // Add the remaining SDK-cached accounts
     for (MCDConnectedDevicesAccount* account in sdkCachedAccounts) {
-        [accountList addObject:[[Account alloc] initWithMCDAccount:account state:AccountRegistrationStateInSdkCacheOnly platform:self.platform apnsManager:self.apnsManager]];
+        [accountList addObject:[[Account alloc] initWithMCDAccount:account state:AccountRegistrationStateInSdkCacheOnly
+                                                platform:self.platform apnsManager:self.apnsManager]];
     }
     
     return accountList;
@@ -421,11 +454,26 @@
 }
 
 - (AnyPromise*)signInMsaAsync {
-    MSAAccount* msaAccount = [[MSAAccount alloc] initWithClientId:MSA_CLIENT_ID scopeOverrides:@{}];
+    MSAAccount* msaAccount = [[MSAAccount alloc] initWithClientId:MSA_CLIENT_ID
+        scopeOverrides:s_msaScopeOverrides];
     return [AnyPromise promiseWithAdapterBlock:^(PMKAdapter _Nonnull adapter) {
         [msaAccount signInWithCompletionCallback:adapter];
     }].then(^{
         Account* account = [[Account alloc] initWithMSAAccount:msaAccount platform:self.platform apnsManager:self.apnsManager];
+        account.state = AccountRegistrationStateInAppCacheOnly;
+        [self.accounts addObject:account];
+        return [account prepareAccountAsync:self];
+    }).then(^{
+        [self accountListChanged];
+    });
+}
+
+- (AnyPromise*)signInAadAsync {
+    AADAccount* aadAccount = [[AADAccount alloc] initWithClientId:AAD_CLIENT_ID redirectUri:[NSURL URLWithString:AAD_REDIRECT_URI]];
+    return [AnyPromise promiseWithAdapterBlock:^(PMKAdapter _Nonnull adapter) {
+        [aadAccount signInWithCompletionCallback:adapter];
+    }].then(^{
+        Account* account = [[Account alloc] initWithAADAccount:aadAccount platform:self.platform apnsManager:self.apnsManager];
         account.state = AccountRegistrationStateInAppCacheOnly;
         [self.accounts addObject:account];
         return [account prepareAccountAsync:self];
@@ -444,7 +492,7 @@
     });
 }
 
-- (void)setNotificationRegistration:(NSString*)tokenString {
+- (void)setNotificationRegistration:(NSString*)token {
     
     MCDConnectedDevicesNotificationRegistration* registration = [MCDConnectedDevicesNotificationRegistration new];
     
@@ -459,7 +507,7 @@
     
     registration.appId = [[NSBundle mainBundle] bundleIdentifier];
     registration.appDisplayName = (NSString*)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-    registration.token = tokenString;
+    registration.token = token;
     
     // The two cases of receiving a new notification token are:
     // 1. A notification registration is asked for and now it is available. In this case there is a pending promise that was made
@@ -470,6 +518,5 @@
     // that are in good standing.
     [self.apnsManager setNotificationRegistration:registration accounts:self.accounts];
 }
-
 
 @end

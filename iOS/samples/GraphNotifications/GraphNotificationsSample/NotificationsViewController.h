@@ -5,8 +5,7 @@
 #pragma once
 
 #import <UIKit/UIKit.h>
-#import "NotificationsManager.h"
 
-@interface NotificationsViewController : UITableViewController
+@interface NotificationsViewController : UITableViewController<UITableViewDelegate, UITableViewDataSource>
 - (IBAction)refresh;
 @end

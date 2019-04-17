@@ -4,107 +4,106 @@
 
 #import <Foundation/Foundation.h>
 #import "NotificationsViewController.h"
+#import "NotificationsManager.h"
+#import "ConnectedDevicesPlatformManager.h"
 
-@interface NotificationsViewController()
-{
+@implementation NotificationsViewController {
+    NotificationsManager* _notificationsManager;
 }
 
-@property (nonatomic) NSMutableArray<MCDUserNotification*>* notifications;
-- (void)updateData;
-- (void)handleTap:(UITapGestureRecognizer*)recognizer;
-@end
-
-@implementation NotificationsViewController
-
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
-    _notifications = [NSMutableArray array];
-    // Do any additional setup after loading the view, typically from a nib.
-
-    __weak typeof(self) weakSelf = self;
-    [[NotificationsManager sharedInstance] addNotificationsChangedListener:
-    ^{
-        NSLog(@"GraphNotifications NotificationsViewController notified of changes!");
-        dispatch_async(dispatch_get_main_queue(),
-        ^{
-            [weakSelf updateData];
-            [weakSelf.tableView reloadData];
-        });
-    }];
-
-    dispatch_async(dispatch_get_main_queue(),
-    ^{
-        [self updateData];
-        [self.tableView reloadData];
-    });
+    [self refresh];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(__unused UITableView*)tableView
-{
+- (void)_initNotificationsManager {
+    @synchronized (self) {
+        if (_notificationsManager == nil) {
+            _notificationsManager = [[ConnectedDevicesPlatformManager sharedInstance] notificationsManager];
+            
+            __weak typeof(self) weakSelf = self;
+            [_notificationsManager addNotificationsChangedListener: ^{
+                NSLog(@"NotificationsViewController notified of changes!");
+                [weakSelf _updateView];
+            }];
+        }
+    }
+}
+
+- (void)_updateView {
+    dispatch_async(dispatch_get_main_queue(), ^{
+           [self.tableView reloadData];
+       });
+}
+
+- (IBAction)refresh {
+    [self _initNotificationsManager];
+    [_notificationsManager refresh];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(__unused UITableView*)tableView {
     return 1;
 }
 
-- (nonnull UITableViewCell*)tableView:(nonnull UITableView*)tableView cellForRowAtIndexPath:(nonnull NSIndexPath*)indexPath
-{
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"NotificationCell" forIndexPath:indexPath];
+- (NSInteger)tableView:(nonnull __unused UITableView*)tableView numberOfRowsInSection:(__unused NSInteger)section {
+    return _notificationsManager.notifications.count;
+}
 
-    MCDUserNotification* notification = self.notifications[indexPath.row];
+- (nonnull UITableViewCell*)tableView:(nonnull UITableView*)tableView cellForRowAtIndexPath:(nonnull NSIndexPath*)indexPath {
+    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"NotificationCell" forIndexPath:indexPath];
+    MCDUserNotification* notification = _notificationsManager.notifications[indexPath.row];
+    NSLog(@"NotificationsViewController updating cell for notification %@", notification.notificationId);
 
     UILabel* idLabel = (UILabel*)[cell viewWithTag:1];
     [idLabel setText:notification.notificationId];
+    [idLabel setFont:[UIFont boldSystemFontOfSize:20]];
 
     UILabel* contentLabel = (UILabel*)[cell viewWithTag:2];
     [contentLabel setText:notification.content];
 
-    UILabel* userActionStateLabel = (UILabel*)[cell viewWithTag:3];
-    [userActionStateLabel setText:((notification.userActionState == MCDUserNotificationUserActionStateNoInteraction) ? @"No Interaction" : @"Activated")];
+    UILabel* actionStateLabel = (UILabel*)[cell viewWithTag:3];
+    UIButton* dismissButton = (UIButton*)[cell viewWithTag:5];
+    [dismissButton setTag:indexPath.row];
+    if (notification.userActionState == MCDUserNotificationUserActionStateNoInteraction) {
+        [actionStateLabel setText:@"No Interaction"];
+        dismissButton.enabled = YES;
+        [dismissButton addTarget:self action:@selector(handleDismiss:) forControlEvents:UIControlEventTouchUpInside];
+    } else {
+        [actionStateLabel setText:@"Dismissed"];
+        dismissButton.enabled = NO;
+    }
 
     UIButton* readButton = (UIButton*)[cell viewWithTag:4];
-    if (notification.readState == MCDUserNotificationReadStateUnread)
-    {
+    [readButton setTag:indexPath.row];
+    if (notification.readState == MCDUserNotificationReadStateUnread) {
+        [idLabel setTextColor:[UIColor greenColor]];
         readButton.enabled = YES;
-        [readButton addTarget:self action:@selector(handleRead:) forControlEvents:UIControlEventTouchDown];
-    }
-    else
-    {
+        [readButton addTarget:self action:@selector(handleRead:) forControlEvents:UIControlEventTouchUpInside];
+    } else {
+        [idLabel setTextColor:[UIColor redColor]];
         readButton.enabled = NO;
     }
-
-    if (notification.userActionState == MCDUserNotificationUserActionStateNoInteraction)
-    {
-        [cell addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)]];
-    }
+    
+    UIButton* deleteButton = (UIButton*)[cell viewWithTag:6];
+    [deleteButton setTag:indexPath.row];
+    [deleteButton addTarget:self action:@selector(handleDelete:) forControlEvents:UIControlEventTouchUpInside];
+    
     return cell;
 }
 
-- (NSInteger)tableView:(nonnull __unused UITableView*)tableView numberOfRowsInSection:(__unused NSInteger)section
-{
-    return self.notifications.count;
+- (IBAction)handleRead:(UIButton*)button {
+    MCDUserNotification* selected = _notificationsManager.notifications[button.tag];
+    [_notificationsManager markRead:selected];
 }
 
-- (void)handleTap:(UITapGestureRecognizer *)recognizer
-{
-    [[NotificationsManager sharedInstance] dismissNotification:(self.notifications[[self.tableView indexPathForCell:(UITableViewCell*)recognizer.view].row])];
+- (IBAction)handleDismiss:(UIButton*)button {
+    MCDUserNotification* selected = _notificationsManager.notifications[button.tag];
+    [_notificationsManager dismissNotification:selected];
 }
 
-- (void)updateData
-{
-    @synchronized (self)
-    {
-        [self.notifications removeAllObjects];
-        [self.notifications addObjectsFromArray:[NotificationsManager sharedInstance].notifications];
-        NSLog(@"GraphNotifications Got %ld valid objects for NotificationsViewController out of %ld", self.notifications.count, [NotificationsManager sharedInstance].notifications.count);
-    }
+- (IBAction)handleDelete:(UIButton*)button {
+    MCDUserNotification* selected = _notificationsManager.notifications[button.tag];
+    [_notificationsManager deleteNotification:selected];
 }
 
-- (void)handleRead:(id)button
-{
-    [[NotificationsManager sharedInstance] readNotification:(self.notifications[[self.tableView indexPathForCell:(UITableViewCell*)((UIView*)button).superview].row])];
-}
-
-- (IBAction)refresh
-{
-    [[NotificationsManager sharedInstance] refresh];
-}
 @end

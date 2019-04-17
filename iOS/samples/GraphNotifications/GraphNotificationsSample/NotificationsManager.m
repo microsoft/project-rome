@@ -4,230 +4,207 @@
 
 #import "NotificationsManager.h"
 #import "Secrets.h"
-#import "AppDelegate.h"
 #import <UserNotifications/UserNotifications.h>
 
-static NotificationsManager* s_manager;
-
-@interface NotificationsManager ()
-{
-    NSInteger _listenerValue;
-    MCDEventSubscription* _readerSubscription;
+@implementation NotificationsManager {
     NSMutableArray<MCDUserNotification*>* _notifications;
+    NSInteger _listenerValue;
+    NSMutableDictionary<NSNumber*, void(^)(void)>* _listenerMap;
+    MCDUserDataFeed* _feed;
+    MCDUserNotificationChannel* _channel;
+    MCDUserNotificationReader* _reader;
+    MCDEventSubscription* _readerSubscription;
 }
 
-
-@property (nonatomic) NSMutableDictionary<NSNumber*, void(^)(void)>* listenerMap;
-@property (nonatomic) MCDConnectedDevicesPlatform* platform;
-@property (nonatomic) MCDUserNotificationChannel* channel;
-@property (nonatomic) MCDUserNotificationReader* reader;
-@property (nonatomic) BOOL platformStarted;
-@end
-
-@implementation NotificationsManager
-- (instancetype)initWithPlatformManager:(ConnectedDevicesPlatformManager*)platformManager
-{
-    if (self = [super init])
-    {
+- (instancetype)initWithAccount:(MCDConnectedDevicesAccount*)account
+                       platform:(MCDConnectedDevicesPlatform*)platform {
+    if (self = [super init]) {
         _notifications = [NSMutableArray array];
         _listenerValue = 0;
         _listenerMap = [NSMutableDictionary dictionary];
-        _platform = platformManager.platform;
-        _platformStarted = NO;
-        MCDUserDataFeed* _userDataFeed = [MCDUserDataFeed getForAccount:platformManager.accounts[0].mcdAccount
-                                                              platform:self.platform
-                                                    activitySourceHost:MSA_CLIENT_ID];
-        [_userDataFeed startSync];
-        self.channel = [MCDUserNotificationChannel channelWithUserDataFeed:_userDataFeed];
-        self.reader = [self.channel createReader];
-        _readerSubscription = [self.reader.dataChanged subscribe:^(__unused MCDUserNotificationReader* source, __unused MCDUserNotificationReaderDataChangedEventArgs* args){
+        
+        // Initialize the feed and subscribe for notifications
+        _feed = [MCDUserDataFeed getForAccount:account
+                                platform:platform
+                                activitySourceHost:APP_HOST_NAME];
+        [_feed.syncStatusChanged subscribe:^(MCDUserDataFeed* _Nonnull sender,
+                                             __unused MCDUserDataFeedSyncStatusChangedEventArgs* _Nonnull args) {
+            NSLog(@"SyncStatus is %ld", (long)sender.syncStatus);
+        }];
+        NSArray<MCDUserDataFeedSyncScope*>* syncScopes = @[ [MCDUserNotificationChannel syncScope] ];
+        [_feed subscribeToSyncScopesAsync:syncScopes
+                callback:^(BOOL success __unused, NSError* _Nullable error __unused) {
+            // Start syncing down notifications
+            [_feed startSync];
+        }];
+        
+        // Create the channel and reader
+        _channel = [MCDUserNotificationChannel channelWithUserDataFeed:_feed];
+        _reader = [_channel createReader];
+        _readerSubscription = [_reader.dataChanged subscribe:^(MCDUserNotificationReader* source,
+                                                               __unused MCDUserNotificationReaderDataChangedEventArgs* args){
             {
-                NSLog(@"GraphNotifications Got an update!");
+                NSLog(@"GraphNotificationsSample got an update!");
+                [self _readFromCache:source];
             };
             
         }];
-        [self forceRead];
+        
+        [self _readFromCache:_reader];
     }
     return self;
 }
 
-
-- (void)forceRead
-{
-    [self.reader readBatchAsyncWithMaxSize:NSUIntegerMax completion:^(NSArray<MCDUserNotification *> * _Nullable notifications, NSError * _Nullable error)
-    {
-        if (error)
-        {
-            NSLog(@"GraphNotifications Failed to read batch with error %@", error);
-        }
-        else
-        {
-            NSLog(@"GraphNotifications NotificationsManager got %ld notifications", notifications.count);
-            [self _handleNotifications:notifications];
-            for (void (^listener)(void) in self.listenerMap.allValues)
-            {
-                listener();
-            }
-        }
-    }];
+- (NSInteger)addNotificationsChangedListener:(void(^)(void))listener {
+    @synchronized (self) {
+        _listenerMap[[NSNumber numberWithInteger:(++_listenerValue)]] = listener;
+        return _listenerValue;
+    }
 }
 
-- (void)readNotification:(MCDUserNotification*)notification
-{
-    @synchronized (self)
-    {
+- (void)removeListener:(NSInteger)token {
+    @synchronized (self) {
+        [_listenerMap removeObjectForKey:[NSNumber numberWithInteger:token]];
+    }
+}
+
+- (void)refresh {
+    @synchronized (self) {
+        [_feed startSync];
+        [self _readFromCache:_reader];
+    }
+}
+
+- (void)markRead:(MCDUserNotification*)notification {
+    if (notification.readState == MCDUserNotificationReadStateUnread) {
+        NSLog(@"Marking notification %@ as read", notification.notificationId);
         notification.readState = MCDUserNotificationReadStateRead;
-        [notification saveAsync:^(__unused MCDUserNotificationUpdateResult * _Nullable result, __unused NSError * _Nullable err)
-        {
-            NSLog(@"GraphNotifications Read notification with result %d error %@", result.succeeded, err);
+        [notification saveAsync:^(__unused MCDUserNotificationUpdateResult * _Nullable result, NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"Failed to mark the notification as read with error %@", error);
+            } else {
+                NSLog(@"Successfully marked the notification as read");
+            }
         }];
     }
 }
 
-- (void)dismissNotificationFromTrayWithId:(NSString *)notificationId
-{
+- (void)deleteNotification:(MCDUserNotification*)notification {
+    NSLog(@"Deleting notification %@", notification.notificationId);
+    [_channel
+     deleteUserNotificationAsync:notification.notificationId
+     completion:^(__unused MCDUserNotificationUpdateResult* _Nullable result, NSError* _Nullable error) {
+         if (error) {
+             NSLog(@"Failed to delete notifications with error %@", error);
+         } else {
+             NSLog(@"Successfully deleted the notification");
+         }
+     }];
+}
+
+- (void)dismissNotification:(MCDUserNotification*)notification {
+    if (notification.userActionState == MCDUserNotificationUserActionStateNoInteraction) {
+        NSLog(@"Dismissing notification %@", notification.notificationId);
+        [self dismissNotificationFromTrayWithId:notification.notificationId];
+        notification.userActionState = MCDUserNotificationUserActionStateDismissed;
+        [notification saveAsync:^(__unused MCDUserNotificationUpdateResult * _Nullable result, __unused NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"Failed to dismiss notifications with error %@", error);
+            } else {
+                 NSLog(@"Successfully dismissed the notification");
+            }
+         }];
+    }
+}
+
+- (void)dismissNotificationFromTrayWithId:(NSString *)notificationId {
     [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[notificationId]];
     [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notificationId]];
 }
 
-- (void)dismissNotificationWithId:(NSString *)notificationId
-{
-    @synchronized (self)
-    {
-        for (MCDUserNotification* notification in self.notifications)
-        {
-            if ([notification.notificationId isEqualToString:notificationId])
-            {
+- (void)dismissNotificationWithId:(NSString *)notificationId {
+    @synchronized (self) {
+        for (MCDUserNotification* notification in self.notifications) {
+            if ([notification.notificationId isEqualToString:notificationId]) {
                 [self dismissNotification:notification];
             }
         }
     }
 }
 
-- (void)dismissNotification:(MCDUserNotification*)notification
-{
-    @synchronized (self)
-    {
-        [self dismissNotificationFromTrayWithId:notification.notificationId];
-        notification.userActionState = MCDUserNotificationUserActionStateActivated;
-        [notification saveAsync:^(__unused MCDUserNotificationUpdateResult * _Nullable result, __unused NSError * _Nullable err)
-        {
-            NSLog(@"GraphNotifications Dismiss notification with result %d error %@", result.succeeded, err);
-        }];
-    }
+- (void)_readFromCache:(MCDUserNotificationReader*)reader {
+    NSLog(@"Read notifications from cache");
+    [reader readBatchAsyncWithMaxSize:100 completion:^(NSArray<MCDUserNotification *> * _Nullable notifications,
+                                                       NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Failed to read notifications with error %@", error);
+        } else {
+            NSLog(@"NotificationsManager got %ld notifications to process", notifications.count);
+            [self _handleNotifications:notifications];
+            
+            // Notify the listeners
+            for (void (^listener)(void) in _listenerMap.allValues) {
+                listener();
+            }
+        }
+    }];
 }
 
-+ (instancetype)sharedInstance
-{
-    @synchronized (self)
-    {
-        return s_manager;
-    }
-}
-
-- (NSInteger)addNotificationsChangedListener:(void(^)(void))listener
-{
-    @synchronized (self)
-    {
-        _listenerMap[[NSNumber numberWithInteger:(++_listenerValue)]] = listener;
-        return _listenerValue;
-    }
-}
-
-- (void)removeListener:(NSInteger)token
-{
-    @synchronized (self)
-    {
-        [_listenerMap removeObjectForKey:[NSNumber numberWithInteger:token]];
-    }
-}
-
-- (NSArray<MCDUserNotification*>*)notifications
-{
-    return _notifications;
-}
-
-- (void)_handleNotifications:(NSArray<MCDUserNotification*>*)notifications
-{
-    @synchronized (self)
-    {
-        NSLog(@"GraphNotifications Got %ld notifications!", notifications.count);
-        for (MCDUserNotification* notification in notifications)
-        {
-            for (NSUInteger i = 0; i < _notifications.count; ++i)
-            {
-                if ([_notifications[i].notificationId isEqualToString:notification.notificationId])
-                {
-                    NSLog(@"GraphNotifications Found a match for %@", notification.notificationId);
-                    [_notifications removeObjectAtIndex:i];
-                    break;
-                }
+- (void)_handleNotifications:(NSArray<MCDUserNotification*>*)notifications {
+    @synchronized (self) {
+        for (MCDUserNotification* notification in notifications) {
+            NSUInteger index = [_notifications
+                indexOfObjectPassingTest:^BOOL(MCDUserNotification* existingNotification, NSUInteger __unused innerIndex, BOOL* stop) {
+                    if ([existingNotification.notificationId isEqualToString:notification.notificationId]) {
+                        *stop = YES;
+                        return YES;
+                    }
+                    return NO;
+                }];
+            
+            if (index != NSNotFound) {
+                [_notifications removeObjectAtIndex:index];
             }
 
-            if (notification.status == MCDUserNotificationStatusActive)
-            {
-                NSLog(@"GraphNotifications Notification is active %@", notification.notificationId);
+            if (notification.status == MCDUserNotificationStatusActive) {
+                NSLog(@"Notification %@ is active", notification.notificationId);
                 [_notifications insertObject:notification atIndex:0];
 
-                if ((notification.userActionState == MCDUserNotificationUserActionStateNoInteraction) && (notification.readState == MCDUserNotificationReadStateUnread))
-                {
+                if ((notification.userActionState == MCDUserNotificationUserActionStateNoInteraction)
+                    && (notification.readState == MCDUserNotificationReadStateUnread)) {
                     UNMutableNotificationContent* content = [UNMutableNotificationContent new];
-                    content.title = @"New MSGraph Notification";
+                    content.title = @"New Graph Notification";
                     content.body = notification.content;
-                    UNTimeIntervalNotificationTrigger* trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1 repeats:NO];
-                    UNNotificationRequest* request = [UNNotificationRequest requestWithIdentifier:notification.notificationId content:content trigger:trigger];
-
-                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error)
-                    {
-                        if (error)
-                        {
-                            NSLog(@"GraphNotifications Failed to post local notification with error %@", error);
-                        }
-                        else
-                        {
-                            NSLog(@"GraphNotifications Successfully posted local notification request");
+                    UNTimeIntervalNotificationTrigger* trigger = [UNTimeIntervalNotificationTrigger
+                                                                  triggerWithTimeInterval:1 repeats:NO];
+                    UNNotificationRequest* request = [UNNotificationRequest requestWithIdentifier:notification.notificationId
+                                                                                          content:content trigger:trigger];
+                    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request
+                                                                           withCompletionHandler:^(NSError * _Nullable error) {
+                        if (error) {
+                            NSLog(@"Failed to post local notification with error %@", error);
+                        } else {
+                            NSLog(@"Successfully posted local notification request");
                         }
                     }];
-                }
-                else
-                {
+                } else {
                     [self dismissNotificationFromTrayWithId:notification.notificationId];
                 }
-            }
-            else
-            {
-                NSLog(@"GraphNotifications Notification is deleted %@", notification.notificationId);
+            } else {
+                NSLog(@"Notification %@ is deleted", notification.notificationId);
                 [self dismissNotificationFromTrayWithId:notification.notificationId];
             }
         }
 
-        NSLog(@"GraphNotifications NotificationsManager now has %ld notifications", _notifications.count);
+        NSLog(@"NotificationsManager now has %ld notifications", _notifications.count);
     }
 }
 
-- (void)_clearNotifications
-{
-    @synchronized (self)
-    {
+- (void)_clearAll {
+    @synchronized (self) {
         [_notifications removeAllObjects];
         [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
         [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
-        for (void (^listener)(void) in self.listenerMap.allValues)
-        {
-            listener();
-        }
-    }
-}
-
-- (void)refresh
-{
-    NSLog(@"GraphNotifications Refreshing NotificationsManager");
-    @synchronized (self)
-    {
-        [self _clearNotifications];
-
-        // Starts setup based on new account, which since this is the current account will just refresh all of the actual setup
-        [self setAccount:self.account];
     }
 }
 

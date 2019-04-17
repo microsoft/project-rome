@@ -3,13 +3,14 @@
 //
 
 #pragma once
+
 #import <UIKit/UIKit.h>
 
 @interface LoginViewController : UIViewController
-- (IBAction)loginAAD;
+@property (strong, nonatomic) IBOutlet UIButton* msaButton;
+@property (strong, nonatomic) IBOutlet UIButton* aadButton;
+@property (strong, nonatomic) IBOutlet UILabel* loginStatusLabel;
 - (IBAction)loginMSA;
-@property (strong, nonatomic) IBOutlet UIButton *aadButton;
-@property (strong, nonatomic) IBOutlet UIButton *msaButton;
-
+- (IBAction)loginAAD;
 @end
 
