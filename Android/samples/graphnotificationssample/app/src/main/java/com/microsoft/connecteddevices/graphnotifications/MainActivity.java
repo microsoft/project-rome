@@ -351,18 +351,21 @@ public class MainActivity extends AppCompatActivity {
                 readButton.setEnabled(false);
             }
 
+            final Button dismissButton = convertView.findViewById(R.id.notification_dismiss);
+            if (notification.getUserActionState() == UserNotificationUserActionState.NO_INTERACTION) {
+                dismissButton.setEnabled(true);
+                dismissButton.setOnClickListener(view -> {
+                    dismissButton.setEnabled(false);
+                    sNotificationsManager.dismiss(notification);
+                });
+            } else {
+                dismissButton.setEnabled(false);
+            }
+
             final Button deleteButton = convertView.findViewById(R.id.notification_delete);
             deleteButton.setOnClickListener(view -> {
                 sNotificationsManager.delete(notification);
             });
-
-            if (notification.getUserActionState() == UserNotificationUserActionState.NO_INTERACTION) {
-                convertView.setOnClickListener(view -> {
-                    sNotificationsManager.activate(notification);
-                });
-            } else {
-                convertView.setOnClickListener(null);
-            }
 
             return convertView;
         }
@@ -392,82 +395,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static class LogFragment extends Fragment {
-        private View mRootView;
-        private TextView mTextView;
-        private File mLogFile;
-        private FileReader mReader;
-        private StringBuilder mLog = new StringBuilder();
-        boolean mStopReading = false;
-
-        public LogFragment() {}
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            mRootView = inflater.inflate(R.layout.fragment_log, container, false);
-            mTextView = mRootView.findViewById(R.id.log_text);
-            mLogFile = new File(getActivity().getApplicationContext().getFilesDir(), "CDPTraces.log");
-            try {
-                mReader = new FileReader(mLogFile);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            startReading();
-            return mRootView;
-        }
-
-        void startReading() {
-            new Thread(() -> {
-                while (!mStopReading) {
-                    boolean stop = false;
-                    char[] buff = new char[2048];
-                    while (!stop) {
-                        int readResult = -1;
-                        try {
-                            readResult = mReader.read(buff, 0, 2048);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            stop = true;
-                        }
-
-                        if (readResult == -1) {
-                            stop = true;
-                        } else {
-                            mLog.append(buff, 0, readResult);
-                        }
-                    }
-
-                    updateText();
-
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-        }
-
-        void updateText() {
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(() -> {
-                    char[] endLog = new char[10000];
-                    int length = mLog.length();
-                    if (length > 10000) {
-                        mLog.getChars(length - 10000, length, endLog, 0);
-                    } else {
-                        mLog.getChars(0, length, endLog, 0);
-                    }
-                    mTextView.setText(new String(endLog));
-                    mRootView.invalidate();
-                });
-            } else {
-                mStopReading = true;
-            }
-        }
-    }
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -475,7 +402,6 @@ public class MainActivity extends AppCompatActivity {
     class SectionsPagerAdapter extends FragmentPagerAdapter {
         private LoginFragment mLoginFragment;
         private NotificationsFragment mNotificationFragment;
-        private LogFragment mLogFragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -497,12 +423,6 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     return mNotificationFragment;
-                case 2:
-                    if  (mLogFragment == null) {
-                        mLogFragment = new LogFragment();
-                    }
-
-                    return mLogFragment;
             }
 
             return null;
@@ -510,8 +430,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show 2 total pages.
+            return 2;
         }
     }
 }
