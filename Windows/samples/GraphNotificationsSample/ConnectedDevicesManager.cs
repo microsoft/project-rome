@@ -253,6 +253,9 @@ namespace SDKTemplate
             if (notification != null)
             {
                 await m_platform.ProcessNotificationAsync(notification);
+
+                // Wait for 15 seconds for platform to process to notification
+                await Task.Delay(TimeSpan.FromSeconds(15));
             }
         }
 
