@@ -37,8 +37,7 @@
             </StackPanel>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10">
-                <Button Name="RefreshButton" Content="Retrieve Notifications History" Margin="10" BorderBrush="AntiqueWhite" Click="Button_Refresh"/>
-                <Button x:Name="LogoutButton" Content="Logout" BorderBrush="AntiqueWhite" Click="Button_Logout" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button Name="RefreshButton" Content="Refresh" Margin="10" BorderBrush="AntiqueWhite" Click="Button_Refresh"/>
             </StackPanel>
 
             <Grid Grid.Row="2">

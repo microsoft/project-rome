@@ -59,14 +59,9 @@ namespace SDKTemplate
 
             // Populate the scenario list from the SampleConfiguration.cs file
             ScenarioControl.ItemsSource = scenarios;
-            if (Window.Current.Bounds.Width < 640)
-            {
-                ScenarioControl.SelectedIndex = -1;
-            }
-            else
-            {
-                ScenarioControl.SelectedIndex = 0;
-            }
+
+            // Go to NotificationsPage if launched from Toast
+            ScenarioControl.SelectedIndex = string.IsNullOrEmpty(e.Parameter as string) ? 0 : 1;
         }
 
         private void RegisterBackgroundTask()

@@ -85,7 +85,6 @@ namespace SDKTemplate
             }
 
             RefreshButton.IsEnabled = (m_userNotificationManager != null);
-            LogoutButton.IsEnabled = (m_account != null);
             if (m_account != null)
             {
                 Description.Text = $"{m_account.Type} user ";
@@ -146,13 +145,6 @@ namespace SDKTemplate
         {
             rootPage.NotifyUser("Updating history", NotifyType.StatusMessage);
             await m_userNotificationManager.RefreshAsync();
-        }
-
-        private async void Button_Logout(object sender, RoutedEventArgs e)
-        {
-            rootPage.NotifyUser("Logged out", NotifyType.ErrorMessage);
-            await ((App)Application.Current).ConnectedDevicesManager.LogoutAsync(m_account);
-            await RefreshAsync();
         }
 
         private async void Button_MarkRead(object sender, RoutedEventArgs e)

@@ -27,9 +27,8 @@ namespace SDKTemplate
 
         List<Scenario> scenarios = new List<Scenario>
         {
-            new Scenario() { Title="Login/Logout", ClassType=typeof(AccountsPage)},
-            new Scenario() { Title="Notification History", ClassType=typeof(NotificationsPage)},
-            new Scenario() { Title="App Logs", ClassType=typeof(LogsPage)},
+            new Scenario() { Title="Accounts", ClassType=typeof(AccountsPage)},
+            new Scenario() { Title="Notifications", ClassType=typeof(NotificationsPage)},
         };
     }
 
