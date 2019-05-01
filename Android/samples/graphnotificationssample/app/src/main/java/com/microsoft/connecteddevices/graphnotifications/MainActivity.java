@@ -5,9 +5,6 @@
 package com.microsoft.connecteddevices.graphnotifications;
 
 import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,8 +14,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -34,24 +29,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.microsoft.connecteddevices.ConnectedDevicesAccount;
 import com.microsoft.connecteddevices.ConnectedDevicesAccountType;
-import com.microsoft.connecteddevices.userdata.UserDataFeed;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotification;
-import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationChannel;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationReadState;
-import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationReader;
-import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationStatus;
-import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationUpdateResult;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationUserActionState;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EventObject;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -119,30 +102,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        // Request a feed sync, all channels will get updated
-        if (id == R.id.action_refresh) {
-            if (sNotificationsManager != null){
-                sNotificationsManager.refresh();
-            }
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     protected void onNewIntent(Intent intent) {
         String id = intent.getStringExtra(UserNotificationsManager.NOTIFICATION_ID);
         activateNotification(id);
@@ -183,43 +142,43 @@ public class MainActivity extends AppCompatActivity {
         if (sConnectedDevicesManager.getSignedInAccount() != null) {
             Log.d(TAG, "Setup Notifications manager");
             sNotificationsManager = sConnectedDevicesManager.getSignedInAccount().getNotificationsManager();
-            sNotificationsManager.addNotificationsUpdatedEventListener(args -> {
-                Log.d(TAG, "Notifications available!");
 
-                if (sNotificationsManager.HasNewNotifications()) {
-                    activity.runOnUiThread(() -> {
-                        Toast.makeText(activity, "Got new notifications", Toast.LENGTH_SHORT).show();
-                    });
-                }
+            if (sNotificationsManager != null) {
+                sNotificationsManager.addNotificationsUpdatedEventListener(args -> {
+                    Log.d(TAG, "Notifications available!");
 
-                sActiveNotifications.clear();
-                sActiveNotifications.addAll(sNotificationsManager.HistoricalNotifications());
+                    if (sNotificationsManager.HasNewNotifications()) {
+                        activity.runOnUiThread(() -> Toast.makeText(activity, "Got new notifications", Toast.LENGTH_SHORT).show());
+                    }
 
-                if (sLatch.getCount() == 1) {
-                    sLatch.countDown();
-                }
+                    sActiveNotifications.clear();
+                    sActiveNotifications.addAll(sNotificationsManager.HistoricalNotifications());
 
-                RunnableManager.runNotificationsUpdated();
-            });
-            sNotificationsManager.refresh();
+                    if (sLatch.getCount() == 1) {
+                        sLatch.countDown();
+                    }
+
+                    RunnableManager.runNotificationsUpdated();
+                });
+                sNotificationsManager.refresh();
+            }
         } else {
-            activity.runOnUiThread(() -> {
-                Toast.makeText(activity, "No signed-in account found!", Toast.LENGTH_SHORT).show();
-            });
+            activity.runOnUiThread(() -> Toast.makeText(activity, "No signed-in account found!", Toast.LENGTH_SHORT).show());
         }
     }
 
     public static class LoginFragment extends Fragment {
-        private Button mAadButton;
-        private Button mMsaButton;
 
         enum LoginState {
+            LOGIN_PROGRESS,
             LOGGED_IN_MSA,
             LOGGED_IN_AAD,
             LOGGED_OUT
         }
 
         private LoginState mState = LoginState.LOGGED_OUT;
+        private Button mAadButton;
+        private Button mMsaButton;
 
         public LoginFragment() {
         }
@@ -231,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
             mAadButton = rootView.findViewById(R.id.login_aad_button);
             mAadButton.setOnClickListener(view -> {
                 if (getLoginState() != LoginState.LOGGED_IN_AAD) {
+                    getActivity().runOnUiThread(() -> updateView(LoginState.LOGIN_PROGRESS));
                     sConnectedDevicesManager.signInAadAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
                         if ((throwable == null) && (success)) {
                             getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_IN_AAD));
@@ -238,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
 
                         } else {
                             Log.e(TAG, "AAD login failed!");
+                            getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_OUT));
                         }
                     });
                 } else {
@@ -252,12 +213,14 @@ public class MainActivity extends AppCompatActivity {
             mMsaButton = rootView.findViewById(R.id.login_msa_button);
             mMsaButton.setOnClickListener(view -> {
                 if (getLoginState() != LoginState.LOGGED_IN_MSA) {
+                    getActivity().runOnUiThread(() -> updateView(LoginState.LOGIN_PROGRESS));
                     sConnectedDevicesManager.signInMsaAsync(getActivity()).whenCompleteAsync((success, throwable) -> {
                         if ((throwable == null) && (success)) {
                             getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_IN_MSA));
                             setupNotificationsManager(getActivity());
                         } else {
                             Log.e(TAG, "MSA login failed!");
+                            getActivity().runOnUiThread(() -> updateView(LoginState.LOGGED_OUT));
                         }
                     });
                 } else {
@@ -270,8 +233,9 @@ public class MainActivity extends AppCompatActivity {
             });
 
             LoginState currentState = LoginState.LOGGED_OUT;
-            if (sConnectedDevicesManager.getSignedInAccount() != null) {
-                currentState = sConnectedDevicesManager.getSignedInAccount().getAccount().getType() == ConnectedDevicesAccountType.AAD ? LoginState.LOGGED_IN_AAD : LoginState.LOGGED_IN_MSA;
+            Account signedInAccount = sConnectedDevicesManager.getSignedInAccount();
+            if (signedInAccount != null) {
+                currentState = signedInAccount.getAccount().getType() == ConnectedDevicesAccountType.AAD ? LoginState.LOGGED_IN_AAD : LoginState.LOGGED_IN_MSA;
                 setupNotificationsManager(getActivity());
             }
             updateView(currentState);
@@ -300,14 +264,25 @@ public class MainActivity extends AppCompatActivity {
                     mMsaButton.setText(R.string.login_msa);
                     break;
 
+                case LOGIN_PROGRESS:
+                    mAadButton.setEnabled(false);
+                    mAadButton.setText(R.string.login_progress);
+                    mMsaButton.setEnabled(false);
+                    mMsaButton.setText(R.string.login_progress);
+                    break;
+
                 case LOGGED_IN_AAD:
+                    mAadButton.setEnabled(true);
                     mAadButton.setText(R.string.logout);
                     mMsaButton.setEnabled(false);
+                    mMsaButton.setText(R.string.login_msa);
                     break;
 
                 case LOGGED_IN_MSA:
-                    mAadButton.setEnabled(false);
+                    mMsaButton.setEnabled(true);
                     mMsaButton.setText(R.string.logout);
+                    mAadButton.setEnabled(false);
+                    mAadButton.setText(R.string.login_aad);
                     break;
             }
         }
@@ -372,23 +347,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class NotificationsFragment extends Fragment {
+        private Button mRefreshButton;
         private NotificationArrayAdapter mNotificationArrayAdapter;
 
         public NotificationsFragment() {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             mNotificationArrayAdapter = new NotificationArrayAdapter(getContext(), sActiveNotifications, getActivity());
 
-            RunnableManager.setNotificationsUpdated(() -> {
-                getActivity().runOnUiThread(() -> {
-                    mNotificationArrayAdapter.notifyDataSetChanged();
-                });
-            });
+            RunnableManager.setNotificationsUpdated(() -> getActivity().runOnUiThread(() -> mNotificationArrayAdapter.notifyDataSetChanged()));
 
             View rootView = inflater.inflate(R.layout.fragment_notifications, container, false);
+            mRefreshButton = rootView.findViewById(R.id.button_refresh);
+            mRefreshButton.setOnClickListener(view -> {
+                if (sNotificationsManager != null) {
+                    sNotificationsManager.refresh();
+                }
+            });
             ListView listView = rootView.findViewById(R.id.notificationListView);
             listView.setAdapter(mNotificationArrayAdapter);
             return rootView;

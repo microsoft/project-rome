@@ -204,7 +204,7 @@ public class UserNotificationsManager {
         });
     }
 
-    static void addNotification(Context ctx, String message, String notificationId) {
+    static void addNotification(Context ctx, String notificationContent, String notificationId) {
         Intent intent = new Intent(ctx, MainActivity.class);
         intent.putExtra(NOTIFICATION_ID, notificationId);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -212,8 +212,8 @@ public class UserNotificationsManager {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx, CHANNEL_NAME)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setContentTitle("New UserNotification!")
-                .setContentText(message)
+                .setContentTitle(notificationId)
+                .setContentText(notificationContent)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);

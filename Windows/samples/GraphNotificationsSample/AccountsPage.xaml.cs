@@ -17,6 +17,7 @@ namespace SDKTemplate
 {
     enum LoginState
     {
+        LOGIN_PROGRESS,
         LOGGED_IN_MSA,
         LOGGED_IN_AAD,
         LOGGED_OUT
@@ -26,7 +27,7 @@ namespace SDKTemplate
     {
         private MainPage m_rootPage;
         private ConnectedDevicesManager m_connectedDevicesManager;
-        private LoginState m_state;
+        private LoginState m_state = LoginState.LOGGED_OUT;
 
         public AccountsPage()
         {
@@ -51,10 +52,12 @@ namespace SDKTemplate
         {
             if (m_state == LoginState.LOGGED_OUT)
             {
+                UpdateView(LoginState.LOGIN_PROGRESS);
                 bool success = await m_connectedDevicesManager.SignInMsaAsync();
                 if (!success)
                 {
                     m_rootPage.NotifyUser("MSA login failed!", NotifyType.ErrorMessage);
+                    UpdateView(LoginState.LOGGED_OUT);
                 }
                 else
                 {
@@ -72,10 +75,12 @@ namespace SDKTemplate
         {
             if (m_state == LoginState.LOGGED_OUT)
             {
+                UpdateView(LoginState.LOGIN_PROGRESS);
                 bool success = await m_connectedDevicesManager.SignInAadAsync();
                 if (!success)
                 {
                     m_rootPage.NotifyUser("AAD login failed!", NotifyType.ErrorMessage);
+                    UpdateView(LoginState.LOGGED_OUT);
                 }
                 else
                 {
@@ -97,7 +102,7 @@ namespace SDKTemplate
             m_rootPage.NotifyUser("Logged out", NotifyType.ErrorMessage);
         }
 
-        LoginState GetCurrentLoginState()
+        private LoginState GetCurrentLoginState()
         {
             LoginState currentState = LoginState.LOGGED_OUT;
             if (m_connectedDevicesManager.Accounts.Count > 0)
@@ -107,7 +112,7 @@ namespace SDKTemplate
             return currentState;
         }
 
-        void UpdateView(LoginState state)
+        private void UpdateView(LoginState state)
         {
             m_state = state;
 
@@ -120,14 +125,25 @@ namespace SDKTemplate
                     MsaButton.Content = "Login with MSA";
                     break;
 
-                case LoginState.LOGGED_IN_AAD:
+                case LoginState.LOGIN_PROGRESS:
+                    AadButton.IsEnabled = false;
+                    AadButton.Content = "Logging In";
                     MsaButton.IsEnabled = false;
-                    AadButton.Content = "Logout - AAD";
+                    MsaButton.Content = "Logging In";
+                    break;
+
+                case LoginState.LOGGED_IN_AAD:
+                    AadButton.IsEnabled = true;
+                    AadButton.Content = "Log Out";
+                    MsaButton.IsEnabled = false;
+                    MsaButton.Content = "Login with MSA";
                     break;
 
                 case LoginState.LOGGED_IN_MSA:
+                    MsaButton.IsEnabled = true;
+                    MsaButton.Content = "Log Out";
                     AadButton.IsEnabled = false;
-                    MsaButton.Content = "Logout - MSA";
+                    AadButton.Content = "Login with AAD";
                     break;
             }
         }

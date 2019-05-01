@@ -2,12 +2,11 @@
     <string name="app_name">Graph Notifications Sample</string>
     <string name="tab_text_1">Accounts</string>
     <string name="tab_text_2">Notifications</string>
-    <string name="tab_text_3">Log</string>
-    <string name="action_refresh">Refresh</string>
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="login_aad">Login with AAD</string>
     <string name="login_msa">Login with MSA</string>
     <string name="logout">Log Out</string>
+    <string name="login_progress">Logging In</string>
+    <string name="refresh">Refresh</string>
     <string name="read">Mark Read</string>
     <string name="dismiss">Dismiss</string>
     <string name="delete">Delete</string>

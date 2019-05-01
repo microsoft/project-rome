@@ -170,6 +170,8 @@ public class Account {
      * @return The async result for this operation
      */
     public AsyncOperation<ConnectedDevicesAccount> logoutAsync(Activity activity) {
+        // Remove from the platform and sign-out
+        mPlatform.getAccountManager().removeAccountAsync(mAccount);
         return mSignInHelper.signOut(activity);
     }
 
