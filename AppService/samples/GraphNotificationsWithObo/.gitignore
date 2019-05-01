@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Properties/PublishProfiles/LearnChefsWebApp - Web Deploy.pubxml.user
+/.vs
+/bin
+/obj
+/packages
+*.user

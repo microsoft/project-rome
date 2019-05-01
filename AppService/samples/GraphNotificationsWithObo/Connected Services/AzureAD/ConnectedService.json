@@ -1,0 +1,10 @@
+﻿{
+  "ProviderId": "Microsoft.Azure.AD",
+  "Version": "15.9",
+  "GettingStartedDocument": {
+    "Uri": "https://go.microsoft.com/fwlink/?LinkId=513810"
+  },
+  "ExtendedData": {
+    "AuthConfiguration": "AspNet_WebAPI"
+  }
+}

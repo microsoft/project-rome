@@ -1,0 +1,59 @@
+﻿<!--  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
+        See LICENSE in the source repository root for complete license information. -->
+@using Resources
+@{
+    ViewBag.Title = Resource.App_Name;
+}
+<div class="row">
+    <div style="float:left;padding-top:3px;padding-bottom:30px;">
+        <h3>
+            <label for="enable_obo">Access resources via On-Behalf-of</label>
+            <label class="switch">
+                <input type="checkbox" id="enable_obo" value="https://gncortanasample.azurewebsites.net/api/obo/" />
+                <span class="slider round"></span>
+            </label>
+        </h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-10 left">
+        <section class="section item-section">
+            <header class="section-header">
+                <h5 class="section-title">
+                    Create a notification via MS Graph API
+                </h5>
+            </header>
+            <div class="section-body">
+                <form>
+                    <div class="form-group">
+                        <label for="createRequest">Use the sample below to publish a new User Notification</label>
+                        <textarea class="form-control" id="createRequest" rows="10"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success pull-right" id="put">Submit</button>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+<div>
+    <div class="code-header spacer-32-top">Graph API Call Response</div>
+    <code id="response" class="lang-json">
+    </code>
+</div>
+<div>
+    <div class="code-header spacer-32-top">Access Token</div>
+    <code id="access_token" class="lang-html">
+    </code>
+</div>
+<div>
+    <div class="code-header spacer-32-top">ID Token Claims</div>
+    <code id="claims" class="lang-json">
+    </code>
+</div>
+
+<div>
+    <div class="code-header spacer-32-top">User Info</div>
+    <code id="userinfo" class="lang-json">
+    </code>
+</div>
+

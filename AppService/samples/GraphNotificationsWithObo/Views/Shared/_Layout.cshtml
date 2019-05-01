@@ -1,0 +1,55 @@
+﻿<!--  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
+        See LICENSE in the source repository root for complete license information. -->
+@using Resources
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("https://assets.onestore.ms/cdnfiles/external/webcore/4.21.28/stylesheets/WebCore.4.21.28.ltr.light.min.css")
+    @Styles.Render("https://assets.onestore.ms/cdnfiles/external/webcore/4.21.28/stylesheets/ltr.light.min/core.css")
+    @Styles.Render("https://assets.onestore.ms/cdnfiles/external/webcore/4.21.28/stylesheets/ltr.light.min/bs-components.css")       
+    @Styles.Render(@"~\Content\site.css")
+</head>
+<body>
+    <div class="wrapper">
+        <div class="jumbotron-hero spacer-84-bottom">
+            <div class="hero-container">
+                <div class="media-content-col last">
+                    <div class="spacer-32-top">
+                        <a href="#" tabindex="66" id="signin" class="btn btn-success pull-right margin-overlap">Sign in with Microsoft</a>
+                        <a href="#" tabindex="66" id="signout" class="btn btn-success pull-right margin-overlap">Sign Out</a>
+                    </div>
+                    <img class="hero-media-content hidden-xs hidden-sm hidden-md" alt="Project Rome Cloud Illustration" src="https://assets.windowsphone.com/840ff497-e8d4-490f-aece-18cb0c06375c/ProjectRomeCloudHero_LG696x240_InvariantCulture_Default.png">
+                    <img class="hero-media-content hidden-xs hidden-lg hidden-xl" alt="Project Rome Cloud Illustration" src="https://assets.windowsphone.com/90ecf41b-d83a-496e-ac8a-47a49a9a3f31/ProjectRomeCloudHero_MD_463x240_InvariantCulture_Default.png">
+                    <img class="hero-media-content hidden-sm hidden-md hidden-lg hidden-xl" alt="Project Rome Cloud Illustration" src="https://assets.windowsphone.com/10d23be4-3e60-4abc-b78e-a0458bcdb9da/ProjectRomeCloudHero_SM_515x160_InvariantCulture_Default.png">
+                </div>
+                <div class="text-content-col first x-hidden-focus">
+                    <h1 class="hero-title">Project Rome</h1>
+                    <p class="spacer-20-top">
+                        Drive app engagement across devices and platforms.
+                    </p>
+                    <div class="spacer-32-top">
+                        <a tabindex="67" class="btn btn-primary" href="https://developer.microsoft.com/en-us/windows/project-rome#get-started">Get started</a>
+                    </div>
+                </div>
+                <div class="background win-color-bg-20"></div>
+            </div>
+
+        </div>
+
+        <div class="container body-content">
+            @RenderBody()
+        </div>
+    </div>
+    @Scripts.Render("https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.3.min.js")
+    @Scripts.Render("https://assets.onestore.ms/cdnfiles/external/webcore/4.21.28/scripts/bootstrap.js")    
+    @Scripts.Render("https://unpkg.com/adaptivecards@1.0.0/dist/adaptivecards.js")        
+    @Scripts.Render("https://secure.aadcdn.microsoftonline-p.com/lib/0.1.5/js/msal.min.js");
+    @Scripts.Render("~/Scripts/jquery.cookie.js")    
+    @Scripts.Render("~/Scripts/siteConfig.js")
+    @Scripts.Render("~/Scripts/site.js")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
