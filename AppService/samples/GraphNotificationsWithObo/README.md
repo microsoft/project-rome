@@ -15,7 +15,7 @@ When posting a notification for a user, an App Service (A.S.) like Outlook, need
 
 This is the sample code for an App Service that can create a notification for a user using OBO flow described above.
 
-In the usual flow, user credentials are sent from client app to the App Service. In this sample, the user signs in directly into the App Service to provide their credentials. This part of the code is labeled as "client side code" in the js files to clarify how code should be structured (Please pay special attention to the scopees in authentication requests for the user). The App Service Specific code is in the Obocontroller). 
+In the usual flow, user credentials are sent from client app to the App Service. In this sample, the user signs in directly into the App Service to provide their credentials. This part of the code is labeled as "client side code" in the js files to clarify how code should be structured (Please pay special attention to the scopees in authentication requests for the user). The App Service Specific code is in the Obocontroller. 
 
 ## Setting up the sample
 
