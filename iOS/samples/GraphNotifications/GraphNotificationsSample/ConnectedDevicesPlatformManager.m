@@ -382,8 +382,11 @@ static NSDictionary<NSString*, NSArray<NSString*>*>* s_msaScopeOverrides;
 }
 
 - (NotificationsManager*)notificationsManager {
-    // Since the sample is setup for single account, return the first account's notifications manager
-    return self.accounts[0].notificationsManager;
+    if (self.accounts.count > 0) {
+        // Since the sample is setup for single account, return the first account's notifications manager
+        return self.accounts[0].notificationsManager;
+    }
+    return nil;
 }
 
 - (NSMutableArray<Account*>*)deserializeAccounts {

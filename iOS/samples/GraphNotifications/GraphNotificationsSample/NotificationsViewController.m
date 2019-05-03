@@ -38,7 +38,9 @@
 
 - (IBAction)refresh {
     [self _initNotificationsManager];
-    [_notificationsManager refresh];
+    if (_notificationsManager != nil) {
+        [_notificationsManager refresh];
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(__unused UITableView*)tableView {

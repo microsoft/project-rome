@@ -55,7 +55,6 @@
     
 #if TARGET_OS_SIMULATOR
     // Simulator doesn't support APNS, use polling mode to run this sample
-    [self _initPlatformManager];
     [_platformManager setNotificationRegistration:@"GraphNotificationsSamplePolling"];
 #endif
 }
