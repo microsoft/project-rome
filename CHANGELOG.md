@@ -1,3 +1,29 @@
+## 1.3.2
+
+
+### Other (1 change)
+
+- Bug fixes and small improvements
+
+## 1.3.1
+
+
+### Fixed (2 changes)
+
+- Fixed Closed event for host AppServiceConnections from being called twice.
+- Fixed Closed event for client AppServiceConnections to be called when the platform is shutdown.
+
+
+### Changed (2 changes)
+
+- Increase target Android SDK version to API 28 (Android 9.0).
+- Move Rome files into internal storage path on Android platform.
+
+
+### Other (1 change)
+
+- Upgrade Android NDK to r19c.
+
 ## 1.2.0
 
 
@@ -90,4 +116,5 @@
 ### Removed (1 change)
 
 - Remove UserNotificationReaderOptions constructors except for default.
+
 
