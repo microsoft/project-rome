@@ -1,5 +1,20 @@
-﻿Third Party Notices
-This file is based on or incorporates material from the projects listed below (collectively, “Third Party Code”). Microsoft is not the original author of the Third Party Code. The original copyright notice and license, under which Microsoft received such Third Party Code, are set out below. Such licenses and notices are provided for informational purposes only. Microsoft, not the third party, licenses the Third Party Code to you under the terms set forth in the license terms for the Microsoft product. Microsoft reserves all other rights not expressly granted under this agreement, whether by implication, estoppel or otherwise.
+﻿NOTICES AND INFORMATION
+Do Not Translate or Localize
+
+This software incorporates material from third parties. Microsoft makes certain
+open source code available at http://3rdpartysource.microsoft.com, or you may
+send a check or money order for US $5.00, including the product name, the open
+source component name, and version number, to:
+
+Source Code Compliance Team
+Microsoft Corporation
+One Microsoft Way
+Redmond, WA 98052
+USA
+
+Notwithstanding any other terms, you may reverse engineer this software to the
+extent required to debug changes to any libraries licensed under the GNU Lesser
+General Public License.
 
 ---------------------------------------------------------------------------------------------------------
 -------------
