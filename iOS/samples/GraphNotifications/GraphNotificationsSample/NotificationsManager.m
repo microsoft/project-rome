@@ -168,7 +168,11 @@
 
             if (notification.status == MCDUserNotificationStatusActive) {
                 NSLog(@"Notification %@ is active", notification.notificationId);
-                [_notifications insertObject:notification atIndex:0];
+                if(index != NSNotFound) {
+                    [_notifications insertObject:notification atIndex:index];
+                } else {
+                    [_notifications insertObject:notification atIndex:0];
+                }
 
                 if ((notification.userActionState == MCDUserNotificationUserActionStateNoInteraction)
                     && (notification.readState == MCDUserNotificationReadStateUnread)) {

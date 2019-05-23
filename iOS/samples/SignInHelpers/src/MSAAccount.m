@@ -315,9 +315,7 @@ static NSURLQueryItem* GetQueryItemForName(NSArray<NSURLQueryItem*>* queryItems,
 
             [self removeAccount];
             [self _signInSignOutSucceededAsync:YES
-                                         error:[NSError errorWithDomain:MsaAccountProviderErrorDomain
-                                                                   code:SampleAccountActionFailureReasonFailToRetrieveAuthCode
-                                                               userInfo:nil]];
+                                         error:nil];
         }
         else
         {

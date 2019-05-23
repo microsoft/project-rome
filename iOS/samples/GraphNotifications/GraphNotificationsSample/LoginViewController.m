@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, LoginState) {
 
     _platformManager = [ConnectedDevicesPlatformManager sharedInstance];
     
-    [self _setButtonTextForState:[self _getState]];
+    [self _setButtonTextAndVisibilityForState:[self _getState]];
 }
 
 - (IBAction)loginMSA {
@@ -32,7 +32,7 @@ typedef NS_ENUM(NSInteger, LoginState) {
         // Perform MSA sign-in
         [_platformManager signInMsaAsync].then(^{
             [self _setStatusText:[NSString stringWithFormat:@"Currently signed in"]];
-            [self _setButtonTextForState:MSA];
+            [self _setButtonTextAndVisibilityForState:MSA];
         }).catch(^(NSError* error){
             NSLog(@"%@", error);
             [self _setStatusText:[NSString stringWithFormat:@"MSA sign-in failed!"]];
@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, LoginState) {
     } else {
         [_platformManager signOutAsync:_platformManager.accounts[0]].then(^{
             [self _setStatusText:[NSString stringWithFormat:@"Currently signed out"]];
-            [self _setButtonTextForState:SIGNED_OUT];
+            [self _setButtonTextAndVisibilityForState:SIGNED_OUT];
         }).catch(^(NSError* error){
             NSLog(@"%@", error);
             [self _setStatusText:[NSString stringWithFormat:@"MSA sign-out failed!"]];
@@ -57,7 +57,7 @@ typedef NS_ENUM(NSInteger, LoginState) {
         // Perform AAD sign-in
         [_platformManager signInAadAsync].then(^{
             [self _setStatusText:[NSString stringWithFormat:@"Currently signed in"]];
-            [self _setButtonTextForState:AAD];
+            [self _setButtonTextAndVisibilityForState:AAD];
         }).catch(^(NSError* error){
             NSLog(@"%@", error);
             [self _setStatusText:[NSString stringWithFormat:@"AAD sign-in failed!"]];
@@ -65,7 +65,7 @@ typedef NS_ENUM(NSInteger, LoginState) {
     } else {
         [_platformManager signOutAsync:_platformManager.accounts[0]].then(^{
             [self _setStatusText:[NSString stringWithFormat:@"Currently signed out"]];
-            [self _setButtonTextForState:SIGNED_OUT];
+            [self _setButtonTextAndVisibilityForState:SIGNED_OUT];
         }).catch(^(NSError* error){
             NSLog(@"%@", error);
             [self _setStatusText:[NSString stringWithFormat:@"AAD sign-out failed!"]];
@@ -94,22 +94,26 @@ typedef NS_ENUM(NSInteger, LoginState) {
     }
 }
 
-- (void)_setButtonTextForState:(LoginState)state {
+- (void)_setButtonTextAndVisibilityForState:(LoginState)state {
     dispatch_async(dispatch_get_main_queue(), ^{
            switch (state) {
                case SIGNED_OUT:
                    [self.aadButton setTitle:@"Login with AAD" forState:UIControlStateNormal];
                    [self.msaButton setTitle:@"Login with MSA" forState:UIControlStateNormal];
+                   self.aadButton.hidden = FALSE;
+                   self.msaButton.hidden = FALSE;
                    self.loginStatusLabel.text = @"Currently signed-out";
                    break;
                case AAD:
                    [self.aadButton setTitle:@"Logout" forState:UIControlStateNormal];
                    [self.msaButton setTitle:@"" forState:UIControlStateNormal];
+                   self.msaButton.hidden = TRUE;
                    self.loginStatusLabel.text = @"Currently signed-in with AAD";
                    break;
                case MSA:
                    [self.aadButton setTitle:@"" forState:UIControlStateNormal];
                    [self.msaButton setTitle:@"Logout" forState:UIControlStateNormal];
+                   self.aadButton.hidden = TRUE;
                    self.loginStatusLabel.text = @"Currently signed-in with MSA";
                    break;
            }
