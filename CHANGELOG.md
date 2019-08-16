@@ -1,3 +1,22 @@
+## 1.4.1
+
+
+### Security (1 change)
+
+- Resolve an internally discovered security issue with processing web requests.
+
+## 1.4.0
+
+
+### Added (1 change)
+
+- Added `userDataFeed.SubscribeToSyncScopesWithResultAsync`.
+
+
+### Deprecated (1 change)
+
+- Deprecate `userDataFeed.SubscibeToSyncScopesAsync` that only returned success/fail, added replacement method to return improved results.
+
 ## 1.3.2
 
 
@@ -116,5 +135,7 @@
 ### Removed (1 change)
 
 - Remove UserNotificationReaderOptions constructors except for default.
+
+
 
 
