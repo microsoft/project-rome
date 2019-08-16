@@ -65,7 +65,8 @@
 
     UILabel* actionStateLabel = (UILabel*)[cell viewWithTag:3];
     UIButton* dismissButton = (UIButton*)[cell viewWithTag:5];
-    [dismissButton setTag:indexPath.row];
+    [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [dismissButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
     if (notification.userActionState == MCDUserNotificationUserActionStateNoInteraction) {
         [actionStateLabel setText:@"No Interaction"];
         dismissButton.enabled = YES;
@@ -76,7 +77,8 @@
     }
 
     UIButton* readButton = (UIButton*)[cell viewWithTag:4];
-    [readButton setTag:indexPath.row];
+    [readButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [readButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
     if (notification.readState == MCDUserNotificationReadStateUnread) {
         [idLabel setTextColor:[UIColor greenColor]];
         readButton.enabled = YES;
@@ -87,19 +89,23 @@
     }
     
     UIButton* deleteButton = (UIButton*)[cell viewWithTag:6];
-    [deleteButton setTag:indexPath.row];
+    [deleteButton setTag:indexPath.row]; 
     [deleteButton addTarget:self action:@selector(handleDelete:) forControlEvents:UIControlEventTouchUpInside];
     
     return cell;
 }
 
 - (IBAction)handleRead:(UIButton*)button {
-    MCDUserNotification* selected = _notificationsManager.notifications[button.tag];
+    CGPoint touchPoint = [button convertPoint:CGPointZero toView:self.tableView];
+    NSIndexPath *clickedButtonIndexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
+    MCDUserNotification* selected = _notificationsManager.notifications[clickedButtonIndexPath.row];
     [_notificationsManager markRead:selected];
 }
 
 - (IBAction)handleDismiss:(UIButton*)button {
-    MCDUserNotification* selected = _notificationsManager.notifications[button.tag];
+    CGPoint touchPoint = [button convertPoint:CGPointZero toView:self.tableView];
+    NSIndexPath *clickedButtonIndexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
+    MCDUserNotification* selected = _notificationsManager.notifications[clickedButtonIndexPath.row];
     [_notificationsManager dismissNotification:selected];
 }
 
