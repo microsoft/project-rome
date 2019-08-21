@@ -92,6 +92,10 @@ namespace SDKTemplate
 
             if (m_userNotificationManager != null)
             {
+                if (m_userNotificationManager.CurrentSubscription != null)
+                {
+                    TextBox_SubscriptionId.Text = m_userNotificationManager.CurrentSubscription.UserNotificationSubscriptionId;
+                }
                 m_userNotificationManager.CacheUpdated += Cache_CacheUpdated;
                 await m_userNotificationManager.RefreshAsync();
             }

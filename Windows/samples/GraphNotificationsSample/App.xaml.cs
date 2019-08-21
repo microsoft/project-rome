@@ -30,16 +30,6 @@ namespace SDKTemplate
         public string notificationId { get; set; }
     }
 
-    public class Activity
-    {
-        public string id { get; set; }
-    }
-
-    public class RawNotificationPayload
-    {
-        public List<Activity> activities { get; set; }
-    }
-
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>

@@ -11,6 +11,7 @@
     NSInteger _listenerValue;
     NSMutableDictionary<NSNumber*, void(^)(void)>* _listenerMap;
     MCDUserDataFeed* _feed;
+    MCDUserDataFeedSubscription* _feedSubscription;
     MCDUserNotificationChannel* _channel;
     MCDUserNotificationReader* _reader;
     MCDEventSubscription* _readerSubscription;
@@ -32,22 +33,29 @@
             NSLog(@"SyncStatus is %ld", (long)sender.syncStatus);
         }];
         NSArray<MCDUserDataFeedSyncScope*>* syncScopes = @[ [MCDUserNotificationChannel syncScope] ];
-        [_feed subscribeToSyncScopesAsync:syncScopes
-                callback:^(BOOL success __unused, NSError* _Nullable error __unused) {
-            // Start syncing down notifications
-            [_feed startSync];
+        [_feed subscribeToSyncScopesWithResultAsync:syncScopes
+                callback:^(MCDUserDataFeedSubscribeResult* result, __unused NSError* _Nullable error) {
+            if (result.status != MCDUserDataFeedSubscribeStatusSuccess) {
+                NSLog(@"GraphNotificationsSample failed to subscribe for notifications!");
+            } else {
+                _feedSubscription = result.subscription;
+                NSLog(@"GraphNotificationsSample subscribed with %@", result.subscription.userNotificationSubscriptionId);
+
+                // This App should send "result.subscription.userNotificationSubscriptionId" to its appservice.
+                // Appservice can use UserNotificationSubscriptionId to POST new notification
+                // to https://graph.microsoft.com/beta/me/notifications without OaAuth tokens.
+
+                [_feed startSync];
+            } 
         }];
         
         // Create the channel and reader
         _channel = [MCDUserNotificationChannel channelWithUserDataFeed:_feed];
         _reader = [_channel createReader];
         _readerSubscription = [_reader.dataChanged subscribe:^(MCDUserNotificationReader* source,
-                                                               __unused MCDUserNotificationReaderDataChangedEventArgs* args){
-            {
-                NSLog(@"GraphNotificationsSample got an update!");
-                [self _readFromCache:source];
-            };
-            
+                                                               __unused MCDUserNotificationReaderDataChangedEventArgs* args) {
+            NSLog(@"GraphNotificationsSample got an update!");
+            [self _readFromCache:source];
         }];
         
         [self _readFromCache:_reader];

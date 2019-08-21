@@ -261,7 +261,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-GraphNotificationsSample/Pods-GraphNotificationsSample-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/ADAL/ADAL.framework",
 				"${PODS_ROOT}/AdaptiveCards/AdaptiveCards.framework",
-				"${PODS_ROOT}/ProjectRomeSdk/full/ConnectedDevices.framework",
+				"${PODS_ROOT}/ProjectRomeSdk/ConnectedDevices.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";

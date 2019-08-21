@@ -26,6 +26,7 @@ namespace SDKTemplate
         private UserNotificationChannel m_channel;
 
         public event EventHandler CacheUpdated;
+
         private List<UserNotification> m_newNotifications = new List<UserNotification>();
         public bool NewNotifications
         {
@@ -44,6 +45,8 @@ namespace SDKTemplate
             }
         }
 
+        public UserDataFeedSubscription CurrentSubscription { get; private set; } = null;
+
         public UserNotificationsManager(ConnectedDevicesPlatform platform, ConnectedDevicesAccount account)
         {
             m_feed = UserDataFeed.GetForAccount(account, platform, Secrets.APP_HOST_NAME);
@@ -58,16 +61,26 @@ namespace SDKTemplate
         public async Task RegisterAccountWithSdkAsync()
         {
             var scopes = new List<UserDataFeedSyncScope> { UserNotificationChannel.SyncScope };
-            bool registered = await m_feed.SubscribeToSyncScopesAsync(scopes);
-            if (!registered)
+            UserDataFeedSubscribeResult result = await m_feed.SubscribeToSyncScopesWithResultAsync(scopes);
+            if (result.Status != UserDataFeedSubscribeStatus.Success)
             {
-                throw new Exception("Subscribe failed");
+                throw new Exception($"GraphNotificationsSample failed to subscribe for notifications, status: {result.Status}");
+            }
+            else
+            {
+                // Save the last good subscription
+                CurrentSubscription = result.Subscription;
+                Logger.Instance.LogMessage($"GraphNotificationsSample subscribed with {result.Subscription.UserNotificationSubscriptionId} valid till {result.Subscription.ExpirationTime}");
+
+                // This App should send "subscription.UserNotificationSubscriptionId" to its appservice.
+                // Appservice can use UserNotificationSubscriptionId to POST new notification
+                // to https://graph.microsoft.com/beta/me/notifications without OaAuth tokens.
             }
         }
 
         private void Feed_SyncStatusChanged(UserDataFeed sender, object args)
         {
-            Logger.Instance.LogMessage($"SyncStatus is {sender.SyncStatus.ToString()}");
+            Logger.Instance.LogMessage($"SyncStatus is {sender.SyncStatus}");
         }
 
         private async void Reader_DataChanged(UserNotificationReader sender, object args)

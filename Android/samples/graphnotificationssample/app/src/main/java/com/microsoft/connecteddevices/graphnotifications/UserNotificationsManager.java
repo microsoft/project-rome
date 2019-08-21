@@ -1,6 +1,5 @@
 package com.microsoft.connecteddevices.graphnotifications;
 
-import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,6 +14,8 @@ import com.microsoft.connecteddevices.AsyncOperation;
 import com.microsoft.connecteddevices.ConnectedDevicesAccount;
 import com.microsoft.connecteddevices.ConnectedDevicesPlatform;
 import com.microsoft.connecteddevices.userdata.UserDataFeed;
+import com.microsoft.connecteddevices.userdata.UserDataFeedSubscribeStatus;
+import com.microsoft.connecteddevices.userdata.UserDataFeedSubscription;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotification;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationChannel;
 import com.microsoft.connecteddevices.userdata.usernotifications.UserNotificationReadState;
@@ -49,6 +50,8 @@ public class UserNotificationsManager {
     private final ArrayList<UserNotification> mHistoricalNotifications = new ArrayList<>();
     private final ArrayList<UserNotification> mNewNotifications = new ArrayList<>();
 
+    private UserDataFeedSubscription mCurrentSubscription = null;
+
     public UserNotificationsManager(@NonNull Context context, @NonNull ConnectedDevicesAccount account, @NonNull ConnectedDevicesPlatform platform)
     {
         mContext = context;
@@ -66,10 +69,22 @@ public class UserNotificationsManager {
 
     public AsyncOperation<Boolean> registerForAccountAsync()
     {
-        return mFeed.subscribeToSyncScopesAsync(Arrays.asList(UserNotificationChannel.getSyncScope())).thenApplyAsync((success) -> {
-            mFeed.startSync();
-            readFromCache(mReader);
-            return success;
+        return mFeed.subscribeToSyncScopesWithResultAsync(Arrays.asList(UserNotificationChannel.getSyncScope())).thenApplyAsync((result) -> {
+            if (result.getStatus() != UserDataFeedSubscribeStatus.SUCCESS) {
+                Log.d(TAG, "GraphNotificationsSample failed to subscribe for notifications, status: " + result.getStatus().toString());
+                return false;
+            } else {
+                mCurrentSubscription = result.getSubscription();
+                Log.d(TAG, "GraphNotificationsSample subscribed with " + result.getSubscription().getUserNotificationSubscriptionId() + " valid till " + result.getSubscription().getExpirationTime().toString());
+
+                // This App should send "result.getSubscription().getUserNotificationSubscriptionId()" to its appservice.
+                // Appservice can use UserNotificationSubscriptionId to POST new notification
+                // to https://graph.microsoft.com/beta/me/notifications without OaAuth tokens.
+
+                mFeed.startSync();
+                readFromCache(mReader);
+                return true;
+            }
         });
     }
 
@@ -151,7 +166,7 @@ public class UserNotificationsManager {
      * Replacement for the java.util.function.Predicate to support pre Java 8 / API 24.
      */
     interface Predicate<T> {
-        public boolean test(T t);
+        boolean test(T t);
     }
 
     /**

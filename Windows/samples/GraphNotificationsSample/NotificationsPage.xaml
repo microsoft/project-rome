@@ -30,19 +30,21 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
+            <StackPanel VerticalAlignment="Top" Margin="10,10,0,10">
                 <TextBlock Name="Description" Style="{StaticResource ScenarioDescriptionTextStyle}" TextWrapping="Wrap">
                 Please login with MSA or AAD account
                 </TextBlock>
             </StackPanel>
 
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10">
-                <Button Name="RefreshButton" Content="Refresh" Margin="10" BorderBrush="AntiqueWhite" Click="Button_Refresh"/>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,10,0,10">
+                <Button Name="RefreshButton" Content="Refresh History" Margin="10" Click="Button_Refresh"/>
+                <TextBlock Text="UNSID: " VerticalAlignment="Center" Margin="10,0,0,0"/>
+                <TextBox IsReadOnly="True" Name="TextBox_SubscriptionId" Margin="10,10,0,10" Width="654" VerticalContentAlignment="Center"/>
             </StackPanel>
 
             <Grid Grid.Row="2">
                 <ScrollViewer VerticalScrollBarVisibility="Visible">
-                    <ListView x:Name="UnreadView" Margin="20,0,0,0" BorderBrush="DarkCyan" BorderThickness="1">
+                    <ListView x:Name="UnreadView" Margin="10,0,0,0" BorderBrush="DarkCyan" BorderThickness="1">
                         <ListView.HeaderTemplate>
                             <DataTemplate>
                                 <Grid Margin="12">
