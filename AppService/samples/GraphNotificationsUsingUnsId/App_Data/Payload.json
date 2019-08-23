@@ -1,0 +1,17 @@
+﻿{
+  //  Step 3 : Please enter the domain name that is registered and verified with the App Service ID in Dev portal as the value for targetHostName below, example: foo.com
+  "targetHostName": "PleaseEnterValue",
+  "appNotificationId": "sampleRawNotification",
+  "payload": {
+    "rawContent": "Hello World!"
+  },
+  "targetPolicy": {
+    "platformTypes": [
+      "windows",
+      "ios",
+      "android"
+    ]
+  },
+  "priority": "High",
+  "displayTimeToLive": "60"
+}

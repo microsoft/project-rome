@@ -1,0 +1,44 @@
+POST https://graph.microsoft.com/beta/me/notifications HTTP/1.1
+Cache-Control: max-age=0
+Accept: application/json, text/plain, */*
+Accept-Language: en-US,en;q=0.5
+Authorization: Bearer <App Service Auth Token>
+Content-Type: application/json
+Connection: Keep-Alive
+
+{
+  "targetHostName": "graphnotifications.sample.windows.com",
+  "appNotificationId": "sampleRawNotification",
+  "payload": {
+    "rawContent": "Hello World!"
+  },
+  "targetPolicy": {
+    "platformTypes": [
+      "windows",
+      "ios",
+      "android"
+    ]
+  },
+  "priority": "High",
+  "displayTimeToLive": "60"
+}
+
+
+HTTP/1.1 201 Created
+Cache-Control: private
+Transfer-Encoding: chunked
+Content-Type: application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8
+Location: https://graph.microsoft.com/beta/me/activities/3407d93c-77f7-4bc0-8fbf-46221a7bed72
+request-id: 943d2ce0-e3a9-4d1d-8b75-dbe0d1432d18
+client-request-id: 943d2ce0-e3a9-4d1d-8b75-dbe0d1432d18
+x-ms-ags-diagnostic: {"ServerInfo":{"DataCenter":"West Central US","Slice":"SliceC","Ring":"1","ScaleUnit":"001","RoleInstance":"AGSFE_IN_1","ADSiteName":"WCU"}}
+Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: ETag, Location, Preference-Applied, Content-Range, request-id, client-request-id, ReadWriteConsistencyToken
+OData-Version: 4.0
+Duration: 364.0911
+Strict-Transport-Security: max-age=31536000
+Date: Fri, 23 Aug 2019 00:25:55 GMT
+
+118
+{"@odata.context":"https://graph.microsoft.com/beta/$metadata#users('gnstest%40contoso.com')/notifications/$entity","displayTimeToLive":59,"expirationDateTime":"2019-08-30T00:25:55.329Z","groupName":null,"id":"3407d93c-77f7-4bc0-8fbf-46221a7bed72","priority":"High","payload":{}}
+0
