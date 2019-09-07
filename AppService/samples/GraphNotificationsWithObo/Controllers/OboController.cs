@@ -107,7 +107,7 @@ namespace Microsoft.Graph.Notifications.Sample.Controllers
             nameValues.Add("client_id", clientId);
             nameValues.Add("client_secret", clientKey);
             nameValues.Add("assertion", token);
-            nameValues.Add("scope", "https://graph.microsoft.com/User.Read Notifications.ReadWrite.CreatedByApp");
+            nameValues.Add("scope", graphBaseAddress + "User.Read " + graphBaseAddress + "Notifications.ReadWrite.CreatedByApp");
             nameValues.Add("requested_token_use", "on_behalf_of");
 
             var content = new FormUrlEncodedContent(nameValues);

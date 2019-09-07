@@ -34,6 +34,12 @@ namespace Microsoft.Graph.Notifications.Sample.GraphNotificationsUsingUnsId.Cont
         #region Private members
 
         private Uri graphBaseAddress = new Uri("https://graph.microsoft.com/");
+
+        /// <summary>
+        /// The base address for getting the auth token
+        /// Step 4 : (Optional) Replace common below with the GUID of the TenantId if the app service is created in a tenant other than the default tenant in Azure Portal
+        /// Example: https://login.microsoftonline.com/{b2492dcb-4697-4ae2-879d-3830d8e1d232}/
+        /// </summary>
         private Uri authBaseAddress = new Uri("https://login.microsoftonline.com/common/");
 
         #endregion

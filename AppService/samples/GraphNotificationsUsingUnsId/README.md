@@ -25,6 +25,7 @@ This is the sample code for an App Service that can create and send a notificati
   * Step 1 : AppServiceSecret (in Web.config): This is the App Service Secret registered in Azure Portal
   * Step 2 : UnsId (in Web.config): This is the UNS ID that the client app receives as part of the response after subscribing to notifications
   * Step 3 : TargetHostName (Payload.json): This is the Domain name that was verified and associated with the App Service Id in Dev Portal
+  * Step 4 : (Optional) TenantId (in UnsIdController.cs) : This is Id of the tenant in which the App Service is created in Azure Portal. This only needs to be updated if the App Service is created in a tenant other than the default tenant
 
 * Deploy locally using IIS Express in VS
  

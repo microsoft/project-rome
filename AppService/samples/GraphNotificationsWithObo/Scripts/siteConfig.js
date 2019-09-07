@@ -8,7 +8,7 @@
     site.targetHostName = "PleaseEnterValue";
 
     site.appServiceScopes = ["api://" + site.appServiceId + "/User.Read"]; //Scopes for the App Service
-    site.graphNotificationScopes = ["https://graph.microsoft.com/User.Read", "Notifications.ReadWrite.CreatedByApp"]; //Scopes for Graph Notifications API
+    site.graphNotificationScopes = ["https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Notifications.ReadWrite.CreatedByApp"]; //Scopes for Graph Notifications API
 
     // Graph notification sample request payload
     site.sampleNotificationRequest = {
