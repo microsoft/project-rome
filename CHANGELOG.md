@@ -1,9 +1,18 @@
+## 1.5.0
+
+
+### Security (2 changes)
+
+- Switch to use built-in android http stack.
+- Update to OpenSSL 1.1.0k
+
 ## 1.4.1
 
 
 ### Security (1 change)
 
 - Resolve an internally discovered security issue with processing web requests.
+
 
 ## 1.4.0
 
