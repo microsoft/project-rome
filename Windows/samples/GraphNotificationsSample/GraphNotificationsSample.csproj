@@ -21,9 +21,8 @@
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>71E165FEBF46280B0AC777550DC048C4E70F6F68</PackageCertificateThumbprint>
-    <PackageCertificateKeyFile>
-    </PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>20DF20075DA8072EF96C32265AC04BC996679700</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>GraphNotificationsSample_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -155,6 +154,7 @@
     <Content Include="Assets\storelogo-sdk.png" />
     <Content Include="Assets\tile-sdk.png" />
     <Content Include="Assets\windows-sdk.png" />
+    <None Include="GraphNotificationsSample_TemporaryKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
