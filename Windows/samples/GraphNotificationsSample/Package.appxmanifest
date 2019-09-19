@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="8f92a39d-5520-48d0-a4d3-e35ad84d19a7" Publisher="CN=8f92a39d-5520-48d0-a4d3-e35ad84d19a7" Version="1.0.0.0" />
+  <Identity Name="8f92a39d-5520-48d0-a4d3-e35ad84d19a7" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="8f92a39d-5520-48d0-a4d3-e35ad84d19a7" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Graph Notifications Sample</DisplayName>
