@@ -21,9 +21,8 @@
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>71E165FEBF46280B0AC777550DC048C4E70F6F68</PackageCertificateThumbprint>
-    <PackageCertificateKeyFile>
-    </PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>64CA614CCD81EF66E21CCDE21704D68C83E09496</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>GraphNotificationsSample_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
