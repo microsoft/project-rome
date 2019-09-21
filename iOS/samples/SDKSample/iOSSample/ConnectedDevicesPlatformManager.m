@@ -458,13 +458,14 @@
 
 - (AnyPromise*)signInMsaAsync {
     MSAAccount* msaAccount = [[MSAAccount alloc] initWithClientId:CLIENT_ID scopeOverrides:@{}];
+    
     return [AnyPromise promiseWithAdapterBlock:^(PMKAdapter _Nonnull adapter) {
         [msaAccount signInWithCompletionCallback:adapter];
     }].then(^{
         Account* account = [[Account alloc] initWithMSAAccount:msaAccount platform:self.platform apnsManager:self.apnsManager];
         account.state = AccountRegistrationStateInAppCacheOnly;
         [self.accounts addObject:account];
-        return [account prepareAccountAsync:self];
+        [account prepareAccountAsync:self];
     }).then(^{
         [self accountListChanged];
     });
