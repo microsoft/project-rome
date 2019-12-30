@@ -1,3 +1,16 @@
+## 1.6.0
+
+
+### Security (1 changes)
+
+- Update android client to use TLS1.2
+
+
+### Other (2 changes)
+
+- Various bug fixes 
+- Telemetry improvements
+
 ## 1.5.0
 
 
