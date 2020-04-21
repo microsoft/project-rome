@@ -1,3 +1,15 @@
+## 1.6.1
+
+
+### Added (6 changes)
+
+- Disabled some iOS BT logging which pollutes iOS logging.
+- Fix a bug on mismatching activityId in telemetry start/stop event.
+- Improvement on Android HTTP client to provide diagnose context when failure happened.
+- "Improvement on ccs client handling WNS revoked error".
+- Improvement on OneRomanApp/Android by not trying to init hte platform everytime it receives a notifiation.
+- Undo an activity change which causes AFC regression on handling 404.
+
 ## 1.6.0
 
 
@@ -25,7 +37,6 @@
 ### Security (1 change)
 
 - Resolve an internally discovered security issue with processing web requests.
-
 
 ## 1.4.0
 
@@ -157,6 +168,7 @@
 ### Removed (1 change)
 
 - Remove UserNotificationReaderOptions constructors except for default.
+
 
 
 
